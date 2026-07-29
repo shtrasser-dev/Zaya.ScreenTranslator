@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Host app Version (app-v*). Sibling ProjectReferences supply interface packages (e.g. Zaya.OCR 0.4.1). -->
+    <Version>0.4.0</Version>
+    <ZayaPrimitivesVersion>0.4.0</ZayaPrimitivesVersion>
+  </PropertyGroup>
+</Project>
