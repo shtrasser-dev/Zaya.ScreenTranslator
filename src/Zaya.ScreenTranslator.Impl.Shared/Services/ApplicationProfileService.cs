@@ -1,0 +1,153 @@
+using System.Diagnostics;
+using System.Text.Json;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Zaya.ScreenTranslator.Impl.Shared.Converters;
+using Zaya.ScreenTranslator.Impl.Shared.Models;
+
+namespace Zaya.ScreenTranslator.Impl.Shared.Services;
+
+public sealed class ApplicationProfileService : ObservableObject, IApplicationProfileService
+{
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new SettingsJsonConverter() }
+    };
+
+    private readonly string _baseDir;
+    private readonly string _profilesDir;
+    private readonly string _settingsPath;
+
+    private IApplicationProfile? _activeProfile;
+
+    public ApplicationProfileService()
+    {
+        _baseDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Zaya", "ScreenTranslator");
+        _profilesDir = Path.Combine(_baseDir, "profiles");
+        _settingsPath = Path.Combine(_baseDir, "settings.json");
+
+        Directory.CreateDirectory(_profilesDir);
+    }
+
+    public IApplicationProfile? ActiveProfile => _activeProfile;
+
+    // ── App-level settings ──
+
+    public ScreenTranslatorProfile LoadScreenTranslatorProfile()
+    {
+        try
+        {
+            if (!File.Exists(_settingsPath))
+            {
+                Debug.WriteLine($"[LoadScreen] File not found: {_settingsPath}");
+                return new ScreenTranslatorProfile();
+            }
+
+            var json = File.ReadAllText(_settingsPath);
+            var result = JsonSerializer.Deserialize<ScreenTranslatorProfile>(json, JsonOptions)
+                         ?? new ScreenTranslatorProfile();
+            if (result.Theme is not "light" and not "dark")
+                result.Theme = "light";
+            if (result.DisplayMode is not "textWindow" and not "overlay")
+                result.DisplayMode = "textWindow";
+            Debug.WriteLine($"[LoadScreen] UiCulture={result.UiCulture}, Theme={result.Theme}, DisplayMode={result.DisplayMode}, LastProfile={result.LastActiveProfileName}");
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[LoadScreen] Error: {ex.Message}");
+            return new ScreenTranslatorProfile();
+        }
+    }
+
+    public void SaveScreenTranslatorProfile(ScreenTranslatorProfile settings)
+    {
+        Debug.WriteLine($"[SaveScreen] UiCulture={settings.UiCulture}, Theme={settings.Theme}, LastProfile={settings.LastActiveProfileName}");
+        var tmp = _settingsPath + ".tmp";
+        var json = JsonSerializer.Serialize(settings, JsonOptions);
+        File.WriteAllText(tmp, json);
+        File.Move(tmp, _settingsPath, overwrite: true);
+        Debug.WriteLine($"[SaveScreen] Written to {_settingsPath}");
+    }
+
+    // ── Translation profiles ──
+
+    public void SetActiveProfile(string name)
+    {
+        var path = ProfilePath(name);
+        if (!File.Exists(path))
+        {
+            // First launch: auto-create default profile if none exist
+            var names = ListProfileNames();
+            if (names.Count == 0)
+            {
+                var defaultProfile = new ApplicationProfile();
+                Save(defaultProfile);
+                _activeProfile = defaultProfile;
+                OnPropertyChanged(nameof(ActiveProfile));
+                return;
+            }
+            return;
+        }
+
+        var json = File.ReadAllText(path);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(json, JsonOptions);
+        if (dict is not null)
+        {
+            _activeProfile = new ApplicationProfile { Settings = dict };
+            OnPropertyChanged(nameof(ActiveProfile));
+        }
+    }
+
+    public void SetActiveProfile(IApplicationProfile profile)
+    {
+        _activeProfile = profile;
+        OnPropertyChanged(nameof(ActiveProfile));
+    }
+
+    public List<string> ListProfileNames()
+    {
+        if (!Directory.Exists(_profilesDir))
+            return [];
+
+        return Directory.EnumerateFiles(_profilesDir, "*.json")
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(n => n is not null)
+            .ToList()!;
+    }
+
+    public void Save(IApplicationProfile profile)
+    {
+        var name = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName);
+        var path = ProfilePath(name);
+        var tmp = path + ".tmp";
+        var json = JsonSerializer.Serialize(profile.Settings, JsonOptions);
+        File.WriteAllText(tmp, json);
+        File.Move(tmp, path, overwrite: true);
+    }
+
+    public void Delete(string name)
+    {
+        var names = ListProfileNames();
+        if (names.Count <= 1)
+            return; // cannot delete last profile
+
+        var path = ProfilePath(name);
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+
+    // ── Helpers ──
+
+    private string ProfilePath(string name) =>
+        Path.Combine(_profilesDir, SanitizeFileName(name) + ".json");
+
+    private static string SanitizeFileName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var sanitized = string.Concat(name.Select(c => invalid.Contains(c) ? '_' : c));
+        return string.IsNullOrWhiteSpace(sanitized) ? "Default" : sanitized;
+    }
+}

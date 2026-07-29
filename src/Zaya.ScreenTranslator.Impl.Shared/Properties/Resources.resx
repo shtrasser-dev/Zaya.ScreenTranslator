@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>Show text</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>Hide text</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>Settings...</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>Idle</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>OCR</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>Capture</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>Translate</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>Minimum text length</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>Filter rules</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>Regex</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>Ignore case</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>Skip block</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>Strip match</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>Add rule</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Remove rule</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>Profile:</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>Save as new</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>Interface language</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>Target translation language</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>OCR engine</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>Capture engine</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>Layout engine</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>Translation engine</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>No translation (OCR only)</value>
+  </data>
+  <data name="Settings_TargetFps" xml:space="preserve">
+    <value>Target FPS</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>Recognized text</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>Window:</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>Profile:</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>No windows found</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>No OCR engine available</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>No capture engine available</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>No target window selected</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>New profile name</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>Name cannot be empty</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>Profile already exists</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>Output:</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>Overlay</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>Overlay engine</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>Start translation to show overlay</value>
+  </data>
+</root>

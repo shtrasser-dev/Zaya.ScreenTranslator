@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <Version>0.1.0</Version>
+    <Title>Zaya Screen Translator</Title>
+    <Description>Real-time on-screen text translator — shared UI and logic.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>SHTrassEr</Authors>
+    <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zaya.ScreenTranslator.Impl.Layout\Zaya.ScreenTranslator.Impl.Layout.csproj" />
+    <ProjectReference Include="..\..\..\Zaya.Screenshot\src\Zaya.Screenshot\Zaya.Screenshot.csproj" />
+    <ProjectReference Include="..\..\..\Zaya.OCR\src\Zaya.OCR\Zaya.OCR.csproj" />
+    <ProjectReference Include="..\..\..\Zaya.Translator\src\Zaya.Translator\Zaya.Translator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Zaya.Primitives" Version="0.2.7" />
+    <PackageReference Include="Avalonia" Version="12.1.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
+    <PackageReference Include="System.Text.Json" Version="10.0.10" />
+  </ItemGroup>
+
+</Project>

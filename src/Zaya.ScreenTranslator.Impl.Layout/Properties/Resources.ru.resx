@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>Экранный overlay</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>Рисует текст поверх целевого окна по координатам</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>Расположение</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>Где рисовать текст относительно прямоугольника</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>Над</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>Поверх</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>Под</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>Масштаб шрифта (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>Размер шрифта в процентах от высоты bounds</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Сдвиг Y (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>Дополнительный вертикальный зазор от края bounds</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>Отступ</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>Внутренний отступ вокруг текста</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>Фон</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>Фон под текстом overlay</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>Полупрозрачный</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>Непрозрачный</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>Прозрачность фона (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>Прозрачность soft/opaque фона</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>Цвет текста</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>Цвет текста overlay</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>Светлый</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>Тёмный</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>Обводка</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>Обводка/тень для читаемости</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>Подгонка</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>Как вписать длинный текст в ширину bounds</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>Уменьшать</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>Перенос</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>Обрезать</value>
+  </data>
+</root>

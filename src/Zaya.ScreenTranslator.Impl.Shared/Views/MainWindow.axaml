@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+        xmlns:m="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Models"
+        x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="{Binding Loc[MainWindow_Title]}"
+        Width="480" Height="300"
+        WindowStartupLocation="CenterScreen"
+        Closing="OnClosing">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Window picker -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+            <TextBlock Text="{Binding Loc[Picker_Window]}" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding Windows}"
+                      SelectedItem="{Binding SelectedWindow}"
+                      MinWidth="200"
+                      DisplayMemberBinding="{Binding Title}" />
+            <Button Content="{Binding Loc[Btn_Refresh]}"
+                    Command="{Binding RefreshWindowsCommand}" />
+        </StackPanel>
+
+        <!-- Row 1: Profile picker + Settings -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+            <TextBlock Text="{Binding Loc[Picker_Profile]}" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding ProfileNames}"
+                      SelectedItem="{Binding SelectedProfileName}"
+                      MinWidth="160" />
+            <Button Content="{Binding Loc[Btn_Settings]}"
+                    Command="{Binding OpenSettingsCommand}" />
+        </StackPanel>
+
+        <!-- Row 2: Start/Stop + display mode + Show/Hide -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+            <Button Command="{Binding StartStopCommand}" MinWidth="100"
+                    Content="{Binding StartStopButtonText}" />
+            <TextBlock Text="{Binding Loc[Picker_DisplayMode]}" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding DisplayModeOptions}"
+                      SelectedItem="{Binding SelectedDisplayMode}"
+                      MinWidth="120" />
+            <Button Command="{Binding ShowHideTextCommand}" MinWidth="120">
+                <TextBlock Text="{Binding Loc[Btn_ShowText]}" />
+            </Button>
+        </StackPanel>
+
+        <!-- Row 3: Status bar + timing -->
+        <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Spacing="2">
+            <TextBlock Text="{Binding StatusText}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       FontSize="12" />
+            <TextBlock Text="{Binding TimingInfo}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                       FontSize="11" />
+        </StackPanel>
+    </Grid>
+</Window>

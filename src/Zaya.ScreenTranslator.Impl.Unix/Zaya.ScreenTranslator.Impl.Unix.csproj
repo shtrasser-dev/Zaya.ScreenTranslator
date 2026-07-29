@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <Version>0.1.0</Version>
+    <Title>Zaya Screen Translator — Unix</Title>
+    <Description>Unix host for Zaya Screen Translator.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>SHTrassEr</Authors>
+    <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zaya.ScreenTranslator.Impl.Shared\Zaya.ScreenTranslator.Impl.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

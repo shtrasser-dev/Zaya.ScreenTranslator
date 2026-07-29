@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+        x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.TextWindow"
+        x:DataType="vm:TextWindowViewModel"
+        Title="{Binding Loc[TextWindow_Title]}"
+        Width="480" Height="320"
+        WindowStartupLocation="Manual"
+        ShowInTaskbar="False"
+        Topmost="{Binding IsTopmost}"
+        Closing="OnClosing">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0"
+                 Text="{Binding RecognizedText, Mode=OneWay}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap" />
+        <CheckBox Grid.Row="1"
+                  IsChecked="{Binding IsTopmost, Mode=TwoWay}"
+                  Content="{Binding Loc[TextWindow_Topmost]}"
+                  Margin="0,8,0,0" />
+    </Grid>
+</Window>

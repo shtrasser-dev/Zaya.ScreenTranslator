@@ -1,0 +1,32 @@
+namespace Zaya.ScreenTranslator.Impl.Layout.Constants;
+
+internal static class OverlayLayoutSettingKeys
+{
+    public const string TargetWindowHandle = "targetWindowHandle";
+
+    public const string Placement = "placement";
+    public const string FontScale = "fontScale";
+    public const string OffsetY = "offsetY";
+    public const string Padding = "padding";
+    public const string Background = "background";
+    public const string BackgroundOpacity = "backgroundOpacity";
+    public const string TextColor = "textColor";
+    public const string Outline = "outline";
+    public const string FitMode = "fitMode";
+
+    public const string PlacementAbove = "above";
+    public const string PlacementOver = "over";
+    public const string PlacementBelow = "below";
+
+    public const string BackgroundNone = "none";
+    public const string BackgroundSoft = "soft";
+    public const string BackgroundOpaque = "opaque";
+
+    public const string TextColorAuto = "auto";
+    public const string TextColorLight = "light";
+    public const string TextColorDark = "dark";
+
+    public const string FitShrink = "shrink";
+    public const string FitWrap = "wrap";
+    public const string FitClip = "clip";
+}
