@@ -1,24 +1,40 @@
 # Zaya.ScreenTranslator
 
-Real-time on-screen text translator for Windows. Captures text from games, movies, and applications, recognizes it with OCR, translates it, and displays the result as an overlay.
+Real-time on-screen text translator for Windows. Captures a window or region, runs OCR, optionally translates, and shows the result in a text window or overlay.
+
+## Version
+
+**0.4.0** — Primitives compatibility channel `0.4`. See [versioning](docs/versioning.md).
 
 ## Features
 
-- Capture text from any region of the screen
-- OCR using multiple engines (OneOCR, Tesseract, Windows.Media.Ocr)
-- Translation via DeepL, LibreTranslate, Yandex
-- Real-time overlay rendering
+- Capture via Windows Graphics Capture plugin
+- OCR (OneOCR, Windows Media OCR) + proximity text layout
+- Translation plugins (Google, Yandex) or built-in “No translation”
+- Overlay / text-window display modes
 - Per-application profiles
+- Plugin updater via GitHub Releases (`plugin-v0.4-latest`); host opens release page for app updates
 
 ## Architecture
 
-- **Zaya.ScreenTranslator** — WPF application: pipeline, overlay, UI
+- **Impl.Windows** — Windows host (`Zaya.ScreenTranslator.Impl.Windows.exe`)
+- **Impl.Shared** — Avalonia UI, pipeline, plugin loader, updater
+- **Impl.Layout** — overlay layout engine (ships with the host)
 
 ## Dependencies
 
-- [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives)
+- [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives) 0.4.0
 - [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot)
 - [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR)
+- [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator)
+
+## Local plugins
+
+```bat
+build-plugins.cmd
+```
+
+Copies sibling repo plugin zips into `%AppData%\Zaya\ScreenTranslator\plugins`.
 
 ## License
 

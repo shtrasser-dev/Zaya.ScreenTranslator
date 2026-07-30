@@ -1,0 +1,147 @@
+using System.Text.Json.Serialization;
+
+namespace Zaya.ScreenTranslator.Impl.Shared.Update;
+
+public sealed class BuiltinPluginEntry
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [JsonPropertyName("repo")]
+    public string Repo { get; set; } = string.Empty;
+
+    [JsonPropertyName("asset")]
+    public string Asset { get; set; } = string.Empty;
+
+    [JsonPropertyName("required")]
+    public bool Required { get; set; }
+}
+
+public sealed class GitHubReleaseInfo
+{
+    public string TagName { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public string Body { get; init; } = string.Empty;
+    public string HtmlUrl { get; init; } = string.Empty;
+    public bool Prerelease { get; init; }
+    public IReadOnlyList<GitHubReleaseAsset> Assets { get; init; } = [];
+
+    /// <summary>Semver from release name ("Plugin v0.4.0" / "App v0.4.0") or body "version: x.y.z".</summary>
+    public Version? ParsedVersion => ReleaseVersionParser.TryParse(Name, Body);
+}
+
+public sealed class GitHubReleaseAsset
+{
+    public string Name { get; init; } = string.Empty;
+    public string BrowserDownloadUrl { get; init; } = string.Empty;
+    public long Size { get; init; }
+    public string? Digest { get; init; }
+}
+
+public sealed class PluginUpdateResult
+{
+    public bool Success { get; init; }
+    public string? ErrorMessage { get; init; }
+    public IReadOnlyList<string> DownloadedAssets { get; init; } = [];
+    public bool RequiresRestart { get; init; }
+}
+
+public sealed class HostUpdateInfo
+{
+    public bool UpdateAvailable { get; init; }
+    public Version? RemoteVersion { get; init; }
+    public string? ReleaseHtmlUrl { get; init; }
+    public string? ReleaseName { get; init; }
+}
+
+public static class ReleaseVersionParser
+{
+    public static Version? TryParse(string? name, string? body)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            // "Plugin v0.4.0" / "App v0.4.0" / "v0.4.0"
+            var m = System.Text.RegularExpressions.Regex.Match(
+                name,
+                @"\bv(?<ver>\d+\.\d+\.\d+)\b",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var fromName))
+                return fromName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(body))
+        {
+            using var reader = new StringReader(body);
+            var first = reader.ReadLine();
+            if (first is not null)
+            {
+                var m = System.Text.RegularExpressions.Regex.Match(
+                    first,
+                    @"^\s*version\s*:\s*(?<ver>\d+\.\d+\.\d+)\s*$",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var fromBody))
+                    return fromBody;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Parses lines like <c>Zaya.OCR.Impl.OneOcr.zip=0.4.1</c> or <c>asset.zip: 0.4.1</c> from release body.
+    /// </summary>
+    public static IReadOnlyDictionary<string, Version> ParseAssetVersions(string? body)
+    {
+        var map = new Dictionary<string, Version>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(body))
+            return map;
+
+        foreach (var raw in body.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            var m = System.Text.RegularExpressions.Regex.Match(
+                line,
+                @"^(?<asset>[^\s=:]+\.zip)\s*[=:]\s*(?<ver>\d+\.\d+\.\d+)\s*$",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var ver))
+                map[m.Groups["asset"].Value] = ver;
+        }
+
+        return map;
+    }
+
+    public static Version? ResolveAssetVersion(GitHubReleaseInfo release, string assetName)
+    {
+        var map = ParseAssetVersions(release.Body);
+        if (map.TryGetValue(assetName, out var perAsset))
+            return perAsset;
+        return release.ParsedVersion;
+    }
+}
+
+public static class HostChannel
+{
+    /// <summary>Primitives / plugin compatibility channel = MAJOR.MINOR of host Version.</summary>
+    public static string Current
+    {
+        get
+        {
+            var ver = AssemblyVersion;
+            return $"{ver.Major}.{ver.Minor}";
+        }
+    }
+
+    public static Version AssemblyVersion =>
+        System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version
+        ?? typeof(HostChannel).Assembly.GetName().Version
+        ?? new Version(0, 4, 0, 0);
+
+    public static Version ThreePartAssemblyVersion
+    {
+        get
+        {
+            var v = AssemblyVersion;
+            return new Version(v.Major, v.Minor, Math.Max(v.Build, 0));
+        }
+    }
+}

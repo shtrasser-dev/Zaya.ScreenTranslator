@@ -186,4 +186,31 @@
   <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Запустите перевод, чтобы показать overlay</value>
   </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Обновления приложения и плагинов</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>Проверять обновления при старте</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>Обновления</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Проверка обновлений…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Всё актуально.</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>Плагины актуальны.</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>Плагины обновлены. Перезапустите приложение, чтобы загрузить их.</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Не удалось обновить.</value>
+  </data>
 </root>

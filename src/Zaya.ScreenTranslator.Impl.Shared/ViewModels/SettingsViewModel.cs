@@ -1,9 +1,12 @@
 using Avalonia;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Update;
+using Zaya.ScreenTranslator.Impl.Shared.Views;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -12,6 +15,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IApplicationProfileService _profileService;
     private readonly LocalizationService _loc;
+    private readonly PluginUpdateService _pluginUpdateService;
+    private readonly HostVersionChecker _hostVersionChecker;
 
     private IApplicationProfile _originalProfile;
     private ScreenTranslatorProfile _originalScreenProfile;
@@ -21,11 +26,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(
         ISettingsService settingsService,
         IApplicationProfileService profileService,
-        LocalizationService loc)
+        LocalizationService loc,
+        PluginUpdateService pluginUpdateService,
+        HostVersionChecker hostVersionChecker)
     {
         _settingsService = settingsService;
         _profileService = profileService;
         _loc = loc;
+        _pluginUpdateService = pluginUpdateService;
+        _hostVersionChecker = hostVersionChecker;
 
         _originalProfile = _settingsService.BeginEdit();
         _originalScreenProfile = CloneScreenProfile(_profileService.LoadScreenTranslatorProfile());
@@ -68,6 +77,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             l => string.Equals(l.Code, _originalScreenProfile.TargetLanguage ?? "en", StringComparison.OrdinalIgnoreCase));
         _selectedTheme = _originalScreenProfile.Theme is "light" or "dark"
             ? _originalScreenProfile.Theme : "light";
+        _checkUpdatesOnStartup = _originalScreenProfile.CheckUpdatesOnStartup;
 
         LoadOcrDescriptors();
         LoadCaptureDescriptors();
@@ -149,11 +159,19 @@ public sealed partial class SettingsViewModel : ObservableObject
     private string _selectedTheme = "light";
 
     [ObservableProperty]
+    private bool _checkUpdatesOnStartup = true;
+
+    [ObservableProperty]
     private int _targetFps;
 
     partial void OnSelectedThemeChanged(string value)
     {
         EditingScreenProfile.Theme = value;
+    }
+
+    partial void OnCheckUpdatesOnStartupChanged(bool value)
+    {
+        EditingScreenProfile.CheckUpdatesOnStartup = value;
     }
 
     partial void OnSelectedUiLanguageChanged(LanguageItem? value)
@@ -218,7 +236,78 @@ public sealed partial class SettingsViewModel : ObservableObject
     /// <summary>Set by the view to show a name-input dialog. Returns the entered name, or null if cancelled.</summary>
     public Func<Task<string?>>? SaveAsNewPrompt;
 
+    /// <summary>Set by the view for modal dialogs.</summary>
+    public Window? OwnerWindow { get; set; }
+
+    [ObservableProperty]
+    private string _updateStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isCheckingUpdates;
+
     // ── Commands ──
+
+    [RelayCommand(CanExecute = nameof(CanCheckUpdates))]
+    private async Task CheckUpdates()
+    {
+        IsCheckingUpdates = true;
+        UpdateStatusMessage = _loc["Update_Checking"];
+        try
+        {
+            var channel = HostChannel.Current;
+            var hostUpdate = await _hostVersionChecker.CheckAsync(channel);
+            if (hostUpdate.UpdateAvailable && !string.IsNullOrEmpty(hostUpdate.ReleaseHtmlUrl))
+            {
+                var open = await UpdateDialogs.ShowHostUpdateAsync(
+                    OwnerWindow,
+                    hostUpdate.RemoteVersion?.ToString() ?? "?",
+                    hostUpdate.ReleaseName);
+                if (open)
+                    HostVersionChecker.OpenReleasePage(hostUpdate.ReleaseHtmlUrl);
+            }
+
+            var result = await _pluginUpdateService.EnsurePluginsAsync(
+                App.PluginsDirectory,
+                channel,
+                updateOptional: true,
+                checkForUpdates: true);
+
+            if (!result.Success)
+            {
+                UpdateStatusMessage = result.ErrorMessage ?? _loc["Update_Failed"];
+                await UpdateDialogs.ShowMessageAsync(OwnerWindow, _loc["Update_Title"], UpdateStatusMessage);
+                return;
+            }
+
+            if (result.DownloadedAssets.Count > 0)
+            {
+                UpdateStatusMessage = _loc["Update_RestartRequired"];
+                await UpdateDialogs.ShowMessageAsync(OwnerWindow, _loc["Update_Title"], UpdateStatusMessage);
+            }
+            else if (!hostUpdate.UpdateAvailable)
+            {
+                UpdateStatusMessage = _loc["Update_UpToDate"];
+                await UpdateDialogs.ShowMessageAsync(OwnerWindow, _loc["Update_Title"], UpdateStatusMessage);
+            }
+            else
+            {
+                UpdateStatusMessage = _loc["Update_PluginsOk"];
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusMessage = ex.Message;
+            await UpdateDialogs.ShowMessageAsync(OwnerWindow, _loc["Update_Title"], ex.Message);
+        }
+        finally
+        {
+            IsCheckingUpdates = false;
+        }
+    }
+
+    private bool CanCheckUpdates() => !IsCheckingUpdates;
+
+    partial void OnIsCheckingUpdatesChanged(bool value) => CheckUpdatesCommand.NotifyCanExecuteChanged();
 
     [RelayCommand]
     private async Task Save()
@@ -324,6 +413,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             TargetLanguage = source.TargetLanguage,
             LastActiveProfileName = source.LastActiveProfileName,
             DisplayMode = source.DisplayMode,
+            CheckUpdatesOnStartup = source.CheckUpdatesOnStartup,
         };
     }
 

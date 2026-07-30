@@ -8,6 +8,7 @@ using Zaya.Screenshot.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Layout.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Update;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -17,6 +18,8 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly IScreenTranslatorContext _context;
     private readonly ISettingsService _settingsService;
     private readonly TranslationLoopService _loopService;
+    private readonly PluginUpdateService _pluginUpdateService;
+    private readonly HostVersionChecker _hostVersionChecker;
 
     private CancellationTokenSource? _loopCts;
     private Task? _loopTask;
@@ -32,12 +35,16 @@ public sealed partial class MainViewModel : ObservableObject
         IApplicationProfileService profileService,
         IScreenTranslatorContext context,
         ISettingsService settingsService,
-        TranslationLoopService loopService)
+        TranslationLoopService loopService,
+        PluginUpdateService pluginUpdateService,
+        HostVersionChecker hostVersionChecker)
     {
         _profileService = profileService;
         _context = context;
         _settingsService = settingsService;
         _loopService = loopService;
+        _pluginUpdateService = pluginUpdateService;
+        _hostVersionChecker = hostVersionChecker;
 
         _profileNames = profileService.ListProfileNames();
         _selectedProfileName = profileService.ActiveProfile?.ScreenTranslatorSettings
@@ -398,7 +405,12 @@ public sealed partial class MainViewModel : ObservableObject
         if (owner is null)
             return;
 
-        var vm = new SettingsViewModel(_settingsService, _profileService, Loc);
+        var vm = new SettingsViewModel(
+            _settingsService,
+            _profileService,
+            Loc,
+            _pluginUpdateService,
+            _hostVersionChecker);
         var window = new Views.SettingsWindow(vm);
         await window.ShowDialog(owner);
 

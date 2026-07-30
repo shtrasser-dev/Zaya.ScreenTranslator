@@ -19,6 +19,7 @@ public partial class SettingsWindow : Window
         DataContext = viewModel;
         InitializeComponent();
 
+        viewModel.OwnerWindow = this;
         viewModel.CloseRequested += OnCloseRequested;
         viewModel.SaveAsNewPrompt = ShowSaveAsNewDialog;
 

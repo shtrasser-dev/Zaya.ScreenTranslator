@@ -6,6 +6,7 @@ using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Update;
 using Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 using Zaya.ScreenTranslator.Impl.Shared.Views;
 
@@ -19,15 +20,87 @@ public partial class App : Application
     private ServiceProvider? _serviceProvider;
     private ScreenTranslatorProfile? _screenProfile;
     private MainWindow? _mainWindow;
+    private GitHubReleasesClient? _releasesClient;
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
-        PluginLoader.LoadPlugins(PluginsDirectory);
+        var channel = HostChannel.Current;
+        var earlyProfile = new ApplicationProfileService().LoadScreenTranslatorProfile();
+        var checkUpdatesOnStartup = earlyProfile.CheckUpdatesOnStartup;
+
+        _releasesClient = new GitHubReleasesClient();
+        var pluginUpdater = new PluginUpdateService(_releasesClient);
+        var hostChecker = new HostVersionChecker(_releasesClient);
+
+        Window? progress = null;
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+        {
+            progress = UpdateDialogs.CreateProgressWindow("ScreenTranslator");
+            desktopLifetime.MainWindow = progress;
+            progress.Show();
+            UpdateDialogs.SetProgressStatus(
+                progress,
+                checkUpdatesOnStartup ? "Checking for updates…" : "Preparing plugins…");
+        }
+
+        try
+        {
+            if (checkUpdatesOnStartup)
+            {
+                // 1. Host update (open browser only — no self-replace)
+                var hostUpdate = await hostChecker.CheckAsync(channel).ConfigureAwait(true);
+                if (hostUpdate.UpdateAvailable && !string.IsNullOrEmpty(hostUpdate.ReleaseHtmlUrl))
+                {
+                    progress?.Hide();
+                    var open = await UpdateDialogs.ShowHostUpdateAsync(
+                        progress,
+                        hostUpdate.RemoteVersion?.ToString() ?? "?",
+                        hostUpdate.ReleaseName).ConfigureAwait(true);
+                    if (open)
+                        HostVersionChecker.OpenReleasePage(hostUpdate.ReleaseHtmlUrl);
+                    progress?.Show();
+                }
+            }
+
+            // 2. Plugins — before LoadPlugins
+            UpdateDialogs.SetProgressStatus(
+                progress,
+                checkUpdatesOnStartup ? "Updating plugins…" : "Preparing plugins…");
+            var status = new Progress<string>(msg => UpdateDialogs.SetProgressStatus(progress, msg));
+
+            var pluginResult = await pluginUpdater.EnsurePluginsAsync(
+                PluginsDirectory,
+                channel,
+                updateOptional: checkUpdatesOnStartup,
+                checkForUpdates: checkUpdatesOnStartup,
+                status: status).ConfigureAwait(true);
+
+            if (!pluginResult.Success)
+            {
+                progress?.Close();
+                await UpdateDialogs.ShowFatalAsync(
+                    "Plugins required",
+                    pluginResult.ErrorMessage ?? "Failed to prepare plugins.").ConfigureAwait(true);
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d)
+                    d.Shutdown(1);
+                return;
+            }
+
+            PluginLoader.LoadPlugins(PluginsDirectory);
+        }
+        catch (Exception ex)
+        {
+            progress?.Close();
+            await UpdateDialogs.ShowFatalAsync("Startup error", ex.Message).ConfigureAwait(true);
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d)
+                d.Shutdown(1);
+            return;
+        }
 
         var services = new ServiceCollection();
         ConfigureServices(services);
@@ -36,23 +109,18 @@ public partial class App : Application
         var profileService = _serviceProvider.GetRequiredService<IApplicationProfileService>();
         var localeService = LocalizationService.Instance;
 
-        // 1. Load app-level settings
         _screenProfile = profileService.LoadScreenTranslatorProfile();
 
-        // 2. Set theme
         Current!.RequestedThemeVariant = _screenProfile.Theme switch
         {
             "dark" => ThemeVariant.Dark,
             _ => ThemeVariant.Light,
         };
 
-        // 3. Set culture
         localeService.SetCulture(_screenProfile.UiCulture);
 
-        // 4. Load last active profile
         profileService.SetActiveProfile(_screenProfile.LastActiveProfileName);
 
-        // 5. Create main window
         var vm = _serviceProvider.GetRequiredService<MainViewModel>();
         _mainWindow = new MainWindow(vm);
         ApplyWindowPosition(_mainWindow, _screenProfile.MainWindow);
@@ -64,12 +132,13 @@ public partial class App : Application
             desktop.Exit += OnExit;
         }
 
+        progress?.Close();
         _mainWindow.Show();
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static void ConfigureServices(ServiceCollection services)
+    private void ConfigureServices(ServiceCollection services)
     {
         services.AddSingleton<IApplicationProfileService, ApplicationProfileService>();
         services.AddSingleton<IScreenTranslatorContext, ScreenTranslatorContext>();
@@ -78,19 +147,24 @@ public partial class App : Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<TextWindowViewModel>();
+
+        services.AddSingleton(LocalizationService.Instance);
+        services.AddSingleton(_ => _releasesClient ?? new GitHubReleasesClient());
+        services.AddSingleton(sp => new PluginUpdateService(sp.GetRequiredService<GitHubReleasesClient>()));
+        services.AddSingleton(sp => new HostVersionChecker(sp.GetRequiredService<GitHubReleasesClient>()));
     }
 
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
+        _releasesClient?.Dispose();
+
         if (_mainWindow is null)
             return;
 
         var profileService = _serviceProvider!.GetRequiredService<IApplicationProfileService>();
 
-        // Re-read to avoid overwriting changes saved by Settings dialog
         _screenProfile = profileService.LoadScreenTranslatorProfile();
 
-        // Update runtime-only fields
         _screenProfile.MainWindow.X = _mainWindow.Position.X;
         _screenProfile.MainWindow.Y = _mainWindow.Position.Y;
         _screenProfile.MainWindow.Width = (int)_mainWindow.Width;
@@ -108,8 +182,6 @@ public partial class App : Application
 
         profileService.SaveScreenTranslatorProfile(_screenProfile);
 
-        // OneOCR / onnxruntime / WinRT capture can leave native foreground threads that
-        // prevent process exit after Avalonia shuts down.
         Environment.Exit(e.ApplicationExitCode);
     }
 

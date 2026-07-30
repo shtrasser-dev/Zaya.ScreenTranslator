@@ -1,0 +1,8 @@
+[
+  { "id": "OneOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.OneOcr.zip", "required": true },
+  { "id": "ProximityTextLayout", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.ProximityTextLayout.zip", "required": true },
+  { "id": "WindowsMediaOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.WindowsMediaOcr.zip", "required": false },
+  { "id": "ScreenshotWindows", "repo": "shtrasser-dev/Zaya.Screenshot", "asset": "Zaya.Screenshot.Impl.Windows.zip", "required": true },
+  { "id": "Google", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Google.zip", "required": false },
+  { "id": "Yandex", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Yandex.zip", "required": false }
+]

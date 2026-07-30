@@ -27,4 +27,6 @@ public sealed class ScreenTranslatorProfile
     public string LastActiveProfileName { get; set; } = "Default";
     /// <summary>Output mode: <c>textWindow</c> or <c>overlay</c>.</summary>
     public string DisplayMode { get; set; } = "textWindow";
+    /// <summary>When true, check host/plugin updates on application startup.</summary>
+    public bool CheckUpdatesOnStartup { get; set; } = true;
 }
