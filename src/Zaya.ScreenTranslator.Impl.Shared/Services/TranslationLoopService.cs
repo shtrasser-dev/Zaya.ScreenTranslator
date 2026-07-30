@@ -5,8 +5,8 @@ using Zaya.OCR.Services;
 using Zaya.Screenshot.Models;
 using Zaya.Screenshot.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Services;
+using Zaya.ScreenTranslator.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;

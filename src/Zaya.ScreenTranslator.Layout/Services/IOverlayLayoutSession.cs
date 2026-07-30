@@ -1,6 +1,6 @@
-using Zaya.ScreenTranslator.Impl.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Models;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Services;
 
 /// <summary>
 /// Active overlay layout session bound to a target window.

@@ -17,14 +17,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zaya.ScreenTranslator.Impl.Layout\Zaya.ScreenTranslator.Impl.Layout.csproj" />
-    <ProjectReference Include="..\..\..\Zaya.Screenshot\src\Zaya.Screenshot\Zaya.Screenshot.csproj" />
-    <ProjectReference Include="..\..\..\Zaya.OCR\src\Zaya.OCR\Zaya.OCR.csproj" />
-    <ProjectReference Include="..\..\..\Zaya.Translator\src\Zaya.Translator\Zaya.Translator.csproj" />
+    <ProjectReference Include="..\Zaya.ScreenTranslator.Layout.Impl\Zaya.ScreenTranslator.Layout.Impl.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
+    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
+    <PackageReference Include="Zaya.Screenshot" Version="$(ZayaScreenshotVersion)" />
+    <PackageReference Include="Zaya.Translator" Version="$(ZayaTranslatorVersion)" />
     <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />

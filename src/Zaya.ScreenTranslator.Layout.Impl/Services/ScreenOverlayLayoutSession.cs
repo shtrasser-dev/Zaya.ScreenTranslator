@@ -1,10 +1,12 @@
 using Avalonia.Threading;
 using Zaya.Primitives;
-using Zaya.ScreenTranslator.Impl.Layout.Constants;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Views;
+using Zaya.ScreenTranslator.Layout.Impl.Constants;
+using Zaya.ScreenTranslator.Layout.Impl.Models;
+using Zaya.ScreenTranslator.Layout.Impl.Views;
+using Zaya.ScreenTranslator.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Services;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 
 internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
 {

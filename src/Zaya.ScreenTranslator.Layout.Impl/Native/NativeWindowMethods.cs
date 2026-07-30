@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Native;
+namespace Zaya.ScreenTranslator.Layout.Impl.Native;
 
 internal static class NativeWindowMethods
 {

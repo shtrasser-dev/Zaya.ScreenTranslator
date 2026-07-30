@@ -1,8 +1,9 @@
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using Zaya.Primitives;
-using Zaya.ScreenTranslator.Impl.Layout.Constants;
+using Zaya.ScreenTranslator.Layout.Impl.Constants;
+using Zaya.ScreenTranslator.Layout.Services;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 
 /// <summary>
 /// Default in-host overlay layout engine: draws text above/over/below item bounds.

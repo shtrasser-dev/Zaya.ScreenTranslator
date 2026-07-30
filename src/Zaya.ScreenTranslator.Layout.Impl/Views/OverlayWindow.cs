@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Zaya.ScreenTranslator.Impl.Layout.Constants;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Native;
+using Zaya.ScreenTranslator.Layout.Impl.Constants;
+using Zaya.ScreenTranslator.Layout.Impl.Models;
+using Zaya.ScreenTranslator.Layout.Impl.Native;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Views;
+namespace Zaya.ScreenTranslator.Layout.Impl.Views;
 
 /// <summary>
 /// Transparent topmost overlay surface owned by the overlay-layout session.

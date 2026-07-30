@@ -1,0 +1,38 @@
+<Project>
+  <!--
+    Layout interface: Version = Major.Interface.0
+    Layout.Impl plugin: Version = Major.Interface.ImpMajor.ImpMinor
+    Host (no role): Version = Major.HostMinor.HostPatch
+  -->
+  <PropertyGroup Condition="'$(ZayaVersionRole)' == 'interface'">
+    <Version>$(ZayaPrimitivesMajor).$(ZayaVersionInterface).0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ZayaVersionRole)' == 'plugin'">
+    <ZayaInterfaceCsproj Condition="'$(ZayaInterfaceCsproj)' == ''">$(MSBuildThisFileDirectory)src\Zaya.ScreenTranslator.Layout\Zaya.ScreenTranslator.Layout.csproj</ZayaInterfaceCsproj>
+    <ZayaVersionInterface>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(ZayaInterfaceCsproj)')), '&lt;ZayaVersionInterface&gt;(\d+)&lt;/ZayaVersionInterface&gt;').Groups[1].Value)</ZayaVersionInterface>
+    <Version>$(ZayaPrimitivesMajor).$(ZayaVersionInterface).$(ZayaVersionImpMajor).$(ZayaVersionImpMinor)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ZayaVersionRole)' != 'interface' AND '$(ZayaVersionRole)' != 'plugin'">
+    <Version>$(ZayaPrimitivesMajor).$(ZayaHostVersionMinor).$(ZayaHostVersionPatch)</Version>
+  </PropertyGroup>
+
+  <Target Name="ValidateZayaVersion" BeforeTargets="BeforeBuild;GenerateNuspec">
+    <Error
+      Condition="'$(ZayaPrimitivesVersion)' == ''"
+      Text="ZayaPrimitivesVersion must be set in Directory.Build.props." />
+    <Error
+      Condition="'$(ZayaVersionRole)' == 'interface' AND '$(ZayaVersionInterface)' == ''"
+      Text="Interface project must set ZayaVersionInterface." />
+    <Error
+      Condition="'$(ZayaVersionRole)' == 'plugin' AND ('$(ZayaVersionImpMajor)' == '' OR '$(ZayaVersionImpMinor)' == '')"
+      Text="Plugin project must set ZayaVersionImpMajor and ZayaVersionImpMinor." />
+    <Error
+      Condition="'$(ZayaVersionRole)' == 'plugin' AND '$(ZayaVersionInterface)' == ''"
+      Text="Could not read ZayaVersionInterface from '$(ZayaInterfaceCsproj)'." />
+    <Error
+      Condition="$([System.Version]::Parse('$(Version)').Major) != $([System.Version]::Parse('$(ZayaPrimitivesVersion)').Major)"
+      Text="Version $(Version) major must equal Zaya.Primitives major $([System.Version]::Parse('$(ZayaPrimitivesVersion)').Major)." />
+  </Target>
+</Project>

@@ -7,8 +7,13 @@
     <LangVersion>13</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>CS1591</NoWarn>
-    <Title>Zaya Screen Translator — Overlay Layout</Title>
-    <Description>Screen overlay layout engine for Zaya Screen Translator.</Description>
+
+    <ZayaVersionRole>interface</ZayaVersionRole>
+    <ZayaVersionInterface>0</ZayaVersionInterface>
+
+    <PackageId>Zaya.ScreenTranslator.Layout</PackageId>
+    <Title>Zaya Screen Translator — Overlay Layout Abstractions</Title>
+    <Description>Overlay layout abstractions for Zaya Screen Translator (IOverlayLayoutService / session / OverlayItem).</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>SHTrassEr</Authors>
     <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
@@ -17,20 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
-    <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>

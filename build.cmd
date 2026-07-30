@@ -18,7 +18,7 @@ echo === Detecting version ===
 
 for /f "usebackq delims=" %%a in (`dotnet msbuild "%ROOT%src\Zaya.ScreenTranslator.Impl.Windows\Zaya.ScreenTranslator.Impl.Windows.csproj" -getProperty:Version -nologo -v:q`) do set VER=%%a
 set VER=!VER: =!
-if "!VER!"=="" set VER=0.4.0
+if "!VER!"=="" set VER=1.0.0
 
 for /f "tokens=1,2,3 delims=." %%a in ("!VER!") do (
     set VER_MAJOR=%%a

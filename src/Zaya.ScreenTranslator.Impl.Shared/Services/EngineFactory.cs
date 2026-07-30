@@ -1,8 +1,9 @@
 using System.Reflection;
 using Zaya.OCR.Services;
 using Zaya.Screenshot.Services;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Services;
+using Zaya.ScreenTranslator.Layout.Impl.Services;
+using Zaya.ScreenTranslator.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;

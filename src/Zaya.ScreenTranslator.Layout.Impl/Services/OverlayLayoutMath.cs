@@ -1,8 +1,9 @@
 using System.Drawing;
-using Zaya.ScreenTranslator.Impl.Layout.Constants;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Impl.Constants;
+using Zaya.ScreenTranslator.Layout.Impl.Models;
+using Zaya.ScreenTranslator.Layout.Models;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 
 /// <summary>
 /// Pure layout math for overlay items (no UI).

@@ -6,7 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
 using Zaya.Screenshot.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Services;
+using Zaya.ScreenTranslator.Layout.Impl.Services;
+using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
 

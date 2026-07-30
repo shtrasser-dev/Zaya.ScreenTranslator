@@ -1,7 +1,7 @@
 using System.Drawing;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Models;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 
 /// <summary>
 /// Keeps overlay boxes steady when OCR returns nearly-identical text with jittery bounds.

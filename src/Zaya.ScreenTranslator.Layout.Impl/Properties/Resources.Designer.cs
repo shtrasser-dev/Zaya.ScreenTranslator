@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Properties {
+namespace Zaya.ScreenTranslator.Layout.Impl.Properties {
     using System;
     
     
@@ -36,7 +36,7 @@ namespace Zaya.ScreenTranslator.Impl.Layout.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Zaya.ScreenTranslator.Impl.Layout.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Zaya.ScreenTranslator.Layout.Impl.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

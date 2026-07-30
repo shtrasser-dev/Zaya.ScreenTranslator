@@ -1,4 +1,4 @@
-namespace Zaya.ScreenTranslator.Impl.Layout.Constants;
+namespace Zaya.ScreenTranslator.Layout.Impl.Constants;
 
 internal static class OverlayLayoutSettingKeys
 {

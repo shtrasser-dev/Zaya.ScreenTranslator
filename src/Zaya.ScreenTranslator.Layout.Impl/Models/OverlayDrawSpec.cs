@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Models;
+namespace Zaya.ScreenTranslator.Layout.Impl.Models;
 
 /// <summary>
 /// Vertical alignment of text inside the draw box.

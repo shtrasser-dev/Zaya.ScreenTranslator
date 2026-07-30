@@ -1,7 +1,7 @@
 using Zaya.Primitives;
-using Zaya.ScreenTranslator.Impl.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Models;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Services;
+namespace Zaya.ScreenTranslator.Layout.Services;
 
 /// <summary>
 /// Draws text overlays on top of a target window from <see cref="OverlayItem"/> lists.

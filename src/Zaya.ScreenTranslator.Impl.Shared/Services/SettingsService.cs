@@ -4,7 +4,8 @@ using Zaya.Primitives;
 using Zaya.Screenshot.Services;
 using Zaya.Translator.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
-using Zaya.ScreenTranslator.Impl.Layout.Services;
+using Zaya.ScreenTranslator.Layout.Impl.Services;
+using Zaya.ScreenTranslator.Layout.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 

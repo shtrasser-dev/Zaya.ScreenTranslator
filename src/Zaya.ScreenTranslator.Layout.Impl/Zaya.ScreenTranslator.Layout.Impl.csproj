@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+
+    <ZayaVersionRole>plugin</ZayaVersionRole>
+    <ZayaVersionImpMajor>0</ZayaVersionImpMajor>
+    <ZayaVersionImpMinor>0</ZayaVersionImpMinor>
+    <ZayaInterfaceCsproj>$(MSBuildThisFileDirectory)..\Zaya.ScreenTranslator.Layout\Zaya.ScreenTranslator.Layout.csproj</ZayaInterfaceCsproj>
+
+    <PackageId>Zaya.ScreenTranslator.Layout.Impl</PackageId>
+    <Title>Zaya Screen Translator — Overlay Layout Engine</Title>
+    <Description>Default screen overlay layout engine for Zaya Screen Translator (Windows Graphics overlay).</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>SHTrassEr</Authors>
+    <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zaya.ScreenTranslator.Layout\Zaya.ScreenTranslator.Layout.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
+    <PackageReference Include="Avalonia" Version="12.1.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

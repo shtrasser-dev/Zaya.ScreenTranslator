@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Zaya.ScreenTranslator.Impl.Layout.Models;
+namespace Zaya.ScreenTranslator.Layout.Models;
 
 /// <summary>
 /// A single text block to draw: content and its source rectangle (capture/client pixels).

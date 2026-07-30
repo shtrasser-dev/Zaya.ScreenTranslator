@@ -19,7 +19,7 @@ Real-time on-screen text translator for Windows. Captures a window or region, ru
 
 - **Impl.Windows** — Windows host (`Zaya.ScreenTranslator.Impl.Windows.exe`)
 - **Impl.Shared** — Avalonia UI, pipeline, plugin loader, updater
-- **Impl.Layout** — overlay layout engine (ships with the host)
+- **Layout** / **Layout.Impl** — overlay layout abstractions + default Windows overlay engine (ships with the host)
 
 ## Dependencies
 

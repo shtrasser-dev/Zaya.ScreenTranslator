@@ -1,7 +1,15 @@
 <Project>
   <PropertyGroup>
-    <!-- Host app Version (app-v*). Sibling ProjectReferences supply interface packages (e.g. Zaya.OCR 0.4.1). -->
-    <Version>0.4.0</Version>
-    <ZayaPrimitivesVersion>0.4.0</ZayaPrimitivesVersion>
+    <ZayaPrimitivesVersion>1.0.0</ZayaPrimitivesVersion>
+    <ZayaPrimitivesMajor>$([System.Version]::Parse('$(ZayaPrimitivesVersion)').Major)</ZayaPrimitivesMajor>
+
+    <!-- Host-consumed interface / layout packages (NuGet). -->
+    <ZayaOcrVersion>1.0.0</ZayaOcrVersion>
+    <ZayaScreenshotVersion>1.0.0</ZayaScreenshotVersion>
+    <ZayaTranslatorVersion>1.0.0</ZayaTranslatorVersion>
+
+    <!-- Host app default (Windows/Unix/Shared) when ZayaVersionRole is unset. -->
+    <ZayaHostVersionMinor>0</ZayaHostVersionMinor>
+    <ZayaHostVersionPatch>0</ZayaHostVersionPatch>
   </PropertyGroup>
 </Project>
