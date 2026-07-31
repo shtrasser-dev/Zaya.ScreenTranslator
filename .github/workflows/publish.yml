@@ -36,7 +36,7 @@ jobs:
         with:
           name: host
           path: |
-            out/Zaya.ScreenTranslator.exe
+            out/Zaya.ScreenTranslator.zip
             out/version.txt
             out/channel.txt
           retention-days: 7
@@ -61,10 +61,10 @@ jobs:
 
             const version = fs.readFileSync('host/version.txt', 'utf8').trim();
             const channel = fs.readFileSync('host/channel.txt', 'utf8').trim();
-            const exeName = 'Zaya.ScreenTranslator.exe';
-            const exePath = path.join('host', exeName);
-            if (!fs.existsSync(exePath)) {
-              core.setFailed(`Missing ${exeName}`);
+            const zipName = 'Zaya.ScreenTranslator.zip';
+            const zipPath = path.join('host', zipName);
+            if (!fs.existsSync(zipPath)) {
+              core.setFailed(`Missing ${zipName}`);
               return;
             }
 
@@ -76,6 +76,8 @@ jobs:
               `primitivesChannel: ${channel}`,
               '',
               `ScreenTranslator host v${version} (Primitives channel ${channel}).`,
+              '',
+              'Download `Zaya.ScreenTranslator.zip`, extract, and run `Zaya.ScreenTranslator.exe`.',
               '',
               'Host does not self-update: open this release page from the app when a newer version is available.',
             ].join('\n');
@@ -120,8 +122,8 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release.data.id,
-                name: exeName,
-                data: fs.readFileSync(exePath),
+                name: zipName,
+                data: fs.readFileSync(zipPath),
               });
             }
 

@@ -31,4 +31,8 @@ echo   Version=!VER!  Channel=!CHANNEL!
 echo !VER!>"%ROOT%out\version.txt"
 echo !CHANNEL!>"%ROOT%out\channel.txt"
 
-echo === Done: out\Zaya.ScreenTranslator.exe ===
+echo === Creating Zaya.ScreenTranslator.zip ===
+powershell -NoProfile -Command "Compress-Archive -Path '%ROOT%out\Zaya.ScreenTranslator.exe' -DestinationPath '%ROOT%out\Zaya.ScreenTranslator.zip' -Force"
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
+
+echo === Done: out\Zaya.ScreenTranslator.zip ===

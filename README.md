@@ -38,11 +38,11 @@ Pinned in `Directory.Build.props` (currently **1.0.0**):
 build.cmd
 ```
 
-Publishes a single-file host to `out\Zaya.ScreenTranslator.exe` and writes `out\version.txt` / `out\channel.txt`.
+Publishes a single-file host and packs it into `out\Zaya.ScreenTranslator.zip` (contains `Zaya.ScreenTranslator.exe`). Also writes `out\version.txt` / `out\channel.txt`.
 
 ## Publish
 
-GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, push, then run the workflow manually. Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator.exe`.
+GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, push, then run the workflow manually. Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator.zip`.
 
 ## Local plugins
 
