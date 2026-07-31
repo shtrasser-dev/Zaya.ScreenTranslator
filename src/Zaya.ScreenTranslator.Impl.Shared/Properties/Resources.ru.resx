@@ -103,16 +103,16 @@
     <value>Правила фильтра</value>
   </data>
   <data name="Filter_Enabled" xml:space="preserve">
-    <value>Вкл.</value>
+    <value>Включено</value>
   </data>
   <data name="Filter_Pattern" xml:space="preserve">
     <value>Текст</value>
   </data>
   <data name="Filter_IsRegex" xml:space="preserve">
-    <value>Регулярка</value>
+    <value>Регулярное выражение</value>
   </data>
   <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>Без регистра</value>
+    <value>Игнорировать регистр</value>
   </data>
   <data name="Filter_Action" xml:space="preserve">
     <value>Действие</value>
