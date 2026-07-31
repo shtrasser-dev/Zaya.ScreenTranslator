@@ -18,10 +18,15 @@ public sealed class PluginUpdateService
     /// Purge wrong-channel / empty bootstrap, then download required (and optional updates when channel ok).
     /// Call before <see cref="Services.PluginLoader.LoadPlugins"/>.
     /// </summary>
+    /// <param name="pluginsDirectory">Directory that stores plugin zip files.</param>
+    /// <param name="channel">Primitives/interface channel (e.g. <c>1.0</c>) used for floating release tags.</param>
+    /// <param name="updateOptional">When true, also update optional catalog entries if a newer release exists.</param>
     /// <param name="checkForUpdates">
     /// When false, only ensure required plugins are present (bootstrap / missing files);
     /// skip host-style version comparisons for already installed plugins.
     /// </param>
+    /// <param name="status">Optional progress reporter for UI status text.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task<PluginUpdateResult> EnsurePluginsAsync(
         string pluginsDirectory,
         string channel,

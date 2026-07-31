@@ -19,6 +19,13 @@ public partial class MainWindow : Window
     private const double ExpandedHeight = 700;
     private const double ExpandedMinHeight = 560;
 
+    /// <summary>Required by Avalonia XAML tooling (AVLN3001). App uses <see cref="MainWindow(MainViewModel)"/>.</summary>
+    public MainWindow()
+    {
+        _viewModel = null!;
+        InitializeComponent();
+    }
+
     public MainWindow(MainViewModel viewModel)
     {
         _viewModel = viewModel;
