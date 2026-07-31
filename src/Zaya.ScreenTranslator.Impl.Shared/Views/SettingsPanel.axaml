@@ -58,7 +58,8 @@
             <RowDefinition Height="*" MinHeight="360" />
         </Grid.RowDefinitions>
 
-        <TabControl Grid.Row="0"
+            <TabControl Grid.Row="0"
+                    Name="SettingsTabControl"
                     TabStripPlacement="Left"
                     Padding="0">
             <TabControl.ItemsPanel>

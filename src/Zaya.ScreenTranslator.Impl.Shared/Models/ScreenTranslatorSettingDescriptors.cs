@@ -65,7 +65,7 @@ public static class ScreenTranslatorSettingDescriptors
         },
         new IntegerSettingDescriptor(TargetFps, LocalizedString.Invariant(TargetFps))
         {
-            DefaultValue = 15,
+            DefaultValue = 1,
             MinValue = 1,
             MaxValue = 120
         },

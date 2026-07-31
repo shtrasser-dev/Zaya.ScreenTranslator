@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
@@ -16,7 +17,12 @@ public partial class SettingsPanel : UserControl
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
-        AttachedToVisualTree += (_, _) => SyncOwnerWindow();
+        AttachedToVisualTree += (_, _) =>
+        {
+            SyncOwnerWindow();
+            ScheduleRebuildAll();
+        };
+        SettingsTabControl.SelectionChanged += (_, _) => ScheduleRebuildAll();
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -33,6 +39,7 @@ public partial class SettingsPanel : UserControl
         _viewModel = vm;
         SyncOwnerWindow();
         WirePanels(vm);
+        ScheduleRebuildAll();
     }
 
     private void SyncOwnerWindow()
@@ -47,19 +54,6 @@ public partial class SettingsPanel : UserControl
         if (_panelsWired)
             return;
         _panelsWired = true;
-
-        RebuildPanel("OcrSettingsPanel", viewModel.OcrDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-        RebuildPanel("CaptureSettingsPanel", viewModel.CaptureDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
-        RebuildPanel("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
-        RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
-        RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
-        RebuildPanel("FilterSettingsPanel", ScreenTranslatorSettingDescriptors.FilterDescriptors,
-            () => ScreenTranslatorSettingDescriptors.StKey);
 
         viewModel.PropertyChanged += (_, e) =>
         {
@@ -79,6 +73,32 @@ public partial class SettingsPanel : UserControl
                 RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
         };
+    }
+
+    private void ScheduleRebuildAll()
+    {
+        // Tab content is swapped into the visual tree after SelectionChanged; defer one layout pass.
+        Dispatcher.UIThread.Post(RebuildAllPanels, DispatcherPriority.Loaded);
+    }
+
+    private void RebuildAllPanels()
+    {
+        if (_viewModel is null)
+            return;
+
+        var viewModel = _viewModel;
+        RebuildPanel("OcrSettingsPanel", viewModel.OcrDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
+        RebuildPanel("CaptureSettingsPanel", viewModel.CaptureDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
+        RebuildPanel("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
+        RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+        RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
+        RebuildPanel("FilterSettingsPanel", ScreenTranslatorSettingDescriptors.FilterDescriptors,
+            () => ScreenTranslatorSettingDescriptors.StKey);
     }
 
     private void RebuildPanel(string panelName,
