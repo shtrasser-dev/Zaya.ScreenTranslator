@@ -18,6 +18,7 @@ internal static class Program
 
         AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(new SkiaOptions { UseOpacitySaveLayer = true })
             .LogToTrace()
             .StartWithClassicDesktopLifetime(args);
     }

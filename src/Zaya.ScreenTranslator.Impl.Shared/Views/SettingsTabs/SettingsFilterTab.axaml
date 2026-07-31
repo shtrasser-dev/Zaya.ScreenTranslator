@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+             x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsFilterTab"
+             x:DataType="vm:SettingsViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <Border Classes="settings-column">
+            <StackPanel>
+                <TextBlock Classes="settings-intro"
+                           Text="{Binding Loc[Settings_Desc_Filter]}" />
+                <Border Classes="settings-divider" />
+                <StackPanel Name="FilterSettingsPanel" />
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

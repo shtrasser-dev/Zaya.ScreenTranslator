@@ -11,5 +11,11 @@ public sealed partial class TextWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _isTopmost = true;
 
-    public LocalizationService Loc => LocalizationService.Instance;
+    public LocalizedStrings Loc { get; private set; } = new(LocalizationService.Instance);
+
+    public void RefreshLocalization()
+    {
+        Loc = new LocalizedStrings(LocalizationService.Instance);
+        OnPropertyChanged(nameof(Loc));
+    }
 }

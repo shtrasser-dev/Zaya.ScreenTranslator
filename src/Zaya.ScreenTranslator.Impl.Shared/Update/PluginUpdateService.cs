@@ -1,26 +1,22 @@
-using System.IO.Compression;
-using System.Text.Json;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 public sealed class PluginUpdateService
 {
-    private static readonly JsonSerializerOptions ManifestJsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
+    private readonly PluginCatalogDownloader _downloader;
 
-    private readonly GitHubReleasesClient _client;
+    private static LocalizationService Loc => LocalizationService.Instance;
 
     public PluginUpdateService(GitHubReleasesClient client)
     {
-        _client = client;
+        _downloader = new PluginCatalogDownloader(client);
     }
 
     /// <summary>
     /// Purge wrong-channel / empty bootstrap, then download required (and optional updates when channel ok).
-    /// Call before <see cref="PluginLoader.LoadPlugins"/>.
+    /// Call before <see cref="Services.PluginLoader.LoadPlugins"/>.
     /// </summary>
     /// <param name="checkForUpdates">
     /// When false, only ensure required plugins are present (bootstrap / missing files);
@@ -40,12 +36,12 @@ public sealed class PluginUpdateService
 
         try
         {
-            var localState = ScanLocalPlugins(pluginsDirectory);
+            var localState = LocalPluginStore.Scan(pluginsDirectory);
             var missingRequired = catalog.Any(e => e.Required
                 && !File.Exists(Path.Combine(pluginsDirectory, e.Asset)));
             var needsBootstrap = localState.Count == 0
                 || missingRequired
-                || localState.Values.Any(m => !string.Equals(m.PrimitivesChannel, channel, StringComparison.Ordinal));
+                || localState.Values.Any(m => LocalPluginStore.IsIncompatibleChannel(m, channel));
 
             if (!checkForUpdates && !needsBootstrap)
             {
@@ -57,59 +53,9 @@ public sealed class PluginUpdateService
             }
 
             if (needsBootstrap)
-            {
-                status?.Report("Removing incompatible plugins…");
-                PurgeWrongChannel(pluginsDirectory, channel, localState);
-                localState = ScanLocalPlugins(pluginsDirectory);
-
-                foreach (var entry in catalog.Where(e => e.Required))
-                {
-                    status?.Report($"Downloading {entry.Asset}…");
-                    await DownloadCatalogEntryAsync(entry, pluginsDirectory, channel, downloaded, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-
-                localState = ScanLocalPlugins(pluginsDirectory);
-                var stillMissing = catalog.Where(e => e.Required
-                    && !File.Exists(Path.Combine(pluginsDirectory, e.Asset))).ToList();
-
-                if (stillMissing.Count > 0)
-                {
-                    return new PluginUpdateResult
-                    {
-                        Success = false,
-                        ErrorMessage =
-                            "Required plugins could not be installed. Check your network connection and try again.\n"
-                            + string.Join("\n", stillMissing.Select(e => e.Asset)),
-                        DownloadedAssets = downloaded,
-                    };
-                }
-
-                // Optional plugins (Google/Yandex, …): best-effort — failure must not block startup
-                if (updateOptional)
-                {
-                    foreach (var entry in catalog.Where(e => !e.Required))
-                    {
-                        try
-                        {
-                            status?.Report($"Downloading {entry.Asset}…");
-                            await DownloadCatalogEntryAsync(entry, pluginsDirectory, channel, downloaded, cancellationToken)
-                                .ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            status?.Report($"Optional plugin skipped ({entry.Asset}): {ex.Message}");
-                        }
-                    }
-                }
-
-                return new PluginUpdateResult
-                {
-                    Success = true,
-                    DownloadedAssets = downloaded,
-                    RequiresRestart = false,
-                };
-            }
+                return await BootstrapAsync(
+                    catalog, pluginsDirectory, channel, updateOptional, downloaded, status, cancellationToken)
+                    .ConfigureAwait(false);
 
             if (!checkForUpdates)
             {
@@ -120,68 +66,22 @@ public sealed class PluginUpdateService
                 };
             }
 
-            // Channel OK — update when remote newer or asset missing
-            var byRepo = catalog.GroupBy(e => e.Repo, StringComparer.OrdinalIgnoreCase);
-            foreach (var group in byRepo)
+            try
             {
-                GitHubReleaseInfo? release;
-                try
+                await _downloader.UpdateFromReleasesAsync(
+                        catalog, pluginsDirectory, channel, updateOptional, downloaded, status, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (RequiredPluginMissingException ex)
+            {
+                return new PluginUpdateResult
                 {
-                    release = await _client.GetChannelLatestAsync(group.Key, channel, "plugin-v", cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    // Offline with existing plugins: continue
-                    status?.Report($"Update check failed for {group.Key}: {ex.Message}");
-                    continue;
-                }
-
-                if (release is null)
-                    continue;
-
-                foreach (var entry in group)
-                {
-                    if (!updateOptional && !entry.Required)
-                        continue;
-
-                    var zipPath = Path.Combine(pluginsDirectory, entry.Asset);
-                    var localManifest = ReadManifestFromZip(zipPath);
-                    var localVersion = Version.TryParse(localManifest?.PluginVersion, out var lv) ? lv : null;
-                    var remoteVersion = ReleaseVersionParser.ResolveAssetVersion(release, entry.Asset);
-
-                    var assetMissing = !File.Exists(zipPath);
-                    var remoteNewer = remoteVersion is not null
-                        && (localVersion is null || remoteVersion > localVersion);
-
-                    if (!assetMissing && !remoteNewer)
-                        continue;
-
-                    var asset = release.Assets.FirstOrDefault(a =>
-                        string.Equals(a.Name, entry.Asset, StringComparison.OrdinalIgnoreCase));
-                    if (asset is null || string.IsNullOrEmpty(asset.BrowserDownloadUrl))
-                    {
-                        if (entry.Required && assetMissing)
-                        {
-                            return new PluginUpdateResult
-                            {
-                                Success = false,
-                                ErrorMessage = $"Required asset '{entry.Asset}' not found in {release.TagName}.",
-                                DownloadedAssets = downloaded,
-                            };
-                        }
-
-                        continue;
-                    }
-
-                    status?.Report($"Updating {entry.Asset}…");
-                    await _client.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
-                    downloaded.Add(entry.Asset);
-                }
+                    Success = false,
+                    ErrorMessage = ex.Message,
+                    DownloadedAssets = downloaded,
+                };
             }
 
-            // Final required check
             foreach (var entry in catalog.Where(e => e.Required))
             {
                 if (!File.Exists(Path.Combine(pluginsDirectory, entry.Asset)))
@@ -189,7 +89,7 @@ public sealed class PluginUpdateService
                     return new PluginUpdateResult
                     {
                         Success = false,
-                        ErrorMessage = $"Required plugin missing: {entry.Asset}",
+                        ErrorMessage = string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.RequiredMissing], entry.Asset),
                         DownloadedAssets = downloaded,
                     };
                 }
@@ -219,7 +119,7 @@ public sealed class PluginUpdateService
             return new PluginUpdateResult
             {
                 Success = false,
-                ErrorMessage = "No network and required plugins are not installed.\n" + ex.Message,
+                ErrorMessage = string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.NoNetwork], ex.Message),
                 DownloadedAssets = downloaded,
             };
         }
@@ -234,85 +134,69 @@ public sealed class PluginUpdateService
         }
     }
 
-    private async Task DownloadCatalogEntryAsync(
-        BuiltinPluginEntry entry,
+    private async Task<PluginUpdateResult> BootstrapAsync(
+        IReadOnlyList<BuiltinPluginEntry> catalog,
         string pluginsDirectory,
         string channel,
+        bool updateOptional,
         List<string> downloaded,
+        IProgress<string>? status,
         CancellationToken cancellationToken)
     {
-        var release = await _client.GetChannelLatestAsync(entry.Repo, channel, "plugin-v", cancellationToken)
-            .ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"No release for channel {channel} in {entry.Repo}.");
+        status?.Report(Loc[LocalizationConstants.Plugin.RemovingIncompatible]);
+        var localState = LocalPluginStore.Scan(pluginsDirectory);
+        LocalPluginStore.PurgeWrongChannel(pluginsDirectory, channel, localState);
 
-        var asset = release.Assets.FirstOrDefault(a =>
-            string.Equals(a.Name, entry.Asset, StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidOperationException($"Asset '{entry.Asset}' missing from {release.TagName}.");
-
-        var zipPath = Path.Combine(pluginsDirectory, entry.Asset);
-        await _client.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-        downloaded.Add(entry.Asset);
-    }
-
-    private static Dictionary<string, PluginManifest> ScanLocalPlugins(string pluginsDirectory)
-    {
-        var result = new Dictionary<string, PluginManifest>(StringComparer.OrdinalIgnoreCase);
-        if (!Directory.Exists(pluginsDirectory))
-            return result;
-
-        foreach (var zip in Directory.EnumerateFiles(pluginsDirectory, "*.zip"))
+        foreach (var entry in catalog.Where(e => e.Required))
         {
-            var manifest = ReadManifestFromZip(zip);
-            if (manifest is null)
-                continue;
-            result[Path.GetFileName(zip)] = manifest;
+            status?.Report(string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.Downloading], entry.Asset));
+            await _downloader.DownloadCatalogEntryAsync(entry, pluginsDirectory, channel, downloaded, cancellationToken)
+                .ConfigureAwait(false);
         }
 
-        return result;
-    }
+        var stillMissing = catalog.Where(e => e.Required
+            && !File.Exists(Path.Combine(pluginsDirectory, e.Asset))).ToList();
 
-    private static void PurgeWrongChannel(
-        string pluginsDirectory,
-        string channel,
-        Dictionary<string, PluginManifest> localState)
-    {
-        foreach (var zip in Directory.EnumerateFiles(pluginsDirectory, "*.zip"))
+        if (stillMissing.Count > 0)
         {
-            var fileName = Path.GetFileName(zip);
-            localState.TryGetValue(fileName, out var manifest);
-            var channelOk = manifest is not null
-                && !string.IsNullOrEmpty(manifest.PrimitivesChannel)
-                && string.Equals(manifest.PrimitivesChannel, channel, StringComparison.Ordinal);
-
-            if (channelOk)
-                continue;
-
-            try { File.Delete(zip); }
-            catch { /* ignore locked */ }
+            return new PluginUpdateResult
+            {
+                Success = false,
+                ErrorMessage = string.Format(
+                    Loc.CurrentCulture,
+                    Loc[LocalizationConstants.Plugin.RequiredInstallFailed],
+                    string.Join("\n", stillMissing.Select(e => e.Asset))),
+                DownloadedAssets = downloaded,
+            };
         }
+
+        if (updateOptional)
+        {
+            foreach (var entry in catalog.Where(e => !e.Required))
+            {
+                try
+                {
+                    status?.Report(string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.Downloading], entry.Asset));
+                    await _downloader.DownloadCatalogEntryAsync(
+                            entry, pluginsDirectory, channel, downloaded, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    status?.Report(string.Format(
+                        Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.OptionalSkipped], entry.Asset, ex.Message));
+                }
+            }
+        }
+
+        return new PluginUpdateResult
+        {
+            Success = true,
+            DownloadedAssets = downloaded,
+            RequiresRestart = false,
+        };
     }
 
     public static PluginManifest? ReadManifestFromZip(string zipPath)
-    {
-        if (!File.Exists(zipPath))
-            return null;
-
-        try
-        {
-            using var archive = ZipFile.OpenRead(zipPath);
-            var entry = archive.GetEntry("plugin.json")
-                ?? archive.Entries.FirstOrDefault(e =>
-                    string.Equals(Path.GetFileName(e.FullName), "plugin.json", StringComparison.OrdinalIgnoreCase));
-            if (entry is null)
-                return null;
-
-            using var stream = entry.Open();
-            return JsonSerializer.Deserialize<PluginManifest>(stream, ManifestJsonOptions);
-        }
-        catch
-        {
-            return null;
-        }
-    }
+        => PluginManifestReader.ReadFromZip(zipPath);
 }

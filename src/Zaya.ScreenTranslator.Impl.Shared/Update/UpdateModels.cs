@@ -56,14 +56,17 @@ public sealed class HostUpdateInfo
 
 public static class ReleaseVersionParser
 {
+    // 3- or 4-part versions (plugin builds use Major.Interface.ImpMajor.ImpMinor).
+    private const string VersionCapture = @"(?<ver>\d+\.\d+\.\d+(?:\.\d+)?)";
+
     public static Version? TryParse(string? name, string? body)
     {
         if (!string.IsNullOrWhiteSpace(name))
         {
-            // "Plugin v0.4.0" / "App v0.4.0" / "v0.4.0"
+            // "Plugin v1.0.0.0" / "App v1.0.0" / "v1.0.0"
             var m = System.Text.RegularExpressions.Regex.Match(
                 name,
-                @"\bv(?<ver>\d+\.\d+\.\d+)\b",
+                $@"\bv{VersionCapture}\b",
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var fromName))
                 return fromName;
@@ -77,7 +80,7 @@ public static class ReleaseVersionParser
             {
                 var m = System.Text.RegularExpressions.Regex.Match(
                     first,
-                    @"^\s*version\s*:\s*(?<ver>\d+\.\d+\.\d+)\s*$",
+                    $@"^\s*version\s*:\s*{VersionCapture}\s*$",
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var fromBody))
                     return fromBody;
@@ -88,7 +91,7 @@ public static class ReleaseVersionParser
     }
 
     /// <summary>
-    /// Parses lines like <c>Zaya.OCR.Impl.OneOcr.zip=0.4.1</c> or <c>asset.zip: 0.4.1</c> from release body.
+    /// Parses lines like <c>Zaya.OCR.Impl.OneOcr.zip=1.0.0.0</c> or <c>asset.zip: 1.0.0</c> from release body.
     /// </summary>
     public static IReadOnlyDictionary<string, Version> ParseAssetVersions(string? body)
     {
@@ -101,7 +104,7 @@ public static class ReleaseVersionParser
             var line = raw.Trim();
             var m = System.Text.RegularExpressions.Regex.Match(
                 line,
-                @"^(?<asset>[^\s=:]+\.zip)\s*[=:]\s*(?<ver>\d+\.\d+\.\d+)\s*$",
+                $@"^(?<asset>[^\s=:]+\.zip)\s*[=:]\s*{VersionCapture}\s*$",
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             if (m.Success && Version.TryParse(m.Groups["ver"].Value, out var ver))
                 map[m.Groups["asset"].Value] = ver;

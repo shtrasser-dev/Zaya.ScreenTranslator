@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.OCR.Services;
 using Zaya.Screenshot.Services;
 using Zaya.Translator.Services;
@@ -73,7 +74,7 @@ public static class PluginLoader
             if (!Directory.Exists(extractDir))
                 continue;
 
-            var manifest = ReadManifest(Path.Combine(extractDir, "plugin.json"));
+            var manifest = ReadManifest(Path.Combine(extractDir, PluginConstants.ManifestFileName));
             if (manifest is not null && !IsInterfaceCompatible(manifest))
             {
                 Debug.WriteLine(
@@ -220,25 +221,4 @@ public static class PluginLoader
 
         return null;
     }
-}
-
-public sealed class PluginManifest
-{
-    [JsonPropertyName("id")]
-    public string Id { get; set; } = string.Empty;
-
-    [JsonPropertyName("type")]
-    public string Type { get; set; } = string.Empty;
-
-    [JsonPropertyName("interface")]
-    public string Interface { get; set; } = string.Empty;
-
-    [JsonPropertyName("interfaceVersion")]
-    public string InterfaceVersion { get; set; } = string.Empty;
-
-    [JsonPropertyName("pluginVersion")]
-    public string PluginVersion { get; set; } = string.Empty;
-
-    [JsonPropertyName("primitivesChannel")]
-    public string PrimitivesChannel { get; set; } = string.Empty;
 }

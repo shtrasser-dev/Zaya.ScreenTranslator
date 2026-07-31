@@ -2,15 +2,23 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views;
 
 internal static class UpdateDialogs
 {
+    private const double ProgressWindowSize = 360;
+
+    private static LocalizationService Loc => LocalizationService.Instance;
+
     public static async Task ShowMessageAsync(Window? owner, string title, string message)
     {
-        var window = CreateDialog(title, message, ("OK", true));
+        var window = CreateDialog(title, message, (Loc[LocalizationConstants.Dialog.Ok], true));
         _ = await ShowAsync(owner, window);
     }
 
@@ -18,16 +26,31 @@ internal static class UpdateDialogs
     public static Task<bool> ShowHostUpdateAsync(Window? owner, string remoteVersion, string? releaseName)
     {
         var text = string.IsNullOrWhiteSpace(releaseName)
-            ? $"A newer ScreenTranslator version is available ({remoteVersion}).\n\nOpen the release page in your browser?"
-            : $"{releaseName} is available.\n\nOpen the release page in your browser?";
+            ? string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Update.AvailableBody], remoteVersion)
+            : string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Update.AvailableBodyNamed], releaseName);
 
-        var window = CreateDialog("Update available", text, ("Open page", true), ("Later", false));
+        var window = CreateDialog(
+            Loc[LocalizationConstants.Update.AvailableTitle],
+            text,
+            (Loc[LocalizationConstants.Update.OpenPage], true),
+            (Loc[LocalizationConstants.Update.Later], false));
+        return ShowAsync(owner, window);
+    }
+
+    public static Task<bool> ShowConfirmAsync(
+        Window? owner,
+        string title,
+        string message,
+        string confirmLabel,
+        string cancelLabel)
+    {
+        var window = CreateDialog(title, message, (confirmLabel, true), (cancelLabel, false));
         return ShowAsync(owner, window);
     }
 
     public static async Task ShowFatalAsync(string title, string message)
     {
-        var window = CreateDialog(title, message, ("Exit", true));
+        var window = CreateDialog(title, message, (Loc[LocalizationConstants.Dialog.Exit], true));
         await ShowAsync(null, window);
     }
 
@@ -110,24 +133,74 @@ internal static class UpdateDialogs
     {
         var status = new TextBlock
         {
-            Text = "Please wait…",
+            Text = Loc[LocalizationConstants.Status.PleaseWait],
             TextWrapping = TextWrapping.Wrap,
+            TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Avalonia.Thickness(16, 8, 16, 12),
+            Foreground = Brushes.White,
+            FontSize = 13,
+            Effect = new DropShadowEffect
+            {
+                BlurRadius = 6,
+                Color = Colors.Black,
+                Opacity = 0.85,
+                OffsetX = 0,
+                OffsetY = 1,
+            },
         };
+
+        var content = new DockPanel();
+        DockPanel.SetDock(status, Dock.Bottom);
+        content.Children.Add(status);
+
+        if (TryLoadLogoBitmap() is { } logo)
+        {
+            content.Children.Add(new Image
+            {
+                Source = logo,
+                Opacity = 1,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                IsHitTestVisible = false,
+            });
+        }
 
         return new Window
         {
             Title = title,
-            Width = 420,
-            Height = 140,
+            Width = ProgressWindowSize,
+            Height = ProgressWindowSize,
+            MinWidth = ProgressWindowSize,
+            MinHeight = ProgressWindowSize,
+            MaxWidth = ProgressWindowSize,
+            MaxHeight = ProgressWindowSize,
             CanResize = false,
+            ShowInTaskbar = false,
+            WindowDecorations = WindowDecorations.None,
+            TransparencyLevelHint = [WindowTransparencyLevel.Transparent],
+            Background = Brushes.Transparent,
+            TransparencyBackgroundFallback = Brushes.Transparent,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            Content = new Border
-            {
-                Padding = new Avalonia.Thickness(16),
-                Child = status,
-            },
+            Content = content,
             Tag = status,
         };
+    }
+
+    private static Bitmap? TryLoadLogoBitmap()
+    {
+        try
+        {
+            var uri = new Uri("avares://Zaya.ScreenTranslator.Impl.Shared/Assets/logo.png");
+            using var stream = AssetLoader.Open(uri);
+            return new Bitmap(stream);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public static void SetProgressStatus(Window? window, string message)

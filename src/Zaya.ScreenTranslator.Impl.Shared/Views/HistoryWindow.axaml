@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+        x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.HistoryWindow"
+        x:DataType="vm:HistoryViewModel"
+        Title="{Binding Loc[HistoryWindow_Title]}"
+        Icon="/Assets/app.ico"
+        Width="560" Height="640"
+        MinWidth="360" MinHeight="320"
+        WindowStartupLocation="CenterOwner"
+        Closing="OnClosing">
+    <Grid Margin="8">
+        <TextBox Text="{Binding HistoryText, Mode=OneWay}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch" />
+    </Grid>
+</Window>

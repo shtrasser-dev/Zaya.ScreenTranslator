@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Converters;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 
@@ -42,25 +43,33 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
             if (!File.Exists(_settingsPath))
             {
                 Debug.WriteLine($"[LoadScreen] File not found: {_settingsPath}");
-                return new ScreenTranslatorProfile();
+                return CreateDefaultScreenProfile();
             }
 
             var json = File.ReadAllText(_settingsPath);
             var result = JsonSerializer.Deserialize<ScreenTranslatorProfile>(json, JsonOptions)
-                         ?? new ScreenTranslatorProfile();
-            if (result.Theme is not "light" and not "dark")
-                result.Theme = "light";
-            if (result.DisplayMode is not "textWindow" and not "overlay")
-                result.DisplayMode = "textWindow";
+                         ?? CreateDefaultScreenProfile();
+            if (result.Theme is not AppConstants.Theme.Light and not AppConstants.Theme.Dark)
+                result.Theme = AppConstants.Theme.Light;
+            if (result.DisplayMode is not AppConstants.DisplayMode.TextWindow and not AppConstants.DisplayMode.Overlay)
+                result.DisplayMode = AppConstants.DisplayMode.TextWindow;
+            if (!LocalizationService.IsSupportedUiCulture(result.UiCulture))
+                result.UiCulture = "en";
             Debug.WriteLine($"[LoadScreen] UiCulture={result.UiCulture}, Theme={result.Theme}, DisplayMode={result.DisplayMode}, LastProfile={result.LastActiveProfileName}");
             return result;
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"[LoadScreen] Error: {ex.Message}");
-            return new ScreenTranslatorProfile();
+            return CreateDefaultScreenProfile();
         }
     }
+
+    private static ScreenTranslatorProfile CreateDefaultScreenProfile() =>
+        new()
+        {
+            UiCulture = LocalizationService.ResolveSystemUiCulture(),
+        };
 
     public void SaveScreenTranslatorProfile(ScreenTranslatorProfile settings)
     {
@@ -137,6 +146,74 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
         var path = ProfilePath(name);
         if (File.Exists(path))
             File.Delete(path);
+    }
+
+    public bool TryRename(string oldName, string newName, out string? errorCode)
+    {
+        errorCode = null;
+        newName = newName.Trim();
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            errorCode = ProfileConstants.ErrorEmpty;
+            return false;
+        }
+
+        if (string.Equals(oldName, newName, StringComparison.Ordinal))
+            return true;
+
+        var names = ListProfileNames();
+        if (names.Any(n =>
+                !string.Equals(n, oldName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(n, newName, StringComparison.OrdinalIgnoreCase)))
+        {
+            errorCode = ProfileConstants.ErrorExists;
+            return false;
+        }
+
+        var oldPath = ProfilePath(oldName);
+        if (!File.Exists(oldPath))
+        {
+            errorCode = ProfileConstants.ErrorMissing;
+            return false;
+        }
+
+        var json = File.ReadAllText(oldPath);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(json, JsonOptions);
+        if (dict is null)
+        {
+            errorCode = ProfileConstants.ErrorMissing;
+            return false;
+        }
+
+        if (!dict.TryGetValue(ScreenTranslatorSettingDescriptors.StKey, out var st))
+        {
+            st = new Dictionary<string, object>();
+            dict[ScreenTranslatorSettingDescriptors.StKey] = st;
+        }
+
+        st[ScreenTranslatorSettingDescriptors.ProfileName] = newName;
+
+        var newPath = ProfilePath(newName);
+        var samePath = string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
+
+        var tmp = newPath + ".tmp";
+        var outJson = JsonSerializer.Serialize(dict, JsonOptions);
+        File.WriteAllText(tmp, outJson);
+        File.Move(tmp, newPath, overwrite: true);
+
+        if (!samePath && File.Exists(oldPath))
+            File.Delete(oldPath);
+
+        var activeName = _activeProfile?.ScreenTranslatorSettings
+            .GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName);
+        if (string.Equals(activeName, oldName, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(oldName, activeName, StringComparison.OrdinalIgnoreCase))
+        {
+            _activeProfile = new ApplicationProfile { Settings = dict };
+            OnPropertyChanged(nameof(ActiveProfile));
+        }
+
+        return true;
     }
 
     // ── Helpers ──

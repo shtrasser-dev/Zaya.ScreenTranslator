@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+             xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+             x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsCaptureTab"
+             x:DataType="vm:SettingsViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <Border Classes="settings-column">
+            <StackPanel>
+                <TextBlock Classes="settings-intro"
+                           Text="{Binding Loc[Settings_Desc_Capture]}" />
+                <Border Classes="settings-divider" />
+
+                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="2"
+                                VerticalAlignment="Center"
+                                Margin="0,0,16,0">
+                        <TextBlock Text="{Binding Loc[Settings_TargetProcess]}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Loc[Settings_TargetProcess_Desc]}"
+                                   FontSize="12"
+                                   Opacity="0.65"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1"
+                                Spacing="6"
+                                Width="{x:Static ctrl:SettingControlFactory.ControlWidth}"
+                                HorizontalAlignment="Right">
+                        <TextBox HorizontalAlignment="Stretch"
+                                 Text="{Binding TargetProcess, Mode=TwoWay}" />
+                        <Button HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Content="{Binding Loc[Settings_SetCurrentProcess]}"
+                                Command="{Binding SetCurrentProcessCommand}" />
+                    </StackPanel>
+                </Grid>
+                <Border Classes="settings-divider" />
+
+                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Loc[Settings_CaptureEngine]}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,16,0"
+                               TextWrapping="Wrap" />
+                    <ComboBox Grid.Column="1"
+                              Classes="settings-control"
+                              ItemsSource="{Binding AvailableCaptureEngines}"
+                              SelectedItem="{Binding SelectedCaptureEngine, Mode=TwoWay}"
+                              DisplayMemberBinding="{Binding Id}" />
+                </Grid>
+                <Border Classes="settings-divider" />
+
+                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Loc[Settings_TargetFps]}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,16,0"
+                               TextWrapping="Wrap" />
+                    <TextBox Grid.Column="1"
+                             Classes="settings-control"
+                             Text="{Binding TargetFps, Mode=TwoWay}" />
+                </Grid>
+                <Border Classes="settings-divider" />
+
+                <StackPanel Name="CaptureSettingsPanel" />
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

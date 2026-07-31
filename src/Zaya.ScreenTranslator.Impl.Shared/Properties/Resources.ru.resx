@@ -27,8 +27,14 @@
   <data name="Btn_HideText" xml:space="preserve">
     <value>Скрыть текст</value>
   </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>История</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>История переводов</value>
+  </data>
   <data name="Btn_Settings" xml:space="preserve">
-    <value>Настройки...</value>
+    <value>Настройки</value>
   </data>
   <data name="Btn_Refresh" xml:space="preserve">
     <value>Обновить</value>
@@ -39,14 +45,44 @@
   <data name="Status_Running" xml:space="preserve">
     <value>Работает</value>
   </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>Статус</value>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Настройки</value>
   </data>
   <data name="Settings_Tab_General" xml:space="preserve">
     <value>Общие</value>
   </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — перевод текста с экрана.</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>Репозиторий на GitHub</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>Поблагодарить автора</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>Модуль захвата изображения с экрана.</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>Модуль распознавания текста.</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>Модуль объединения слов в строки и строк в абзацы.</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>Модуль перевода.</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>Модуль фильтрации текста.</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>Модуль наложения перевода на экран.</value>
+  </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
-    <value>OCR</value>
+    <value>Распознавание</value>
   </data>
   <data name="Settings_Tab_Capture" xml:space="preserve">
     <value>Захват</value>
@@ -135,6 +171,27 @@
   <data name="Settings_TargetFps" xml:space="preserve">
     <value>Целевой FPS</value>
   </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>Название процесса</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>Автоматически подключаться к указанному процессу.</value>
+  </data>
+  <data name="Settings_EnableCache" xml:space="preserve">
+    <value>Включить кэш</value>
+  </data>
+  <data name="Settings_CacheTtlMinutes" xml:space="preserve">
+    <value>TTL кэша (мин)</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>Установить текущий процесс</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>Выберите целевое окно</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>Ожидаем процесс «{0}»</value>
+  </data>
   <data name="TextWindow_Title" xml:space="preserve">
     <value>Распознанный текст</value>
   </data>
@@ -177,8 +234,32 @@
   <data name="Picker_DisplayMode" xml:space="preserve">
     <value>Вывод:</value>
   </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>Создать новый профиль</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>Новый профиль</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>Нельзя создать больше {1} профилей на основе «{0}». Переименуйте или удалите существующие.</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>Удалить профиль</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>Удаление текущего профиля без возможности восстановить</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>Удаление профиля</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>Удалить профиль «{0}»? Это действие нельзя отменить.</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>Нельзя удалить последний профиль.</value>
+  </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
-    <value>Overlay</value>
+    <value>Наложение</value>
   </data>
   <data name="Settings_OverlayEngine" xml:space="preserve">
     <value>Движок overlay</value>
@@ -195,6 +276,12 @@
   <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
     <value>Проверять обновления при старте</value>
   </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>Сохраненные файлы настроек и плагины</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>Перейти к файлам</value>
+  </data>
   <data name="Update_Title" xml:space="preserve">
     <value>Обновления</value>
   </data>
@@ -202,7 +289,7 @@
     <value>Проверка обновлений…</value>
   </data>
   <data name="Update_UpToDate" xml:space="preserve">
-    <value>Всё актуально.</value>
+    <value>Всё актуально</value>
   </data>
   <data name="Update_PluginsOk" xml:space="preserve">
     <value>Плагины актуальны.</value>
@@ -212,5 +299,122 @@
   </data>
   <data name="Update_Failed" xml:space="preserve">
     <value>Не удалось обновить.</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>Остановка…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>Остановлено</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>Запуск…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>Создание сессий…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>Нет активного профиля</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>Движок не найден</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>Движок компоновки не найден</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>Движок перевода не найден</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>Движок наложения недоступен</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>Ошибка наложения: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Ошибка: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Подождите…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>Захват: {0:F0}мс | OCR: {1:F0}мс | Перевод: {2:F0}мс</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- ср. уверенность: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>Текстовое окно</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>Наложение</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>Доступна новая версия ScreenTranslator ({0}).
+
+Открыть страницу релиза в браузере?</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>Доступно: {0}.
+
+Открыть страницу релиза в браузере?</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>Открыть страницу</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Позже</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>Подготовка плагинов…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>Обновление плагинов…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>Нужны плагины</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>Не удалось подготовить плагины.</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>Ошибка запуска</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>Удаление несовместимых плагинов…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>Загрузка {0}…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>Обновление {0}…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>Не удалось проверить обновления для {0}: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>Опциональный плагин пропущен ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>Отсутствует обязательный плагин: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>Не удалось установить обязательные плагины. Проверьте подключение к сети и попробуйте снова.
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>Нет сети, а обязательные плагины не установлены.
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>Обязательный файл «{0}» не найден в {1}.</value>
   </data>
 </root>

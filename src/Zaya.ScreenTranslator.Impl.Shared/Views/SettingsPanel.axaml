@@ -1,0 +1,154 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
+             xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+             xmlns:tabs="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs"
+             x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsPanel"
+             x:DataType="vm:SettingsViewModel">
+    <UserControl.Styles>
+        <Style Selector="Grid.settings-row">
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+        <Style Selector="Grid.settings-row TextBlock">
+            <Setter Property="FontSize" Value="{x:Static ctrl:SettingControlFactory.SettingsLabelFontSize}" />
+        </Style>
+        <Style Selector="Border.settings-column">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="24,12" />
+        </Style>
+        <Style Selector="Border.settings-divider">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Opacity" Value="0.18" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+        <Style Selector="ComboBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.settings-intro">
+            <Setter Property="FontSize" Value="{x:Static ctrl:SettingControlFactory.SettingsLabelFontSize}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,10" />
+        </Style>
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#CF222E" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#A40E26" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,6" />
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#A40E26" />
+        </Style>
+        <Style Selector="Button.danger:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="360" />
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0"
+                    TabStripPlacement="Left"
+                    Padding="0">
+            <TabControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </TabControl.ItemsPanel>
+            <TabControl.Template>
+                <ControlTemplate>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{TemplateBinding Background}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                        <DockPanel>
+                            <ScrollViewer DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                                          Width="{x:Static ctrl:SettingControlFactory.MainNavWidth}"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Auto"
+                                          AllowAutoHide="False"
+                                          HorizontalAlignment="Left">
+                                <ScrollViewer.Styles>
+                                    <Style Selector="ScrollBar:vertical">
+                                        <Setter Property="Width" Value="6" />
+                                        <Setter Property="MinWidth" Value="6" />
+                                    </Style>
+                                </ScrollViewer.Styles>
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
+                            <ContentPresenter Name="PART_SelectedContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Content="{TemplateBinding SelectedContent}"
+                                              ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                        </DockPanel>
+                    </Border>
+                </ControlTemplate>
+            </TabControl.Template>
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
+                    <Setter Property="MinWidth" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
+                    <Setter Property="MaxWidth" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
+                    <Setter Property="Padding" Value="10,8" />
+                    <Setter Property="FontSize" Value="18" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    <Setter Property="HeaderTemplate">
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextAlignment="Left" />
+                        </DataTemplate>
+                    </Setter>
+                </Style>
+            </TabControl.Styles>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_General]}">
+                <tabs:SettingsGeneralTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_Capture]}">
+                <tabs:SettingsCaptureTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_OCR]}">
+                <tabs:SettingsOcrTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_TextLayout]}">
+                <tabs:SettingsTextLayoutTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_Translator]}">
+                <tabs:SettingsTranslatorTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_Filter]}">
+                <tabs:SettingsFilterTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_Overlay]}">
+                <tabs:SettingsOverlayTab />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -4,6 +4,7 @@ using Zaya.OCR.Models;
 using Zaya.OCR.Services;
 using Zaya.Screenshot.Models;
 using Zaya.Screenshot.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Layout.Models;
 using Zaya.ScreenTranslator.Layout.Services;
@@ -25,9 +26,10 @@ public sealed class TranslationLoopService
         Action<string> onStatus,
         Action<double, double, double>? onTimings = null,
         string? targetLanguage = null,
-        IOverlayLayoutSession? overlaySession = null)
+        IOverlayLayoutSession? overlaySession = null,
+        Action<IReadOnlyList<(string Source, string Translation)>>? onTranslatedPairs = null)
     {
-        onStatus("Creating sessions...");
+        onStatus(LocalizationService.Instance[LocalizationConstants.Status.CreatingSessions]);
 
         var ocrSettings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
@@ -61,7 +63,7 @@ public sealed class TranslationLoopService
         var translatorTimes = new Queue<double>();
         const int windowSize = 10;
 
-        onStatus("Running");
+        onStatus(AppConstants.LoopStatus.Running);
 
         while (!ct.IsCancellationRequested)
         {
@@ -127,11 +129,22 @@ public sealed class TranslationLoopService
                     if (overlaySession is not null)
                         await overlaySession.PresentAsync(overlayItems, ct);
 
-                    var textOut = string.Join("\n\n", translatedTexts)
-                        + $"\n--- avg conf: {result.Confidence:F2} ---";
+                    var pairs = new List<(string Source, string Translation)>(sourceTexts.Count);
+                    for (var i = 0; i < sourceTexts.Count; i++)
+                    {
+                        var translated = i < translatedTexts.Count ? translatedTexts[i] : sourceTexts[i];
+                        pairs.Add((sourceTexts[i], translated));
+                    }
+
+                    var confLine = string.Format(
+                        LocalizationService.Instance.CurrentCulture,
+                        LocalizationService.Instance[LocalizationConstants.Text.AvgConfidence],
+                        result.Confidence);
+                    var textOut = string.Join("\n\n", translatedTexts) + "\n" + confLine;
 
                     Dispatcher.UIThread.Post(() =>
                     {
+                        onTranslatedPairs?.Invoke(pairs);
                         onTextUpdated(textOut);
                         onTimings?.Invoke(avgCaptureMs, avgOcrMs, avgTranslateMs);
                     });
@@ -145,12 +158,15 @@ public sealed class TranslationLoopService
             }
             catch (Exception ex)
             {
-                onStatus($"Error: {ex.Message}");
+                onStatus(string.Format(
+                    LocalizationService.Instance.CurrentCulture,
+                    LocalizationService.Instance[LocalizationConstants.Status.Error],
+                    ex.Message));
                 await Task.Delay(1000, ct);
             }
         }
 
-        onStatus("Stopped");
+        onStatus(LocalizationService.Instance[LocalizationConstants.Status.Stopped]);
     }
 
     private static List<OverlayItem> BuildOverlayItems(

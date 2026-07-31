@@ -31,4 +31,4 @@ echo   Version=!VER!  Channel=!CHANNEL!
 echo !VER!>"%ROOT%out\version.txt"
 echo !CHANNEL!>"%ROOT%out\channel.txt"
 
-echo === Done: out\Zaya.ScreenTranslator.Impl.Windows.exe ===
+echo === Done: out\Zaya.ScreenTranslator.exe ===

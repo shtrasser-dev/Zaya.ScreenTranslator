@@ -11,5 +11,6 @@ App.PluginsDirectory = pluginsDir;
 
 AppBuilder.Configure<App>()
     .UsePlatformDetect()
+    .With(new SkiaOptions { UseOpacitySaveLayer = true })
     .LogToTrace()
     .StartWithClassicDesktopLifetime(args);

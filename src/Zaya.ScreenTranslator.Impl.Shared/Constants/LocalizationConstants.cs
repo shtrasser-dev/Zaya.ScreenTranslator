@@ -1,0 +1,141 @@
+namespace Zaya.ScreenTranslator.Impl.Shared.Constants;
+
+internal static class LocalizationConstants
+{
+    public static class Buttons
+    {
+        public const string Start = "Btn_Start";
+        public const string Stop = "Btn_Stop";
+        public const string ShowText = "Btn_ShowText";
+        public const string HideText = "Btn_HideText";
+        public const string Settings = "Btn_Settings";
+    }
+
+    public static class Status
+    {
+        public const string Label = "Status_Label";
+        public const string Idle = "Status_Idle";
+        public const string Running = "Status_Running";
+        public const string Stopping = "Status_Stopping";
+        public const string Stopped = "Status_Stopped";
+        public const string Starting = "Status_Starting";
+        public const string CreatingSessions = "Status_CreatingSessions";
+        public const string Error = "Status_Error";
+        public const string NoActiveProfile = "Status_NoActiveProfile";
+        public const string EngineNotFound = "Status_EngineNotFound";
+        public const string TextLayoutNotFound = "Status_TextLayoutNotFound";
+        public const string TranslatorNotFound = "Status_TranslatorNotFound";
+        public const string OverlayUnavailable = "Status_OverlayUnavailable";
+        public const string OverlayFailed = "Status_OverlayFailed";
+        public const string SelectTargetWindow = "Status_SelectTargetWindow";
+        public const string WaitingForProcess = "Status_WaitingForProcess";
+        public const string PleaseWait = "Status_PleaseWait";
+    }
+
+    public static class Update
+    {
+        public const string AvailableTitle = "Update_Available_Title";
+        public const string AvailableBody = "Update_Available_Body";
+        public const string AvailableBodyNamed = "Update_Available_BodyNamed";
+        public const string OpenPage = "Update_OpenPage";
+        public const string Later = "Update_Later";
+        public const string Checking = "Update_Checking";
+        public const string PreparingPlugins = "Update_PreparingPlugins";
+        public const string UpdatingPlugins = "Update_UpdatingPlugins";
+        public const string PluginsRequiredTitle = "Update_PluginsRequired_Title";
+        public const string PluginsRequiredBody = "Update_PluginsRequired_Body";
+        public const string StartupErrorTitle = "Update_StartupError_Title";
+        public const string Failed = "Update_Failed";
+        public const string RestartRequired = "Update_RestartRequired";
+        public const string UpToDate = "Update_UpToDate";
+        public const string PluginsOk = "Update_PluginsOk";
+    }
+
+    public static class Plugin
+    {
+        public const string RequiredMissing = "Plugin_RequiredMissing";
+        public const string NoNetwork = "Plugin_NoNetwork";
+        public const string RemovingIncompatible = "Plugin_RemovingIncompatible";
+        public const string Downloading = "Plugin_Downloading";
+        public const string RequiredInstallFailed = "Plugin_RequiredInstallFailed";
+        public const string OptionalSkipped = "Plugin_OptionalSkipped";
+        public const string UpdateCheckFailed = "Plugin_UpdateCheckFailed";
+        public const string RequiredAssetMissing = "Plugin_RequiredAssetMissing";
+        public const string Updating = "Plugin_Updating";
+    }
+
+    public static class Profile
+    {
+        public const string CreateNew = "Profile_CreateNew";
+        public const string DeleteLast = "Profile_Delete_Last";
+        public const string DeleteTitle = "Profile_Delete_Title";
+        public const string DeleteConfirm = "Profile_Delete_Confirm";
+        public const string Delete = "Profile_Delete";
+        public const string CreateLimit = "Profile_CreateLimit";
+        public const string NewName = "Profile_NewName";
+    }
+
+    public static class SaveAsNew
+    {
+        public const string ErrorEmpty = "SaveAsNew_Error_Empty";
+        public const string ErrorExists = "SaveAsNew_Error_Exists";
+        public const string Cancel = "SaveAsNew_Cancel";
+    }
+
+    public static class Dialog
+    {
+        public const string Ok = "Dialog_OK";
+        public const string Exit = "Dialog_Exit";
+    }
+
+    public static class DisplayMode
+    {
+        public const string TextWindow = "DisplayMode_TextWindow";
+        public const string Overlay = "DisplayMode_Overlay";
+    }
+
+    public static class Filter
+    {
+        public const string MinLength = "Filter_MinLength";
+        public const string Rules = "Filter_Rules";
+        public const string Enabled = "Filter_Enabled";
+        public const string Pattern = "Filter_Pattern";
+        public const string IsRegex = "Filter_IsRegex";
+        public const string IgnoreCase = "Filter_IgnoreCase";
+        public const string Action = "Filter_Action";
+        public const string ActionSkip = "Filter_Action_Skip";
+        public const string ActionStrip = "Filter_Action_Strip";
+        public const string Description = "Filter_Description";
+        public const string AddRule = "Filter_AddRule";
+        public const string RemoveRule = "Filter_RemoveRule";
+    }
+
+    public static class Settings
+    {
+        public const string TargetProcess = "Settings_TargetProcess";
+        public const string TargetProcessDesc = "Settings_TargetProcess_Desc";
+        public const string TranslatorNone = "Settings_TranslatorNone";
+        public const string EnableCache = "Settings_EnableCache";
+        public const string CacheTtlMinutes = "Settings_CacheTtlMinutes";
+    }
+
+    public static class Timing
+    {
+        public const string Format = "Timing_Format";
+    }
+
+    public static class Text
+    {
+        public const string AvgConfidence = "Text_AvgConfidence";
+    }
+
+    public static class Overlay
+    {
+        public const string NeedStart = "Overlay_NeedStart";
+    }
+
+    public static class Main
+    {
+        public const string WindowTitle = "MainWindow_Title";
+    }
+}

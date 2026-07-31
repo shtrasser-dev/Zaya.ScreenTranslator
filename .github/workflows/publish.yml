@@ -36,7 +36,7 @@ jobs:
         with:
           name: host
           path: |
-            out/Zaya.ScreenTranslator.Impl.Windows.exe
+            out/Zaya.ScreenTranslator.exe
             out/version.txt
             out/channel.txt
           retention-days: 7
@@ -61,7 +61,7 @@ jobs:
 
             const version = fs.readFileSync('host/version.txt', 'utf8').trim();
             const channel = fs.readFileSync('host/channel.txt', 'utf8').trim();
-            const exeName = 'Zaya.ScreenTranslator.Impl.Windows.exe';
+            const exeName = 'Zaya.ScreenTranslator.exe';
             const exePath = path.join('host', exeName);
             if (!fs.existsSync(exePath)) {
               core.setFailed(`Missing ${exeName}`);

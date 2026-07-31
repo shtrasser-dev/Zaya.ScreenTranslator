@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>13</LangVersion>
+    <AssemblyName>Zaya.ScreenTranslator</AssemblyName>
     <Title>Zaya Screen Translator — Windows</Title>
     <Description>Windows host for Zaya Screen Translator.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,6 +15,7 @@
     <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -21,6 +23,10 @@
     <DebugSymbols>false</DebugSymbols>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Zaya.ScreenTranslator.Impl.Shared\Zaya.ScreenTranslator.Impl.Shared.csproj" />

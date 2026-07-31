@@ -4,7 +4,7 @@ setlocal
 set PLUGINS_DIR=%APPDATA%\Zaya\ScreenTranslator\plugins
 
 echo Stopping any running ScreenTranslator instances...
-taskkill /f /im Zaya.ScreenTranslator.Impl.Windows.exe 2>nul
+taskkill /f /im Zaya.ScreenTranslator.exe 2>nul
 taskkill /f /im Zaya.ScreenTranslator.Impl.Unix.exe 2>nul
 
 echo === Building Zaya.OCR plugins ===

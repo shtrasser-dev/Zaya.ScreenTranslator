@@ -1,3 +1,5 @@
+using Avalonia.Media.Imaging;
+
 namespace Zaya.ScreenTranslator.Impl.Shared.Models;
 
 /// <summary>
@@ -5,9 +7,16 @@ namespace Zaya.ScreenTranslator.Impl.Shared.Models;
 /// </summary>
 public sealed class WindowInfo
 {
+    public static WindowInfo Loading { get; } = new() { IsLoadingPlaceholder = true };
+
     public nint Handle { get; init; }
     public string Title { get; init; } = string.Empty;
     public string ProcessName { get; init; } = string.Empty;
+    public Bitmap? Icon { get; init; }
+    public bool IsLoadingPlaceholder { get; init; }
 
-    public override string ToString() => $"{Title}  [{ProcessName}]";
+    public bool HasIcon => Icon is not null;
+
+    public override string ToString() =>
+        IsLoadingPlaceholder ? string.Empty : $"{Title}  [{ProcessName}]";
 }

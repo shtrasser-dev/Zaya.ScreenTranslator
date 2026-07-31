@@ -2,62 +2,244 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
         xmlns:m="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Models"
+        xmlns:views="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views"
+        xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="{Binding Loc[MainWindow_Title]}"
-        Width="480" Height="300"
-        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/app.ico"
+        Width="920" MinWidth="920"
+        Height="240" MinHeight="0"
+        SizeToContent="Height"
+        WindowStartupLocation="Manual"
         Closing="OnClosing">
-    <Grid Margin="12">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Window.Styles>
+        <Style Selector="Grid.settings-row">
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+        <Style Selector="Grid.settings-row TextBlock">
+            <Setter Property="FontSize" Value="{x:Static ctrl:SettingControlFactory.SettingsLabelFontSize}" />
+        </Style>
+        <Style Selector="Border.settings-column">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="24,12" />
+        </Style>
+        <Style Selector="Border.settings-divider">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Opacity" Value="0.18" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+        <Style Selector="ComboBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ComboBox.window-picker /template/ Popup#PART_Popup">
+            <Setter Property="Width" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="MinWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="MaxWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+        </Style>
+        <Style Selector="Button.main-nav">
+            <Setter Property="MinWidth" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Window.Styles>
 
-        <!-- Row 0: Window picker -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
-            <TextBlock Text="{Binding Loc[Picker_Window]}" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{Binding Windows}"
-                      SelectedItem="{Binding SelectedWindow}"
-                      MinWidth="200"
-                      DisplayMemberBinding="{Binding Title}" />
-            <Button Content="{Binding Loc[Btn_Refresh]}"
-                    Command="{Binding RefreshWindowsCommand}" />
-        </StackPanel>
+    <Panel Name="Root">
+        <!-- Canvas reports 0 desired size so the decorative logo does not inflate window height. -->
+        <Canvas ClipToBounds="True"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                IsHitTestVisible="False">
+            <Viewbox Stretch="Uniform"
+                     Width="{Binding #Root.Bounds.Width}"
+                     Height="{Binding #Root.Bounds.Height}"
+                     Margin="56"
+                     Opacity="{DynamicResource MainWindowLogoOpacity}">
+                <svg:Svg Width="1254" Height="1254"
+                         Path="avares://Zaya.ScreenTranslator.Impl.Shared/Assets/logo.svg"
+                         Css="{DynamicResource MainWindowLogoCss}" />
+            </Viewbox>
+        </Canvas>
 
-        <!-- Row 1: Profile picker + Settings -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
-            <TextBlock Text="{Binding Loc[Picker_Profile]}" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{Binding ProfileNames}"
-                      SelectedItem="{Binding SelectedProfileName}"
-                      MinWidth="160" />
-            <Button Content="{Binding Loc[Btn_Settings]}"
-                    Command="{Binding OpenSettingsCommand}" />
-        </StackPanel>
+        <Grid Name="MainLayout" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" MinHeight="0" />
+            </Grid.RowDefinitions>
 
-        <!-- Row 2: Start/Stop + display mode + Show/Hide -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
-            <Button Command="{Binding StartStopCommand}" MinWidth="100"
-                    Content="{Binding StartStopButtonText}" />
-            <TextBlock Text="{Binding Loc[Picker_DisplayMode]}" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{Binding DisplayModeOptions}"
-                      SelectedItem="{Binding SelectedDisplayMode}"
-                      MinWidth="120" />
-            <Button Command="{Binding ShowHideTextCommand}" MinWidth="120">
-                <TextBlock Text="{Binding Loc[Btn_ShowText]}" />
-            </Button>
-        </StackPanel>
+            <!-- Main controls: left nav + settings-style column -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Column="0"
+                            Width="{x:Static ctrl:SettingControlFactory.MainNavWidth}"
+                            Spacing="4"
+                            Margin="0,12,0,0"
+                            VerticalAlignment="Top">
+                    <Button Classes="main-nav"
+                            Command="{Binding StartStopCommand}"
+                            Content="{Binding StartStopButtonText}" />
+                    <Button Classes="main-nav"
+                            Command="{Binding ShowHideTextCommand}"
+                            Content="{Binding ShowHideTextButtonText}" />
+                    <Button Classes="main-nav"
+                            Command="{Binding OpenHistoryCommand}"
+                            Content="{Binding Loc[Btn_History]}" />
+                </StackPanel>
 
-        <!-- Row 3: Status bar + timing -->
-        <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Spacing="2">
-            <TextBlock Text="{Binding StatusText}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                       FontSize="12" />
-            <TextBlock Text="{Binding TimingInfo}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
-                       FontSize="11" />
-        </StackPanel>
-    </Grid>
+                <Border Grid.Column="1" Classes="settings-column" Margin="24,12,24,0">
+                    <StackPanel>
+                        <Grid Classes="settings-row" ColumnDefinitions="*,*">
+                            <StackPanel Margin="0,0,12,0" Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Loc[Picker_Profile]}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,16,0"
+                                               TextWrapping="Wrap" />
+                                    <ComboBox Grid.Column="1"
+                                              Name="ProfileCombo"
+                                              Classes="settings-control"
+                                              IsEditable="True"
+                                              ItemsSource="{Binding ProfilePickerItems}"
+                                              SelectedItem="{Binding SelectedProfileName, Mode=TwoWay}"
+                                              SelectionChanged="OnProfileComboSelectionChanged"
+                                              LostFocus="OnProfileComboLostFocus"
+                                              KeyDown="OnProfileComboKeyDown" />
+                                </Grid>
+                                <TextBlock Text="{Binding ProfileErrorMessage}"
+                                           IsVisible="{Binding HasProfileError}"
+                                           Foreground="#C62828"
+                                           FontSize="12"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="12,0,0,0">
+                                <TextBlock Text="{Binding Loc[Picker_Window]}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,16,0"
+                                           TextWrapping="Wrap" />
+                                <ComboBox Grid.Column="1"
+                                          Classes="settings-control window-picker"
+                                          ItemsSource="{Binding Windows}"
+                                          SelectedItem="{Binding SelectedWindow}"
+                                          DropDownOpened="OnWindowComboDropDownOpened">
+                                    <ComboBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ComboBox.ItemsPanel>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="m:WindowInfo">
+                                            <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                                                <Panel Width="16" Height="16" Margin="0,0,8,0"
+                                                       VerticalAlignment="Center">
+                                                    <ProgressBar Width="14" Height="14"
+                                                                 IsIndeterminate="True"
+                                                                 IsVisible="{Binding IsLoadingPlaceholder}" />
+                                                    <Image Width="16" Height="16"
+                                                           Source="{Binding Icon}"
+                                                           IsVisible="{Binding HasIcon}" />
+                                                </Panel>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Title}"
+                                                           IsVisible="{Binding !IsLoadingPlaceholder}"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                    <ComboBox.SelectionBoxItemTemplate>
+                                        <DataTemplate x:DataType="m:WindowInfo">
+                                            <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                                                <Panel Width="16" Height="16" Margin="0,0,8,0"
+                                                       VerticalAlignment="Center">
+                                                    <Image Width="16" Height="16"
+                                                           Source="{Binding Icon}"
+                                                           IsVisible="{Binding HasIcon}" />
+                                                </Panel>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Title}"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ComboBox.SelectionBoxItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                        </Grid>
+                        <Border Classes="settings-divider" />
+
+                        <Grid Classes="settings-row" ColumnDefinitions="*,*">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,12,0">
+                                <TextBlock Text="{Binding Loc[Picker_DisplayMode]}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,16,0"
+                                           TextWrapping="Wrap" />
+                                <ComboBox Grid.Column="1"
+                                          Classes="settings-control"
+                                          ItemsSource="{Binding DisplayModeOptions}"
+                                          SelectedItem="{Binding SelectedDisplayModeOption}"
+                                          DisplayMemberBinding="{Binding Name}" />
+                            </Grid>
+                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="12,0,0,0">
+                                <TextBlock Text="{Binding Loc[Settings_TargetLang]}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,16,0"
+                                           TextWrapping="Wrap" />
+                                <ComboBox Grid.Column="1"
+                                          Classes="settings-control"
+                                          ItemsSource="{Binding TargetLanguages}"
+                                          SelectedItem="{Binding SelectedTargetLanguage, Mode=TwoWay}"
+                                          DisplayMemberBinding="{Binding Name}" />
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Status (aligned with the centered settings column) -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="0,0,0,2">
+                <Border Grid.Column="0"
+                        Width="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
+                <Border Grid.Column="1"
+                        Classes="settings-column"
+                        Margin="24,0">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="{Binding StatusLine}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   FontSize="12" />
+                        <TextBlock Text="{Binding TimingInfo}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                   FontSize="11" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Settings toggle -->
+            <Button Grid.Row="2"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Margin="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Content="{Binding SettingsToggleText}"
+                    Command="{Binding ToggleSettingsCommand}" />
+
+            <!-- Inline settings -->
+            <Border Grid.Row="3"
+                    IsVisible="{Binding IsSettingsOpen}"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="0,8,0,0">
+                <views:SettingsPanel DataContext="{Binding Settings}" />
+            </Border>
+        </Grid>
+    </Panel>
 </Window>

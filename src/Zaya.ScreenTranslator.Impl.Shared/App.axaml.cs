@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
@@ -14,8 +15,13 @@ namespace Zaya.ScreenTranslator.Impl.Shared;
 
 public partial class App : Application
 {
+    public static string DataDirectory { get; set; } =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Zaya", "ScreenTranslator");
+
     public static string PluginsDirectory { get; set; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Zaya", "ScreenTranslator", "plugins");
+        Path.Combine(DataDirectory, "plugins");
+
+    private static readonly TimeSpan StartupUpdateCheckInterval = TimeSpan.FromHours(1);
 
     private ServiceProvider? _serviceProvider;
     private ScreenTranslatorProfile? _screenProfile;
@@ -30,8 +36,15 @@ public partial class App : Application
     public override async void OnFrameworkInitializationCompleted()
     {
         var channel = HostChannel.Current;
-        var earlyProfile = new ApplicationProfileService().LoadScreenTranslatorProfile();
-        var checkUpdatesOnStartup = earlyProfile.CheckUpdatesOnStartup;
+        var earlyProfileService = new ApplicationProfileService();
+        var earlyProfile = earlyProfileService.LoadScreenTranslatorProfile();
+        LocalizationService.Instance.SetCulture(
+            string.IsNullOrWhiteSpace(earlyProfile.UiCulture)
+                ? LocalizationService.ResolveSystemUiCulture()
+                : earlyProfile.UiCulture);
+        var loc = LocalizationService.Instance;
+        var checkUpdatesOnStartup = earlyProfile.CheckUpdatesOnStartup
+            && ShouldCheckUpdatesOnStartup(earlyProfile);
 
         _releasesClient = new GitHubReleasesClient();
         var pluginUpdater = new PluginUpdateService(_releasesClient);
@@ -40,12 +53,12 @@ public partial class App : Application
         Window? progress = null;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
         {
-            progress = UpdateDialogs.CreateProgressWindow("ScreenTranslator");
+            progress = UpdateDialogs.CreateProgressWindow(loc[LocalizationConstants.Main.WindowTitle]);
             desktopLifetime.MainWindow = progress;
             progress.Show();
             UpdateDialogs.SetProgressStatus(
                 progress,
-                checkUpdatesOnStartup ? "Checking for updates…" : "Preparing plugins…");
+                checkUpdatesOnStartup ? loc[LocalizationConstants.Update.Checking] : loc[LocalizationConstants.Update.PreparingPlugins]);
         }
 
         try
@@ -70,7 +83,7 @@ public partial class App : Application
             // 2. Plugins — before LoadPlugins
             UpdateDialogs.SetProgressStatus(
                 progress,
-                checkUpdatesOnStartup ? "Updating plugins…" : "Preparing plugins…");
+                checkUpdatesOnStartup ? loc[LocalizationConstants.Update.UpdatingPlugins] : loc[LocalizationConstants.Update.PreparingPlugins]);
             var status = new Progress<string>(msg => UpdateDialogs.SetProgressStatus(progress, msg));
 
             var pluginResult = await pluginUpdater.EnsurePluginsAsync(
@@ -80,12 +93,18 @@ public partial class App : Application
                 checkForUpdates: checkUpdatesOnStartup,
                 status: status).ConfigureAwait(true);
 
+            if (checkUpdatesOnStartup)
+            {
+                earlyProfile.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
+                earlyProfileService.SaveScreenTranslatorProfile(earlyProfile);
+            }
+
             if (!pluginResult.Success)
             {
                 progress?.Close();
                 await UpdateDialogs.ShowFatalAsync(
-                    "Plugins required",
-                    pluginResult.ErrorMessage ?? "Failed to prepare plugins.").ConfigureAwait(true);
+                    loc[LocalizationConstants.Update.PluginsRequiredTitle],
+                    pluginResult.ErrorMessage ?? loc[LocalizationConstants.Update.PluginsRequiredBody]).ConfigureAwait(true);
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d)
                     d.Shutdown(1);
                 return;
@@ -96,7 +115,7 @@ public partial class App : Application
         catch (Exception ex)
         {
             progress?.Close();
-            await UpdateDialogs.ShowFatalAsync("Startup error", ex.Message).ConfigureAwait(true);
+            await UpdateDialogs.ShowFatalAsync(loc[LocalizationConstants.Update.StartupErrorTitle], ex.Message).ConfigureAwait(true);
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d)
                 d.Shutdown(1);
             return;
@@ -113,7 +132,7 @@ public partial class App : Application
 
         Current!.RequestedThemeVariant = _screenProfile.Theme switch
         {
-            "dark" => ThemeVariant.Dark,
+            AppConstants.Theme.Dark => ThemeVariant.Dark,
             _ => ThemeVariant.Light,
         };
 
@@ -123,7 +142,7 @@ public partial class App : Application
 
         var vm = _serviceProvider.GetRequiredService<MainViewModel>();
         _mainWindow = new MainWindow(vm);
-        ApplyWindowPosition(_mainWindow, _screenProfile.MainWindow);
+        _mainWindow.ApplyStartupPosition(_screenProfile.MainWindow.X, _screenProfile.MainWindow.Y);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -144,6 +163,7 @@ public partial class App : Application
         services.AddSingleton<IScreenTranslatorContext, ScreenTranslatorContext>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<TranslationLoopService>();
+        services.AddSingleton<TranslationHistoryService>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<TextWindowViewModel>();
@@ -167,12 +187,11 @@ public partial class App : Application
 
         _screenProfile.MainWindow.X = _mainWindow.Position.X;
         _screenProfile.MainWindow.Y = _mainWindow.Position.Y;
-        _screenProfile.MainWindow.Width = (int)_mainWindow.Width;
-        _screenProfile.MainWindow.Height = (int)_mainWindow.Height;
 
         if (_mainWindow.DataContext is MainViewModel mainVm)
         {
             mainVm.CaptureTextWindowSettings(_screenProfile.TextWindow);
+            mainVm.CloseAuxiliaryWindows();
             _screenProfile.DisplayMode = mainVm.SelectedDisplayMode;
         }
 
@@ -185,11 +204,11 @@ public partial class App : Application
         Environment.Exit(e.ApplicationExitCode);
     }
 
-    private static void ApplyWindowPosition(Window window, WindowSettings settings)
+    private static bool ShouldCheckUpdatesOnStartup(ScreenTranslatorProfile profile)
     {
-        if (settings.Width > 0) window.Width = settings.Width;
-        if (settings.Height > 0) window.Height = settings.Height;
-        if (settings.X != 0 || settings.Y != 0)
-            window.Position = new PixelPoint(settings.X, settings.Y);
+        if (profile.LastUpdateCheckUtc is not { } last)
+            return true;
+
+        return DateTimeOffset.UtcNow - last >= StartupUpdateCheckInterval;
     }
 }

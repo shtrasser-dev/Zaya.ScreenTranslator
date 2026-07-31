@@ -27,8 +27,14 @@
   <data name="Btn_HideText" xml:space="preserve">
     <value>Hide text</value>
   </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>Translation history</value>
+  </data>
   <data name="Btn_Settings" xml:space="preserve">
-    <value>Settings...</value>
+    <value>Settings</value>
   </data>
   <data name="Btn_Refresh" xml:space="preserve">
     <value>Refresh</value>
@@ -39,14 +45,44 @@
   <data name="Status_Running" xml:space="preserve">
     <value>Running</value>
   </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>Status</value>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Settings</value>
   </data>
   <data name="Settings_Tab_General" xml:space="preserve">
     <value>General</value>
   </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — on-screen text translation.</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>GitHub repository</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>Thank the author</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>Screen image capture module.</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>Text recognition module.</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>Module that groups words into lines and lines into paragraphs.</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>Translation module.</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>Text filter module.</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>On-screen overlay module.</value>
+  </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
-    <value>OCR</value>
+    <value>Recognition</value>
   </data>
   <data name="Settings_Tab_Capture" xml:space="preserve">
     <value>Capture</value>
@@ -135,6 +171,27 @@
   <data name="Settings_TargetFps" xml:space="preserve">
     <value>Target FPS</value>
   </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>Process name</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>Automatically connect to the specified process.</value>
+  </data>
+  <data name="Settings_EnableCache" xml:space="preserve">
+    <value>Enable cache</value>
+  </data>
+  <data name="Settings_CacheTtlMinutes" xml:space="preserve">
+    <value>Cache TTL (min)</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>Set current process</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>Select a target window</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>Waiting for process "{0}"</value>
+  </data>
   <data name="TextWindow_Title" xml:space="preserve">
     <value>Recognized text</value>
   </data>
@@ -177,6 +234,30 @@
   <data name="Picker_DisplayMode" xml:space="preserve">
     <value>Output:</value>
   </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>Create new profile</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>New profile</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>Cannot create more than {1} profiles based on "{0}". Rename or delete existing ones.</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>Delete profile</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>Delete the current profile with no way to restore it</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>Delete profile</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>Delete profile "{0}"? This cannot be undone.</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>Cannot delete the last profile.</value>
+  </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Overlay</value>
   </data>
@@ -195,6 +276,12 @@
   <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
     <value>Check for updates on startup</value>
   </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>Saved settings files and plugins</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>Open files folder</value>
+  </data>
   <data name="Update_Title" xml:space="preserve">
     <value>Updates</value>
   </data>
@@ -202,7 +289,7 @@
     <value>Checking for updates…</value>
   </data>
   <data name="Update_UpToDate" xml:space="preserve">
-    <value>Everything is up to date.</value>
+    <value>Everything is up to date</value>
   </data>
   <data name="Update_PluginsOk" xml:space="preserve">
     <value>Plugins are up to date.</value>
@@ -212,5 +299,122 @@
   </data>
   <data name="Update_Failed" xml:space="preserve">
     <value>Update failed.</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>Stopping…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>Stopped</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>Starting…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>Creating sessions…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>No active profile</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>Engine not found</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>TextLayout engine not found</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>Translator engine not found</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>Overlay layout engine not available</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>Overlay failed: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Please wait…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>Capture: {0:F0}ms | OCR: {1:F0}ms | Translate: {2:F0}ms</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- avg conf: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>Text window</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>Overlay</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>A newer ScreenTranslator version is available ({0}).
+
+Open the release page in your browser?</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>{0} is available.
+
+Open the release page in your browser?</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>Open page</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>Preparing plugins…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>Updating plugins…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>Plugins required</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>Failed to prepare plugins.</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>Startup error</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>Removing incompatible plugins…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>Downloading {0}…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>Updating {0}…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>Update check failed for {0}: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>Optional plugin skipped ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>Required plugin missing: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>Required plugins could not be installed. Check your network connection and try again.
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>No network and required plugins are not installed.
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>Required asset '{0}' not found in {1}.</value>
   </data>
 </root>

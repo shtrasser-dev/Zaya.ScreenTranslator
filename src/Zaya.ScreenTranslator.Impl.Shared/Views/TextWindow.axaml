@@ -4,6 +4,7 @@
         x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.TextWindow"
         x:DataType="vm:TextWindowViewModel"
         Title="{Binding Loc[TextWindow_Title]}"
+        Icon="/Assets/app.ico"
         Width="480" Height="320"
         WindowStartupLocation="Manual"
         ShowInTaskbar="False"
@@ -19,9 +20,14 @@
                  IsReadOnly="True"
                  AcceptsReturn="True"
                  TextWrapping="Wrap" />
-        <CheckBox Grid.Row="1"
-                  IsChecked="{Binding IsTopmost, Mode=TwoWay}"
-                  Content="{Binding Loc[TextWindow_Topmost]}"
-                  Margin="0,8,0,0" />
+        <DockPanel Grid.Row="1" Margin="0,8,0,0" LastChildFill="True">
+            <ToggleSwitch DockPanel.Dock="Right"
+                          IsChecked="{Binding IsTopmost, Mode=TwoWay}"
+                          OnContent=""
+                          OffContent=""
+                          VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Loc[TextWindow_Topmost]}"
+                       VerticalAlignment="Center" />
+        </DockPanel>
     </Grid>
 </Window>

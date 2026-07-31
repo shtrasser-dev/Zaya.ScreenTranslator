@@ -1,4 +1,5 @@
 using Zaya.Primitives;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.Translator.Services;
 
@@ -19,9 +20,9 @@ public sealed class NoTranslationTranslatorService : ITranslatorService
 
     public string EngineId => EngineIdValue;
 
-    public LocalizedString DisplayName => Loc("Settings_TranslatorNone");
+    public LocalizedString DisplayName => Loc(LocalizationConstants.Settings.TranslatorNone);
 
-    public LocalizedString Description => Loc("Settings_TranslatorNone");
+    public LocalizedString Description => Loc(LocalizationConstants.Settings.TranslatorNone);
 
     public bool IsAvailable => true;
 
