@@ -91,7 +91,9 @@ public sealed class GitHubReleasesClient : IDisposable
             .Where(r => !r.Prerelease
                         && r.TagName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
                         && !r.TagName.EndsWith("-latest", StringComparison.OrdinalIgnoreCase)
-                        && !r.TagName.Contains('-', StringComparison.Ordinal)) // skip -beta etc beyond channel
+                        // Reject only suffixes after the channel prefix (e.g. plugin-v1.0.0-beta),
+                        // not the hyphen in the "plugin-v" / "app-v" tag prefix itself.
+                        && !r.TagName.AsSpan(prefix.Length).Contains('-'))
             .Select(r => (Release: r, Version: r.ParsedVersion ?? TryParseTagVersion(r.TagName, tagPrefix)))
             .Where(x => x.Version is not null)
             .OrderByDescending(x => x.Version)

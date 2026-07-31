@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.OCR.Services;
 using Zaya.Screenshot.Services;
@@ -47,10 +45,10 @@ public static class PluginLoader
 
         Directory.CreateDirectory(ExtractRoot);
 
-        // 1. Extract new or updated zips
+        // 1. Extract new or updated zips (re-extract when stamp or zip contents diverge)
         foreach (var zip in Directory.EnumerateFiles(pluginsPath, "*.zip"))
         {
-            ExtractIfNeeded(zip, ExtractRoot);
+            PluginExtractCache.ExtractIfNeeded(zip, ExtractRoot);
         }
 
         // 2. Clean stale extracted dirs (no corresponding .zip)
@@ -59,10 +57,7 @@ public static class PluginLoader
             var dirName = Path.GetFileName(dir);
             var expectedZip = Path.Combine(pluginsPath, dirName + ".zip");
             if (!File.Exists(expectedZip))
-            {
-                try { Directory.Delete(dir, true); }
-                catch { /* ignore */ }
-            }
+                PluginExtractCache.TryDeleteDirectory(dir);
         }
 
         // 3. Load DLLs from extracted dirs — root first, then satellites
@@ -145,41 +140,6 @@ public static class PluginLoader
         catch
         {
             _loadedNames.Remove(Path.GetFileNameWithoutExtension(dll));
-        }
-    }
-
-    private static void ExtractIfNeeded(string zipPath, string tempRoot)
-    {
-        var zipName = Path.GetFileNameWithoutExtension(zipPath);
-        var extractDir = Path.Combine(tempRoot, zipName);
-        var stampPath = Path.Combine(extractDir, ".zip-stamp");
-        var zipStamp = File.GetLastWriteTimeUtc(zipPath).Ticks.ToString();
-
-        if (Directory.Exists(extractDir)
-            && File.Exists(stampPath)
-            && File.ReadAllText(stampPath).Trim() == zipStamp)
-        {
-            return;
-        }
-
-        try
-        {
-            if (Directory.Exists(extractDir))
-                Directory.Delete(extractDir, true);
-        }
-        catch
-        {
-            return; // locked files, skip this plugin
-        }
-
-        try
-        {
-            ZipFile.ExtractToDirectory(zipPath, extractDir);
-            File.WriteAllText(stampPath, zipStamp);
-        }
-        catch
-        {
-            /* ignore corrupt zip */
         }
     }
 
