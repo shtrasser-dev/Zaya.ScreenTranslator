@@ -70,12 +70,12 @@ jobs:
 
             const tag = `app-v${version}`;
             const latestTag = `app-v${channel}-latest`;
-            const releaseName = `App v${version}`;
+            const releaseName = `Zaya.ScreenTranslator v${version}`;
             const body = [
               `version: ${version}`,
               `primitivesChannel: ${channel}`,
               '',
-              `ScreenTranslator host v${version} (Primitives channel ${channel}).`,
+              `Zaya.ScreenTranslator v${version} (Primitives channel ${channel}).`,
               '',
               'Download `Zaya.ScreenTranslator.zip`, extract, and run `Zaya.ScreenTranslator.exe`.',
               '',

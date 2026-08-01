@@ -26,7 +26,7 @@ public sealed class GitHubReleaseInfo
     public bool Prerelease { get; init; }
     public IReadOnlyList<GitHubReleaseAsset> Assets { get; init; } = [];
 
-    /// <summary>Semver from release name ("Plugin v0.4.0" / "App v0.4.0") or body "version: x.y.z".</summary>
+    /// <summary>Semver from release name ("Plugin v0.4.0" / "Zaya.ScreenTranslator v1.0.4") or body "version: x.y.z".</summary>
     public Version? ParsedVersion => ReleaseVersionParser.TryParse(Name, Body);
 }
 
@@ -63,7 +63,7 @@ public static class ReleaseVersionParser
     {
         if (!string.IsNullOrWhiteSpace(name))
         {
-            // "Plugin v1.0.0.0" / "App v1.0.0" / "v1.0.0"
+            // "Plugin v1.0.0.0" / "Zaya.ScreenTranslator v1.0.0" / "v1.0.0"
             var m = System.Text.RegularExpressions.Regex.Match(
                 name,
                 $@"\bv{VersionCapture}\b",
