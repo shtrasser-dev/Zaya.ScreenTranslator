@@ -23,7 +23,7 @@ public sealed class PluginManifest
     [JsonPropertyName("primitivesChannel")]
     public string PrimitivesChannel { get; set; } = string.Empty;
 
-    /// <summary>Interface MAJOR.MINOR channel used by floating release tags (<c>plugin-v{channel}-latest</c>).</summary>
+    /// <summary>Interface MAJOR.MINOR channel used by floating release tags (<c>plugin-{interface}-v{channel}-latest</c>).</summary>
     [JsonPropertyName("interfaceChannel")]
     public string InterfaceChannel { get; set; } = string.Empty;
 

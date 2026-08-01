@@ -2,9 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
-using Zaya.OCR.Services;
-using Zaya.Screenshot.Services;
-using Zaya.Translator.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Update;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -98,34 +96,11 @@ public static class PluginLoader
     /// <summary>
     /// plugin.json interfaceVersion must match the three-part Version of the host-shipped abstractions assembly.
     /// </summary>
+    private static Assembly? ResolveHostInterfaceAssembly(string interfaceName)
+        => PluginHostCompatibility.ResolveHostInterfaceAssembly(interfaceName);
+
     private static bool IsInterfaceCompatible(PluginManifest manifest)
-    {
-        if (string.IsNullOrWhiteSpace(manifest.InterfaceVersion))
-            return true; // legacy plugins without the field
-
-        if (!Version.TryParse(manifest.InterfaceVersion, out var required))
-            return true;
-
-        var hostAsm = ResolveHostInterfaceAssembly(manifest.Interface);
-        if (hostAsm is null)
-            return true;
-
-        var hostVer = hostAsm.GetName().Version;
-        if (hostVer is null)
-            return true;
-
-        var hostThree = new Version(hostVer.Major, hostVer.Minor, Math.Max(hostVer.Build, 0));
-        var requiredThree = new Version(required.Major, required.Minor, Math.Max(required.Build, 0));
-        return hostThree == requiredThree;
-    }
-
-    private static Assembly? ResolveHostInterfaceAssembly(string interfaceName) => interfaceName switch
-    {
-        "Zaya.OCR" => typeof(IOCRService).Assembly,
-        "Zaya.Translator" => typeof(ITranslatorService).Assembly,
-        "Zaya.Screenshot" => typeof(ICaptureService).Assembly,
-        _ => null,
-    };
+        => PluginHostCompatibility.IsInterfaceCompatible(manifest);
 
     private static void TryLoad(string dll)
     {

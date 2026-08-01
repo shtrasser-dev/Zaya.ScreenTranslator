@@ -6,10 +6,11 @@
     <!-- Host-consumed interface / layout packages (NuGet). -->
     <ZayaOcrVersion>1.0.0</ZayaOcrVersion>
     <ZayaScreenshotVersion>1.0.0</ZayaScreenshotVersion>
-    <ZayaTranslatorVersion>1.0.0</ZayaTranslatorVersion>
+    <ZayaTranslatorVersion>1.1.0</ZayaTranslatorVersion>
+    <ZayaTranslatorCacheVersion>1.0.0</ZayaTranslatorCacheVersion>
 
     <!-- Host app default (Windows/Unix/Shared) when ZayaVersionRole is unset. -->
     <ZayaHostVersionMinor>0</ZayaHostVersionMinor>
-    <ZayaHostVersionPatch>5</ZayaHostVersionPatch>
+    <ZayaHostVersionPatch>6</ZayaHostVersionPatch>
   </PropertyGroup>
 </Project>

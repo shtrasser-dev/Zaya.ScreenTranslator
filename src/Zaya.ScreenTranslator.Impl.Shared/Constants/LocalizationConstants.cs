@@ -25,6 +25,7 @@ internal static class LocalizationConstants
         public const string EngineNotFound = "Status_EngineNotFound";
         public const string TextLayoutNotFound = "Status_TextLayoutNotFound";
         public const string TranslatorNotFound = "Status_TranslatorNotFound";
+        public const string TranslatorCacheNotFound = "Status_TranslatorCacheNotFound";
         public const string OverlayUnavailable = "Status_OverlayUnavailable";
         public const string OverlayFailed = "Status_OverlayFailed";
         public const string SelectTargetWindow = "Status_SelectTargetWindow";
@@ -117,8 +118,8 @@ internal static class LocalizationConstants
         public const string FramePauseMs = "Settings_FramePauseMs";
         public const string FramePauseMsDesc = "Settings_FramePauseMs_Desc";
         public const string TranslatorNone = "Settings_TranslatorNone";
-        public const string EnableCache = "Settings_EnableCache";
-        public const string CacheTtlMinutes = "Settings_CacheTtlMinutes";
+        public const string TranslatorCacheNone = "Settings_TranslatorCacheNone";
+        public const string TranslatorCacheEngine = "Settings_TranslatorCacheEngine";
     }
 
     public static class Validation

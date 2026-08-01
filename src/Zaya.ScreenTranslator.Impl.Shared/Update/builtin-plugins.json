@@ -1,8 +1,9 @@
 [
-  { "id": "OneOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.OneOcr.zip", "required": true },
-  { "id": "ProximityTextLayout", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.ProximityTextLayout.zip", "required": true },
-  { "id": "WindowsMediaOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.WindowsMediaOcr.zip", "required": false },
-  { "id": "ScreenshotWindows", "repo": "shtrasser-dev/Zaya.Screenshot", "asset": "Zaya.Screenshot.Impl.Windows.zip", "required": true },
-  { "id": "Google", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Google.zip", "required": false },
-  { "id": "Yandex", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Yandex.zip", "required": false }
+  { "id": "OneOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.OneOcr.zip", "interface": "Zaya.OCR", "required": true },
+  { "id": "ProximityTextLayout", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.ProximityTextLayout.zip", "interface": "Zaya.OCR", "required": true },
+  { "id": "WindowsMediaOcr", "repo": "shtrasser-dev/Zaya.OCR", "asset": "Zaya.OCR.Impl.WindowsMediaOcr.zip", "interface": "Zaya.OCR", "required": false },
+  { "id": "ScreenshotWindows", "repo": "shtrasser-dev/Zaya.Screenshot", "asset": "Zaya.Screenshot.Impl.Windows.zip", "interface": "Zaya.Screenshot", "required": true },
+  { "id": "Google", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Google.zip", "interface": "Zaya.Translator", "required": false },
+  { "id": "Yandex", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.Translator.Impl.Yandex.zip", "interface": "Zaya.Translator", "required": false },
+  { "id": "Memory", "repo": "shtrasser-dev/Zaya.Translator", "asset": "Zaya.TranslatorCache.Impl.Memory.zip", "interface": "Zaya.TranslatorCache", "required": true }
 ]

@@ -69,6 +69,9 @@ public partial class SettingsPanel : UserControl
             if (e.PropertyName == nameof(SettingsViewModel.TranslatorDescriptors))
                 RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+            if (e.PropertyName == nameof(SettingsViewModel.TranslatorCacheDescriptors))
+                RebuildPanel("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
+                    () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
             if (e.PropertyName == nameof(SettingsViewModel.OverlayLayoutDescriptors))
                 RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
@@ -95,6 +98,8 @@ public partial class SettingsPanel : UserControl
             () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
         RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
             () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+        RebuildPanel("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
+            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
         RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
             () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
         RebuildPanel("FilterSettingsPanel", ScreenTranslatorSettingDescriptors.FilterDescriptors,

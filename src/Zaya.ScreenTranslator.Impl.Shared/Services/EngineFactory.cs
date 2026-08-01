@@ -5,6 +5,7 @@ using Zaya.ScreenTranslator.Layout.Impl.Services;
 using Zaya.ScreenTranslator.Layout.Models;
 using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
+using Zaya.TranslatorCache.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -98,6 +99,34 @@ public static class EngineFactory
                     try
                     {
                         var instance = Activator.CreateInstance(t) as ITranslatorService;
+                        if (instance?.EngineId == engineId)
+                            return instance;
+                        (instance as IDisposable)?.Dispose();
+                    }
+                    catch { }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static ITranslatorCacheService? CreateTranslatorCache(string engineId)
+    {
+        if (string.Equals(engineId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(engineId, "none", StringComparison.OrdinalIgnoreCase))
+            return new NoTranslatorCacheService();
+
+        var engineType = typeof(ITranslatorCacheService);
+        foreach (var asm in PluginLoader.LoadedAssemblies)
+        {
+            foreach (var t in SafeGetTypes(asm))
+            {
+                if (t is { IsClass: true, IsAbstract: false, IsGenericTypeDefinition: false } &&
+                    engineType.IsAssignableFrom(t))
+                {
+                    try
+                    {
+                        var instance = Activator.CreateInstance(t) as ITranslatorCacheService;
                         if (instance?.EngineId == engineId)
                             return instance;
                         (instance as IDisposable)?.Dispose();

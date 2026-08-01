@@ -12,12 +12,12 @@ internal static class SettingsConstants
     public const string Capture = "capture";
     public const string TextLayout = "textLayout";
     public const string Translator = "translator";
+    public const string TranslatorCache = "translatorCache";
     public const string OverlayLayout = "overlayLayout";
 
     public const string TranslatorNone = "none";
-
-    public const string EnableCache = "enableCache";
-    public const string CacheTtlMinutes = "cacheTtlMinutes";
+    /// <summary>Distinct from <see cref="TranslatorNone"/> so plugin setting bags do not collide.</summary>
+    public const string TranslatorCacheNone = "cache-none";
 
     public const string FilterMinLength = "filterMinLength";
     public const string FilterRules = "filterRules";
@@ -39,6 +39,7 @@ internal static class SettingsConstants
         public const string Capture = "graphics-capture";
         public const string TextLayout = "proximity-text-layout";
         public const string Translator = "google";
+        public const string TranslatorCache = "memory-translator-cache";
         public const string OverlayLayout = "screen-overlay";
     }
 }

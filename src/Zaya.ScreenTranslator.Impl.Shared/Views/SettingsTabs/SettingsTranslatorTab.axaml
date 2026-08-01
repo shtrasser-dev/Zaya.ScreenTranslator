@@ -24,6 +24,25 @@
                 </Grid>
                 <Border Classes="settings-divider" />
                 <StackPanel Name="TranslatorSettingsPanel" />
+
+                <Border Classes="settings-divider" Margin="0,12,0,0" />
+                <TextBlock Classes="settings-intro"
+                           Text="{Binding Loc[Settings_Desc_TranslatorCache]}" />
+                <Border Classes="settings-divider" />
+
+                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Loc[Settings_TranslatorCacheEngine]}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,16,0"
+                               TextWrapping="Wrap" />
+                    <ComboBox Grid.Column="1"
+                              Classes="settings-control"
+                              ItemsSource="{Binding AvailableTranslatorCacheEngines}"
+                              SelectedItem="{Binding SelectedTranslatorCacheEngine, Mode=TwoWay}"
+                              DisplayMemberBinding="{Binding Label}" />
+                </Grid>
+                <Border Classes="settings-divider" />
+                <StackPanel Name="TranslatorCacheSettingsPanel" />
             </StackPanel>
         </Border>
     </ScrollViewer>

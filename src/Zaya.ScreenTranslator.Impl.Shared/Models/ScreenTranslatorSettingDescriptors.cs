@@ -14,16 +14,17 @@ public static class ScreenTranslatorSettingDescriptors
     public const string Capture = SettingsConstants.Capture;
     public const string TextLayout = SettingsConstants.TextLayout;
     public const string Translator = SettingsConstants.Translator;
+    public const string TranslatorCache = SettingsConstants.TranslatorCache;
     public const string OverlayLayout = SettingsConstants.OverlayLayout;
 
     /// <summary>Sentinel engine id: OCR only, skip translation.</summary>
     public const string TranslatorNone = SettingsConstants.TranslatorNone;
 
+    /// <summary>Sentinel engine id: do not wrap translator sessions with a cache.</summary>
+    public const string TranslatorCacheNone = SettingsConstants.TranslatorCacheNone;
+
     public const string DisplayModeTextWindow = AppConstants.DisplayMode.TextWindow;
     public const string DisplayModeOverlay = AppConstants.DisplayMode.Overlay;
-
-    public const string EnableCache = SettingsConstants.EnableCache;
-    public const string CacheTtlMinutes = SettingsConstants.CacheTtlMinutes;
 
     public const string FilterMinLength = SettingsConstants.FilterMinLength;
     public const string FilterRules = SettingsConstants.FilterRules;
@@ -86,19 +87,13 @@ public static class ScreenTranslatorSettingDescriptors
         {
             DefaultValue = SettingsConstants.EngineDefaults.Translator
         },
+        new StringSettingDescriptor(TranslatorCache, LocalizedString.Invariant(TranslatorCache))
+        {
+            DefaultValue = SettingsConstants.EngineDefaults.TranslatorCache
+        },
         new StringSettingDescriptor(OverlayLayout, LocalizedString.Invariant(OverlayLayout))
         {
             DefaultValue = SettingsConstants.EngineDefaults.OverlayLayout
-        },
-        new BooleanSettingDescriptor(EnableCache, Loc(LocalizationConstants.Settings.EnableCache))
-        {
-            DefaultValue = true,
-        },
-        new IntegerSettingDescriptor(CacheTtlMinutes, Loc(LocalizationConstants.Settings.CacheTtlMinutes))
-        {
-            DefaultValue = 0,
-            MinValue = 0,
-            MaxValue = 10080,
         },
         ..FilterDescriptors,
     ];

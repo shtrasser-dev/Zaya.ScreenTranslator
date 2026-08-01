@@ -75,6 +75,9 @@
   <data name="Settings_Desc_Translator" xml:space="preserve">
     <value>Модуль перевода.</value>
   </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>Модуль кэша перевода (меньше запросов к API и стабилизация мигания OCR).</value>
+  </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
     <value>Модуль фильтрации текста.</value>
   </data>
@@ -92,6 +95,9 @@
   </data>
   <data name="Settings_Tab_Translator" xml:space="preserve">
     <value>Перевод</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>Кэш</value>
   </data>
   <data name="Settings_Tab_Filter" xml:space="preserve">
     <value>Фильтр</value>
@@ -168,6 +174,12 @@
   <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Без перевода (только OCR)</value>
   </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>Движок кэша</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>Без кэша</value>
+  </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
     <value>Пауза между обработкой кадров в миллисекундах</value>
   </data>
@@ -185,12 +197,6 @@
   </data>
   <data name="Settings_TargetProcess_Desc" xml:space="preserve">
     <value>Автоматически подключаться к указанному процессу.</value>
-  </data>
-  <data name="Settings_EnableCache" xml:space="preserve">
-    <value>Включить кэш</value>
-  </data>
-  <data name="Settings_CacheTtlMinutes" xml:space="preserve">
-    <value>TTL кэша (мин)</value>
   </data>
   <data name="Settings_SetCurrentProcess" xml:space="preserve">
     <value>Установить текущий процесс</value>
@@ -332,6 +338,9 @@
   </data>
   <data name="Status_TranslatorNotFound" xml:space="preserve">
     <value>Движок перевода не найден</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>Движок кэша перевода не найден</value>
   </data>
   <data name="Status_OverlayUnavailable" xml:space="preserve">
     <value>Движок наложения недоступен</value>

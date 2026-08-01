@@ -22,6 +22,8 @@ public interface ISettingsService
     IReadOnlyList<SettingDescriptor>? GetTextLayoutDescriptors(string engineId);
     IReadOnlyList<EngineInfo> GetAvailableTranslatorEngines();
     IReadOnlyList<SettingDescriptor>? GetTranslatorDescriptors(string engineId);
+    IReadOnlyList<EngineInfo> GetAvailableTranslatorCacheEngines();
+    IReadOnlyList<SettingDescriptor>? GetTranslatorCacheDescriptors(string engineId);
     IReadOnlyList<EngineInfo> GetAvailableOverlayLayoutEngines();
     IReadOnlyList<SettingDescriptor>? GetOverlayLayoutDescriptors(string engineId);
 }

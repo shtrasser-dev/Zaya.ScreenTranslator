@@ -53,6 +53,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _availableCaptureEngines = _settingsService.GetAvailableCaptureEngines();
         _availableTextLayoutEngines = _settingsService.GetAvailableTextLayoutEngines();
         _availableTranslatorEngines = _settingsService.GetAvailableTranslatorEngines();
+        _availableTranslatorCacheEngines = _settingsService.GetAvailableTranslatorCacheEngines();
         _availableOverlayLayoutEngines = _settingsService.GetAvailableOverlayLayoutEngines();
         _profileNames = _profileService.ListProfileNames();
         _selectedProfileName = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName);
@@ -64,6 +65,16 @@ public sealed partial class SettingsViewModel : ObservableObject
             _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
         _selectedTranslatorEngine = _availableTranslatorEngines.FirstOrDefault(e => e.Id ==
             _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+        var cacheId = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
+        if (string.IsNullOrWhiteSpace(cacheId)
+            || string.Equals(cacheId, "none", StringComparison.OrdinalIgnoreCase))
+            cacheId = SettingsConstants.EngineDefaults.TranslatorCache;
+        _selectedTranslatorCacheEngine = _availableTranslatorCacheEngines.FirstOrDefault(e => e.Id == cacheId)
+            ?? _availableTranslatorCacheEngines.FirstOrDefault(e =>
+                e.Id == SettingsConstants.EngineDefaults.TranslatorCache)
+            ?? _availableTranslatorCacheEngines.FirstOrDefault(e =>
+                e.Id != NoTranslatorCacheService.EngineIdValue)
+            ?? _availableTranslatorCacheEngines.FirstOrDefault();
         _selectedOverlayLayoutEngine = _availableOverlayLayoutEngines.FirstOrDefault(e => e.Id ==
             _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout))
             ?? _availableOverlayLayoutEngines.FirstOrDefault();
@@ -183,6 +194,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         CaptureDescriptors = _descriptorLoader.LoadCapture(EditingProfile);
         TextLayoutDescriptors = _descriptorLoader.LoadTextLayout(EditingProfile);
         TranslatorDescriptors = _descriptorLoader.LoadTranslator(EditingProfile);
+        TranslatorCacheDescriptors = _descriptorLoader.LoadTranslatorCache(EditingProfile);
         OverlayLayoutDescriptors = _descriptorLoader.LoadOverlayLayout(EditingProfile);
     }
 

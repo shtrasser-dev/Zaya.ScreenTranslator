@@ -15,19 +15,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Checkout sibling packages (project references)
-        shell: bash
-        run: |
-          # Shared uses ProjectReference to local siblings when present in CI workspace.
-          # Prefer NuGet when siblings are unavailable — restore ProjectRefs via sparse checkouts.
-          mkdir -p ../Zaya.OCR/src ../Zaya.Screenshot/src ../Zaya.Translator/src
-          git clone --depth 1 https://github.com/shtrasser-dev/Zaya.OCR.git ../Zaya.OCR-tmp
-          git clone --depth 1 https://github.com/shtrasser-dev/Zaya.Screenshot.git ../Zaya.Screenshot-tmp
-          git clone --depth 1 https://github.com/shtrasser-dev/Zaya.Translator.git ../Zaya.Translator-tmp
-          rm -rf ../Zaya.OCR && mv ../Zaya.OCR-tmp ../Zaya.OCR
-          rm -rf ../Zaya.Screenshot && mv ../Zaya.Screenshot-tmp ../Zaya.Screenshot
-          rm -rf ../Zaya.Translator && mv ../Zaya.Translator-tmp ../Zaya.Translator
-
       - name: Build host
         run: .\build.cmd
 

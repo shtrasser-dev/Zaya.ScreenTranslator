@@ -72,7 +72,9 @@ public sealed class GitHubReleasesClient : IDisposable
     }
 
     /// <summary>
-    /// Channel floating tag first; on 404 fall back to max immutable <c>plugin-v{channel}.*</c> / <c>app-v{channel}.*</c>.
+    /// Channel floating tag first; on 404 fall back to max immutable
+    /// <c>{tagPrefix}{channel}.*</c> (e.g. <c>plugin-Zaya.OCR-v1.0-latest</c> /
+    /// <c>plugin-Zaya.OCR-v1.0.0.2</c>, or host <c>app-v1.0-latest</c>).
     /// </summary>
     public async Task<GitHubReleaseInfo?> GetChannelLatestAsync(
         string ownerRepo,
@@ -91,14 +93,28 @@ public sealed class GitHubReleasesClient : IDisposable
             .Where(r => !r.Prerelease
                         && r.TagName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
                         && !r.TagName.EndsWith("-latest", StringComparison.OrdinalIgnoreCase)
-                        // Reject only suffixes after the channel prefix (e.g. plugin-v1.0.0-beta),
-                        // not the hyphen in the "plugin-v" / "app-v" tag prefix itself.
+                        // Reject only suffixes after the channel prefix (e.g. …-beta),
+                        // not hyphens that belong to the tag prefix itself.
                         && !r.TagName.AsSpan(prefix.Length).Contains('-'))
             .Select(r => (Release: r, Version: r.ParsedVersion ?? TryParseTagVersion(r.TagName, tagPrefix)))
             .Where(x => x.Version is not null)
             .OrderByDescending(x => x.Version)
             .Select(x => x.Release)
             .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Plugin floating channel for one interface package:
+    /// <c>plugin-{interface}-v{channel}-latest</c>.
+    /// </summary>
+    public Task<GitHubReleaseInfo?> GetPluginInterfaceChannelLatestAsync(
+        string ownerRepo,
+        string interfaceName,
+        string channel,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(interfaceName);
+        return GetChannelLatestAsync(ownerRepo, channel, $"plugin-{interfaceName}-v", cancellationToken);
     }
 
     public async Task DownloadAssetAsync(

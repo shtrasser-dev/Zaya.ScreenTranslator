@@ -25,6 +25,7 @@
     <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
     <PackageReference Include="Zaya.Screenshot" Version="$(ZayaScreenshotVersion)" />
     <PackageReference Include="Zaya.Translator" Version="$(ZayaTranslatorVersion)" />
+    <PackageReference Include="Zaya.TranslatorCache" Version="$(ZayaTranslatorCacheVersion)" />
     <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />
     <PackageReference Include="Avalonia.Skia" Version="12.1.0" />

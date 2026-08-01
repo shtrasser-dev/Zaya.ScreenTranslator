@@ -9,6 +9,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Layout.Models;
 using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
+using Zaya.TranslatorCache.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -19,6 +20,7 @@ public sealed class TranslationLoopService
         ICaptureService capture,
         ITextLayoutService textLayout,
         ITranslatorService translator,
+        ITranslatorCacheService translatorCache,
         ICaptureRegion region,
         IApplicationProfile profile,
         CancellationToken ct,
@@ -39,6 +41,8 @@ public sealed class TranslationLoopService
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
         var trSettings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+        var cacheSettings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
 
         using var captureSession = await capture.CreateSessionAsync(region,
             ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, captureSettings), ct);
@@ -46,9 +50,13 @@ public sealed class TranslationLoopService
             ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, ocrSettings), ct);
         using var layoutSession = await textLayout.CreateSessionAsync(
             ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, tlSettings), ct);
-        using var translatorSession = await translator.CreateSessionAsync(
+        var rawTranslatorSession = await translator.CreateSessionAsync(
             ManagedSettingKeys.PrepareForEngine(
                 translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
+        using var translatorSession = await translatorCache.WrapSessionAsync(
+            rawTranslatorSession,
+            ManagedSettingKeys.PrepareForEngine(
+                translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
 
         var filter = TextFilterSession.Create(profile.ScreenTranslatorSettings);
         var passThrough = translator.EngineId == NoTranslationTranslatorService.EngineIdValue;
@@ -186,12 +194,9 @@ public sealed class TranslationLoopService
             var parts = WrapTranslatedToLines(translated, lines);
             for (var li = 0; li < lines.Count; li++)
             {
-                var lineText = parts[li];
-                if (string.IsNullOrWhiteSpace(lineText))
-                    continue;
                 items.Add(new OverlayItem
                 {
-                    Text = lineText,
+                    Text = parts[li],
                     Bounds = lines[li].Bounds,
                 });
             }
@@ -201,16 +206,53 @@ public sealed class TranslationLoopService
     }
 
     /// <summary>
-    /// Joins OCR paragraph lines into one sentence for the translator
-    /// (newlines would otherwise be treated as separate sentences).
+    /// Joins OCR paragraph lines for the translator. Consecutive lines are joined with
+    /// a space, except after a line that ends with sentence punctuation (<c>.</c>,
+    /// <c>!</c>, <c>?</c>, <c>...</c>, <c>…</c>) — then <c>\n</c> is kept so the translator
+    /// sees a sentence break. Paragraph/line layout is unchanged.
     /// </summary>
     private static string JoinParagraphForTranslation(ITextParagraph paragraph)
     {
-        if (paragraph.Lines.Count > 0)
-            return CollapseWhitespace(string.Join(" ", paragraph.Lines.Select(l => l.Text)));
+        var lines = paragraph.Lines;
+        if (lines.Count == 0)
+            return CollapseWhitespace(paragraph.Text.Replace('\r', ' ').Replace('\n', ' '));
 
-        return CollapseWhitespace(paragraph.Text.Replace('\r', ' ').Replace('\n', ' '));
+        var sb = new System.Text.StringBuilder();
+        for (var i = 0; i < lines.Count; i++)
+        {
+            if (i > 0)
+                sb.Append(EndsWithSentenceTerminator(lines[i - 1].Text) ? '\n' : ' ');
+            sb.Append(lines[i].Text);
+        }
+
+        return CollapseWhitespacePreservingNewlines(sb.ToString());
     }
+
+    /// <summary>
+    /// True when the OCR line ends with sentence-ending punctuation
+    /// (<c>.</c>, <c>!</c>, <c>?</c>, <c>...</c>, <c>…</c>), ignoring trailing quotes/brackets.
+    /// </summary>
+    internal static bool EndsWithSentenceTerminator(string? lineText)
+    {
+        if (string.IsNullOrWhiteSpace(lineText))
+            return false;
+
+        var t = lineText.TrimEnd();
+        while (t.Length > 0 && IsTrailingCloser(t[^1]))
+            t = t[..^1].TrimEnd();
+
+        if (t.Length == 0)
+            return false;
+
+        if (t.EndsWith("...", StringComparison.Ordinal) || t.EndsWith('…'))
+            return true;
+
+        var last = t[^1];
+        return last is '.' or '!' or '?';
+    }
+
+    private static bool IsTrailingCloser(char c) => c is '"' or '\'' or '\u2019' or '\u201D'
+        or ')' or ']' or '}' or '\u00BB'; // »
 
     private static string CollapseWhitespace(string text)
     {
@@ -240,9 +282,41 @@ public sealed class TranslationLoopService
     }
 
     /// <summary>
+    /// Like <see cref="CollapseWhitespace"/>, but keeps <c>\n</c> as hard breaks
+    /// (only collapses spaces/tabs within each line).
+    /// </summary>
+    private static string CollapseWhitespacePreservingNewlines(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        var lines = text.Split('\n');
+        var sb = new System.Text.StringBuilder(text.Length);
+        var wrote = false;
+        foreach (var line in lines)
+        {
+            var collapsed = CollapseWhitespace(line);
+            if (!wrote)
+            {
+                sb.Append(collapsed);
+                wrote = true;
+            }
+            else
+            {
+                sb.Append('\n');
+                sb.Append(collapsed);
+            }
+        }
+
+        return sb.ToString().Trim('\n');
+    }
+
+    /// <summary>
     /// Packs translated text into the original line boxes top-to-bottom.
-    /// Character budgets follow line widths, but earlier lines get priority so a
-    /// short final OCR line is not forced to absorb leftover from rigid cuts.
+    /// When the translation keeps the same number of <c>\n</c> breaks as the join
+    /// rule (period-ending OCR lines), each segment is wrapped only into that
+    /// line group; otherwise falls back to flat wrap across all lines.
     /// </summary>
     private static string[] WrapTranslatedToLines(string text, IReadOnlyList<ITextLine> lines)
     {
@@ -250,7 +324,69 @@ public sealed class TranslationLoopService
         if (lineCount <= 0)
             return [];
 
-        text = CollapseWhitespace(text.Replace('\r', ' ').Replace('\n', ' '));
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        if (lineCount == 1)
+            return [CollapseWhitespace(text.Replace('\n', ' '))];
+
+        if (string.IsNullOrWhiteSpace(text))
+            return Enumerable.Repeat(string.Empty, lineCount).ToArray();
+
+        var groups = BuildJoinLineGroups(lines);
+        var segments = text.Split('\n');
+        if (segments.Length == groups.Count)
+        {
+            var result = new string[lineCount];
+            var offset = 0;
+            for (var g = 0; g < groups.Count; g++)
+            {
+                var groupSize = groups[g];
+                var groupLines = new ITextLine[groupSize];
+                for (var i = 0; i < groupSize; i++)
+                    groupLines[i] = lines[offset + i];
+
+                var wrapped = WrapFlatTextToLines(
+                    CollapseWhitespace(segments[g]),
+                    groupLines);
+                for (var i = 0; i < wrapped.Length; i++)
+                    result[offset + i] = wrapped[i];
+                offset += groupSize;
+            }
+
+            return result;
+        }
+
+        return WrapFlatTextToLines(CollapseWhitespace(text.Replace('\n', ' ')), lines);
+    }
+
+    /// <summary>
+    /// Line-count groups matching <see cref="JoinParagraphForTranslation"/>:
+    /// consecutive lines until one ends with sentence punctuation.
+    /// </summary>
+    private static List<int> BuildJoinLineGroups(IReadOnlyList<ITextLine> lines)
+    {
+        var groups = new List<int>();
+        var count = 0;
+        foreach (var line in lines)
+        {
+            count++;
+            if (!EndsWithSentenceTerminator(line.Text))
+                continue;
+            groups.Add(count);
+            count = 0;
+        }
+
+        if (count > 0)
+            groups.Add(count);
+
+        return groups;
+    }
+
+    private static string[] WrapFlatTextToLines(string text, IReadOnlyList<ITextLine> lines)
+    {
+        var lineCount = lines.Count;
+        if (lineCount <= 0)
+            return [];
+
         if (lineCount == 1)
             return [text];
 

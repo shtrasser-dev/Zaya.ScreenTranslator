@@ -15,11 +15,13 @@ public sealed class PluginUpdateService
     }
 
     /// <summary>
-    /// Purge wrong-channel / empty bootstrap, then download required (and optional updates when channel ok).
+    /// Ensure required plugins, then optionally refresh from GitHub when a newer remote exists.
+    /// Local zips that match the host interface NuGet are never deleted solely because their
+    /// update channel differs from the host app channel. Local versions newer than GitHub are kept.
     /// Call before <see cref="Services.PluginLoader.LoadPlugins"/>.
     /// </summary>
     /// <param name="pluginsDirectory">Directory that stores plugin zip files.</param>
-    /// <param name="channel">Primitives/interface channel (e.g. <c>1.0</c>) used for floating release tags.</param>
+    /// <param name="channel">Host app channel (fallback when an entry has no interface mapping).</param>
     /// <param name="updateOptional">When true, also update optional catalog entries if a newer release exists.</param>
     /// <param name="checkForUpdates">
     /// When false, only ensure required plugins are present (bootstrap / missing files);
@@ -46,7 +48,7 @@ public sealed class PluginUpdateService
                 && !File.Exists(Path.Combine(pluginsDirectory, e.Asset)));
             var needsBootstrap = localState.Count == 0
                 || missingRequired
-                || localState.Values.Any(m => LocalPluginStore.IsIncompatibleChannel(m, channel));
+                || localState.Values.Any(LocalPluginStore.IsIncompatibleWithHost);
 
             if (!checkForUpdates && !needsBootstrap)
             {
@@ -148,9 +150,10 @@ public sealed class PluginUpdateService
         IProgress<string>? status,
         CancellationToken cancellationToken)
     {
+        _ = updateOptional;
         status?.Report(Loc[LocalizationConstants.Plugin.RemovingIncompatible]);
         var localState = LocalPluginStore.Scan(pluginsDirectory);
-        LocalPluginStore.PurgeWrongChannel(pluginsDirectory, channel, localState);
+        LocalPluginStore.PurgeIncompatibleInterfaces(pluginsDirectory, localState);
 
         foreach (var entry in catalog.Where(e => e.Required))
         {
@@ -175,22 +178,23 @@ public sealed class PluginUpdateService
             };
         }
 
-        if (updateOptional)
+        // Always fetch missing optional plugins on bootstrap (not gated on update checks).
+        foreach (var entry in catalog.Where(e => !e.Required))
         {
-            foreach (var entry in catalog.Where(e => !e.Required))
+            if (File.Exists(Path.Combine(pluginsDirectory, entry.Asset)))
+                continue;
+
+            try
             {
-                try
-                {
-                    status?.Report(string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.Downloading], entry.Asset));
-                    await _downloader.DownloadCatalogEntryAsync(
-                            entry, pluginsDirectory, channel, downloaded, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    status?.Report(string.Format(
-                        Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.OptionalSkipped], entry.Asset, ex.Message));
-                }
+                status?.Report(string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.Downloading], entry.Asset));
+                await _downloader.DownloadCatalogEntryAsync(
+                        entry, pluginsDirectory, channel, downloaded, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                status?.Report(string.Format(
+                    Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.OptionalSkipped], entry.Asset, ex.Message));
             }
         }
 

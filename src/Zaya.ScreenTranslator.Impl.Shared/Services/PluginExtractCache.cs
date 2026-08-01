@@ -18,21 +18,63 @@ internal static class PluginExtractCache
         if (IsExtractUpToDate(zipPath, extractDir))
             return;
 
-        if (!TryDeleteDirectory(extractDir))
-        {
-            Debug.WriteLine($"[PluginLoader] Could not refresh extract for {zipName}; using stale files.");
-            return;
-        }
+        // Prefer a side-by-side extract so a locked stale folder cannot block refresh.
+        var stagingDir = extractDir + ".staging";
+        TryDeleteDirectory(stagingDir);
 
         try
         {
-            Directory.CreateDirectory(extractDir);
-            ZipFile.ExtractToDirectory(zipPath, extractDir);
-            File.WriteAllText(Path.Combine(extractDir, StampFileName), MakeStamp(zipPath));
+            Directory.CreateDirectory(stagingDir);
+            ZipFile.ExtractToDirectory(zipPath, stagingDir);
+            File.WriteAllText(Path.Combine(stagingDir, StampFileName), MakeStamp(zipPath));
+
+            if (!TryDeleteDirectory(extractDir))
+            {
+                // Stale folder still locked — keep staging as the live extract path via junction swap:
+                // fall back to copying unlocked files over the stale tree.
+                Debug.WriteLine(
+                    $"[PluginLoader] Could not replace extract for {zipName}; copying into existing folder.");
+                CopyExtractOver(stagingDir, extractDir);
+                TryDeleteDirectory(stagingDir);
+                return;
+            }
+
+            Directory.Move(stagingDir, extractDir);
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"[PluginLoader] Extract failed for {zipName}: {ex.Message}");
+            TryDeleteDirectory(stagingDir);
+        }
+    }
+
+    private static void CopyExtractOver(string sourceDir, string destDir)
+    {
+        Directory.CreateDirectory(destDir);
+        foreach (var file in Directory.EnumerateFiles(sourceDir, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(sourceDir, file);
+            var dest = Path.Combine(destDir, relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+            try
+            {
+                File.Copy(file, dest, overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[PluginLoader] Could not refresh '{relative}': {ex.Message}");
+            }
+        }
+
+        try
+        {
+            File.WriteAllText(
+                Path.Combine(destDir, StampFileName),
+                File.ReadAllText(Path.Combine(sourceDir, StampFileName)));
+        }
+        catch
+        {
+            /* ignore */
         }
     }
 

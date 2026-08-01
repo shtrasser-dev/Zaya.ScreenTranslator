@@ -2,7 +2,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
-/// <summary>Scans and maintains plugin zips on disk for the active update channel.</summary>
+/// <summary>Scans and maintains plugin zips on disk.</summary>
 internal static class LocalPluginStore
 {
     public static Dictionary<string, PluginManifest> Scan(string pluginsDirectory)
@@ -22,16 +22,22 @@ internal static class LocalPluginStore
         return result;
     }
 
-    public static void PurgeWrongChannel(
+    /// <summary>
+    /// Removes zips whose <c>interfaceVersion</c> does not match the host-shipped interface NuGet.
+    /// Local builds that match the host interface (e.g. Translator 1.1.x) are kept even when
+    /// their update channel differs from the host app channel.
+    /// </summary>
+    public static void PurgeIncompatibleInterfaces(
         string pluginsDirectory,
-        string channel,
         Dictionary<string, PluginManifest> localState)
     {
         foreach (var zip in Directory.EnumerateFiles(pluginsDirectory, "*.zip"))
         {
             var fileName = Path.GetFileName(zip);
             localState.TryGetValue(fileName, out var manifest);
-            if (manifest is null || !IsIncompatibleChannel(manifest, channel))
+            if (manifest is null)
+                continue;
+            if (PluginHostCompatibility.IsInterfaceCompatible(manifest))
                 continue;
 
             try { File.Delete(zip); }
@@ -40,14 +46,8 @@ internal static class LocalPluginStore
     }
 
     /// <summary>
-    /// True only when the plugin declares (or implies) a channel and it differs from the host channel.
-    /// Missing channel is not treated as incompatible — avoids re-downloading every startup.
+    /// True when the plugin declares an interface version that cannot load against the host NuGet.
     /// </summary>
-    public static bool IsIncompatibleChannel(PluginManifest manifest, string hostChannel)
-    {
-        var pluginChannel = manifest.ResolveUpdateChannel();
-        if (string.IsNullOrEmpty(pluginChannel))
-            return false;
-        return !string.Equals(pluginChannel, hostChannel, StringComparison.Ordinal);
-    }
+    public static bool IsIncompatibleWithHost(PluginManifest manifest)
+        => !PluginHostCompatibility.IsInterfaceCompatible(manifest);
 }

@@ -32,6 +32,7 @@ internal sealed class TranslationSessionCoordinator
     private IDisposable? _captureEngine;
     private IDisposable? _textLayoutEngine;
     private IDisposable? _translatorEngine;
+    private IDisposable? _translatorCacheEngine;
     private IOverlayLayoutService? _overlayLayoutEngine;
     private IOverlayLayoutSession? _overlaySession;
 
@@ -113,6 +114,37 @@ internal sealed class TranslationSessionCoordinator
             return;
         }
 
+        var translatorCacheId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
+        if (string.IsNullOrWhiteSpace(translatorCacheId)
+            || string.Equals(translatorCacheId, "none", StringComparison.OrdinalIgnoreCase))
+        {
+            // Legacy profiles used translator "none" id for cache-off; prefer Memory by default.
+            translatorCacheId = SettingsConstants.EngineDefaults.TranslatorCache;
+        }
+
+        // Keep the chosen engine id persisted so settings UI and runtime stay aligned.
+        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
+            = translatorCacheId;
+
+        var translatorCache = EngineFactory.CreateTranslatorCache(translatorCacheId);
+        if (translatorCache is null
+            && !string.Equals(translatorCacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
+        {
+            // Memory plugin missing → fall back to no-cache rather than aborting the session.
+            translatorCache = new NoTranslatorCacheService();
+            translatorCacheId = NoTranslatorCacheService.EngineIdValue;
+        }
+        if (translatorCache is null)
+        {
+            ocr.Dispose();
+            capture.Dispose();
+            textLayout.Dispose();
+            translator.Dispose();
+            AbortPendingStart();
+            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorCacheNotFound], isError: true);
+            return;
+        }
+
         IOverlayLayoutService? overlayLayout = null;
         IOverlayLayoutSession? overlaySession = null;
         if (_host.IsOverlayMode)
@@ -128,6 +160,7 @@ internal sealed class TranslationSessionCoordinator
                 capture.Dispose();
                 textLayout.Dispose();
                 translator.Dispose();
+                translatorCache.Dispose();
                 overlayLayout?.Dispose();
                 AbortPendingStart();
                 _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
@@ -150,6 +183,7 @@ internal sealed class TranslationSessionCoordinator
                 capture.Dispose();
                 textLayout.Dispose();
                 translator.Dispose();
+                translatorCache.Dispose();
                 overlayLayout.Dispose();
                 AbortPendingStart();
                 _host.SetStatus(string.Format(_host.Loc[LocalizationConstants.Status.OverlayFailed], ex.Message), isError: true);
@@ -161,6 +195,7 @@ internal sealed class TranslationSessionCoordinator
         _captureEngine = capture;
         _textLayoutEngine = textLayout;
         _translatorEngine = translator;
+        _translatorCacheEngine = translatorCache;
         _overlayLayoutEngine = overlayLayout;
         _overlaySession = overlaySession;
 
@@ -176,7 +211,7 @@ internal sealed class TranslationSessionCoordinator
         _loopTask = Task.Run(async () =>
         {
             await _loopService.RunAsync(
-                ocr, capture, textLayout, translator, region, profile, ct,
+                ocr, capture, textLayout, translator, translatorCache, region, profile, ct,
                 text => _textOutput.UpdateText(text),
                 status => Dispatcher.UIThread.Post(() =>
                 {
@@ -234,11 +269,13 @@ internal sealed class TranslationSessionCoordinator
         _captureEngine?.Dispose();
         _textLayoutEngine?.Dispose();
         _translatorEngine?.Dispose();
+        _translatorCacheEngine?.Dispose();
         _overlayLayoutEngine?.Dispose();
         _ocrEngine = null;
         _captureEngine = null;
         _textLayoutEngine = null;
         _translatorEngine = null;
+        _translatorCacheEngine = null;
         _overlayLayoutEngine = null;
     }
 

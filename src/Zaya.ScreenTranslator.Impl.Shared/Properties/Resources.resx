@@ -75,6 +75,9 @@
   <data name="Settings_Desc_Translator" xml:space="preserve">
     <value>Translation module.</value>
   </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>Translation cache module (reduces API calls and stabilizes OCR flicker).</value>
+  </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
     <value>Text filter module.</value>
   </data>
@@ -92,6 +95,9 @@
   </data>
   <data name="Settings_Tab_Translator" xml:space="preserve">
     <value>Translate</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>Cache</value>
   </data>
   <data name="Settings_Tab_Filter" xml:space="preserve">
     <value>Filter</value>
@@ -168,6 +174,12 @@
   <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>No translation (OCR only)</value>
   </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>Cache engine</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>No cache</value>
+  </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
     <value>Pause between frame processing (ms)</value>
   </data>
@@ -185,12 +197,6 @@
   </data>
   <data name="Settings_TargetProcess_Desc" xml:space="preserve">
     <value>Automatically connect to the specified process.</value>
-  </data>
-  <data name="Settings_EnableCache" xml:space="preserve">
-    <value>Enable cache</value>
-  </data>
-  <data name="Settings_CacheTtlMinutes" xml:space="preserve">
-    <value>Cache TTL (min)</value>
   </data>
   <data name="Settings_SetCurrentProcess" xml:space="preserve">
     <value>Set current process</value>
@@ -332,6 +338,9 @@
   </data>
   <data name="Status_TranslatorNotFound" xml:space="preserve">
     <value>Translator engine not found</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>Translator cache engine not found</value>
   </data>
   <data name="Status_OverlayUnavailable" xml:space="preserve">
     <value>Overlay layout engine not available</value>

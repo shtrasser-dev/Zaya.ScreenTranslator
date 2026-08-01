@@ -24,6 +24,6 @@ Same rules as OCR / Screenshot / Translator plugins. Major comes from `ZayaPrimi
 |------|---------|
 | `interfaceVersion` | Must equal host-shipped `Zaya.OCR` / `Zaya.Translator` / `Zaya.Screenshot` / layout interface assembly version |
 | `pluginVersion` | Per-engine zip; updater compares per asset |
-| `updateChannel` | Interface `MAJOR.MINOR` → floating tag `plugin-v{channel}-latest` |
+| `updateChannel` | Interface `MAJOR.MINOR` → floating tag `plugin-{interface}-v{channel}-latest` |
 
 `PluginLoader` skips zips whose `interfaceVersion` does not match the host interface assembly.

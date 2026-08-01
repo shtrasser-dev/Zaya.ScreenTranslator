@@ -20,6 +20,9 @@ public sealed partial class SettingsViewModel
     [ObservableProperty] private IReadOnlyList<EngineInfo> _availableTranslatorEngines;
     [ObservableProperty] private IReadOnlyList<SettingDescriptor>? _translatorDescriptors;
     [ObservableProperty] private EngineInfo? _selectedTranslatorEngine;
+    [ObservableProperty] private IReadOnlyList<EngineInfo> _availableTranslatorCacheEngines;
+    [ObservableProperty] private IReadOnlyList<SettingDescriptor>? _translatorCacheDescriptors;
+    [ObservableProperty] private EngineInfo? _selectedTranslatorCacheEngine;
     [ObservableProperty] private IReadOnlyList<EngineInfo> _availableOverlayLayoutEngines;
     [ObservableProperty] private IReadOnlyList<SettingDescriptor>? _overlayLayoutDescriptors;
     [ObservableProperty] private EngineInfo? _selectedOverlayLayoutEngine;
@@ -147,6 +150,14 @@ public sealed partial class SettingsViewModel
         if (value is null) return;
         EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.Translator] = value.Id;
         TranslatorDescriptors = _descriptorLoader.LoadTranslator(EditingProfile);
+        ApplyChanges();
+    }
+
+    partial void OnSelectedTranslatorCacheEngineChanged(EngineInfo? value)
+    {
+        if (value is null) return;
+        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache] = value.Id;
+        TranslatorCacheDescriptors = _descriptorLoader.LoadTranslatorCache(EditingProfile);
         ApplyChanges();
     }
 

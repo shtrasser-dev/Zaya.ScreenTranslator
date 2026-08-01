@@ -13,7 +13,6 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     private readonly SettingDescriptorList _settings;
     private readonly IntPtr _targetHwnd;
     private readonly OverlayWindow _window;
-    private readonly OverlayBoundsStabilizer _stabilizer = new();
     private bool _disposed;
     private bool _visible;
 
@@ -40,10 +39,8 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         var outline = _settings.GetValueAsBool(OverlayLayoutSettingKeys.Outline);
         var fitMode = _settings.GetValueAsString(OverlayLayoutSettingKeys.FitMode);
 
-        var stabilized = _stabilizer.Stabilize(items);
-
-        var specs = new List<OverlayDrawSpec>(stabilized.Count);
-        foreach (var item in stabilized)
+        var specs = new List<OverlayDrawSpec>(items.Count);
+        foreach (var item in items)
         {
             if (string.IsNullOrWhiteSpace(item.Text))
                 continue;
@@ -93,7 +90,6 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     public void Clear()
     {
         if (_disposed) return;
-        _stabilizer.Reset();
         OverlayWindow.RunOnUi(() => _window.ClearItems());
     }
 
@@ -101,7 +97,6 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     {
         if (_disposed) return;
         _disposed = true;
-        _stabilizer.Reset();
         OverlayWindow.RunOnUi(() =>
         {
             _window.ClearItems();

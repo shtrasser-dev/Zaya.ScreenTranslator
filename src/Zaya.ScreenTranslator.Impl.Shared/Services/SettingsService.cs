@@ -3,6 +3,7 @@ using Zaya.OCR.Services;
 using Zaya.Primitives;
 using Zaya.Screenshot.Services;
 using Zaya.Translator.Services;
+using Zaya.TranslatorCache.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Layout.Impl.Services;
 using Zaya.ScreenTranslator.Layout.Services;
@@ -136,6 +137,23 @@ public sealed class SettingsService : ISettingsService
         return engine?.Settings;
     }
 
+    public IReadOnlyList<EngineInfo> GetAvailableTranslatorCacheEngines()
+    {
+        using var builtIn = new NoTranslatorCacheService();
+        var label = builtIn.DisplayName.GetValue(LocalizationService.Instance.CurrentCulture);
+        // Real cache engines first; built-in "off" last so UI fallbacks never prefer no-cache.
+        var engines = new List<EngineInfo>();
+        engines.AddRange(ScanForEngines(typeof(ITranslatorCacheService)));
+        engines.Add(new EngineInfo(builtIn.EngineId, label));
+        return engines;
+    }
+
+    public IReadOnlyList<SettingDescriptor>? GetTranslatorCacheDescriptors(string engineId)
+    {
+        using var engine = EngineFactory.CreateTranslatorCache(engineId);
+        return engine?.Settings;
+    }
+
     public IReadOnlyList<EngineInfo> GetAvailableOverlayLayoutEngines()
     {
         using var builtIn = new ScreenOverlayLayoutService();
@@ -173,6 +191,8 @@ public sealed class SettingsService : ISettingsService
                             engines.Add(new EngineInfo(tl.EngineId));
                         else if (instance is ITranslatorService tr)
                             engines.Add(new EngineInfo(tr.EngineId));
+                        else if (instance is ITranslatorCacheService tc)
+                            engines.Add(new EngineInfo(tc.EngineId, tc.DisplayName.GetValue(LocalizationService.Instance.CurrentCulture)));
                         else if (instance is IOverlayLayoutService ol)
                             engines.Add(new EngineInfo(ol.EngineId, ol.DisplayName.GetValue(LocalizationService.Instance.CurrentCulture)));
                         (instance as IDisposable)?.Dispose();

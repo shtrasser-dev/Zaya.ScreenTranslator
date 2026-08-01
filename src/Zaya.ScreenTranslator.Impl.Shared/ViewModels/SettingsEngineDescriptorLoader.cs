@@ -30,6 +30,10 @@ internal sealed class SettingsEngineDescriptorLoader
         => _settingsService.GetTranslatorDescriptors(
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
 
+    public IReadOnlyList<SettingDescriptor>? LoadTranslatorCache(IApplicationProfile profile)
+        => _settingsService.GetTranslatorCacheDescriptors(
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
+
     public IReadOnlyList<SettingDescriptor>? LoadOverlayLayout(IApplicationProfile profile)
         => _settingsService.GetOverlayLayoutDescriptors(
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
