@@ -99,10 +99,10 @@ public sealed class TranslationLoopService
                     var batch = new List<(ITextParagraph Paragraph, string Text)>();
                     foreach (var paragraph in layoutResult.Paragraphs)
                     {
-                        if (string.IsNullOrWhiteSpace(paragraph.Text))
+                        var text = JoinParagraphForTranslation(paragraph);
+                        if (string.IsNullOrWhiteSpace(text))
                             continue;
 
-                        var text = paragraph.Text;
                         if (!passThrough)
                         {
                             var filtered = filter.Apply([text]);
@@ -183,7 +183,7 @@ public sealed class TranslationLoopService
             if (lines.Count == 0)
                 continue;
 
-            var parts = SplitToLineCount(translated, lines.Count);
+            var parts = WrapTranslatedToLines(translated, lines);
             for (var li = 0; li < lines.Count; li++)
             {
                 var lineText = parts[li];
@@ -200,47 +200,223 @@ public sealed class TranslationLoopService
         return items;
     }
 
-    private static string[] SplitToLineCount(string text, int lineCount)
+    /// <summary>
+    /// Joins OCR paragraph lines into one sentence for the translator
+    /// (newlines would otherwise be treated as separate sentences).
+    /// </summary>
+    private static string JoinParagraphForTranslation(ITextParagraph paragraph)
     {
+        if (paragraph.Lines.Count > 0)
+            return CollapseWhitespace(string.Join(" ", paragraph.Lines.Select(l => l.Text)));
+
+        return CollapseWhitespace(paragraph.Text.Replace('\r', ' ').Replace('\n', ' '));
+    }
+
+    private static string CollapseWhitespace(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        var chars = text.Trim().ToCharArray();
+        var sb = new System.Text.StringBuilder(chars.Length);
+        var prevSpace = false;
+        foreach (var c in chars)
+        {
+            if (char.IsWhiteSpace(c))
+            {
+                if (prevSpace)
+                    continue;
+                sb.Append(' ');
+                prevSpace = true;
+            }
+            else
+            {
+                sb.Append(c);
+                prevSpace = false;
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Packs translated text into the original line boxes top-to-bottom.
+    /// Character budgets follow line widths, but earlier lines get priority so a
+    /// short final OCR line is not forced to absorb leftover from rigid cuts.
+    /// </summary>
+    private static string[] WrapTranslatedToLines(string text, IReadOnlyList<ITextLine> lines)
+    {
+        var lineCount = lines.Count;
         if (lineCount <= 0)
             return [];
 
-        var byNewline = text.Replace("\r\n", "\n").Split('\n');
-        if (byNewline.Length == lineCount)
-            return byNewline;
+        text = CollapseWhitespace(text.Replace('\r', ' ').Replace('\n', ' '));
+        if (lineCount == 1)
+            return [text];
 
-        var result = new string[lineCount];
-        if (byNewline.Length > lineCount)
-        {
-            for (var i = 0; i < lineCount - 1; i++)
-                result[i] = byNewline[i];
-            result[lineCount - 1] = string.Join(" ", byNewline.Skip(lineCount - 1));
-            return result;
-        }
+        if (string.IsNullOrEmpty(text))
+            return Enumerable.Repeat(string.Empty, lineCount).ToArray();
 
-        // Fewer newline parts than lines: put all on first line, rest empty — or distribute words.
-        var words = text.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-        if (words.Length == 0)
-        {
-            result[0] = text;
-            for (var i = 1; i < lineCount; i++)
-                result[i] = string.Empty;
-            return result;
-        }
-
-        var perLine = Math.Max(1, (int)Math.Ceiling(words.Length / (double)lineCount));
-        var wi = 0;
+        var widths = new double[lineCount];
+        var totalWidth = 0.0;
         for (var i = 0; i < lineCount; i++)
         {
-            var take = Math.Min(perLine, words.Length - wi);
-            if (i == lineCount - 1)
-                take = words.Length - wi;
-            result[i] = take > 0 ? string.Join(" ", words.Skip(wi).Take(take)) : string.Empty;
-            wi += take;
+            widths[i] = Math.Max(1.0, lines[i].Bounds.Width);
+            totalWidth += widths[i];
+        }
+
+        // Prefer word wrap; fall back to character wrap for scripts without spaces.
+        var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length <= 1 && text.Length > 1 && !text.Contains(' '))
+            return WrapByCharacters(text, widths, totalWidth);
+
+        var totalChars = words.Sum(w => w.Length) + Math.Max(0, words.Length - 1);
+        var budgets = AllocateCharBudgets(widths, totalWidth, totalChars);
+
+        var result = new string[lineCount];
+        var wi = 0;
+        for (var li = 0; li < lineCount; li++)
+        {
+            if (wi >= words.Length)
+            {
+                result[li] = string.Empty;
+                continue;
+            }
+
+            if (li == lineCount - 1)
+            {
+                result[li] = string.Join(" ", words.Skip(wi));
+                break;
+            }
+
+            // Soft cut: allow earlier lines a bit past their share so leftovers
+            // do not pile onto a short final line.
+            var budget = SoftEarlierBudget(budgets[li]);
+            // On the line before last, keep taking words until the remainder
+            // fits the last line's width share.
+            if (li == lineCount - 2)
+                budget = Math.Max(budget, RemainingChars(words, wi) - budgets[^1]);
+
+            var start = wi;
+            var used = 0;
+            while (wi < words.Length)
+            {
+                var w = words[wi];
+                var need = w.Length + (wi > start ? 1 : 0);
+                if (wi > start && used + need > budget)
+                    break;
+                used += need;
+                wi++;
+                if (used >= budget)
+                    break;
+            }
+
+            // Always consume at least one word so we make progress.
+            if (wi == start && wi < words.Length)
+                wi++;
+
+            result[li] = string.Join(" ", words.Skip(start).Take(wi - start));
         }
 
         return result;
     }
+
+    private static string[] WrapByCharacters(string text, double[] widths, double totalWidth)
+    {
+        var lineCount = widths.Length;
+        var budgets = AllocateCharBudgets(widths, totalWidth, text.Length);
+        var result = new string[lineCount];
+        var offset = 0;
+        for (var li = 0; li < lineCount; li++)
+        {
+            if (offset >= text.Length)
+            {
+                result[li] = string.Empty;
+                continue;
+            }
+
+            if (li == lineCount - 1)
+            {
+                result[li] = text[offset..];
+                break;
+            }
+
+            var takeBudget = SoftEarlierBudget(budgets[li]);
+            if (li == lineCount - 2)
+                takeBudget = Math.Max(takeBudget, text.Length - offset - budgets[^1]);
+
+            var take = Math.Clamp(takeBudget, 1, text.Length - offset);
+            result[li] = text.Substring(offset, take);
+            offset += take;
+        }
+
+        return result;
+    }
+
+    private static int RemainingChars(string[] words, int startIndex)
+    {
+        if (startIndex >= words.Length)
+            return 0;
+
+        var chars = 0;
+        for (var i = startIndex; i < words.Length; i++)
+        {
+            if (i > startIndex)
+                chars++;
+            chars += words[i].Length;
+        }
+
+        return chars;
+    }
+
+    /// <summary>
+    /// Caps the last line by its width share; distributes the rest across earlier
+    /// lines (they absorb more so a short final box does not overflow).
+    /// </summary>
+    private static int[] AllocateCharBudgets(double[] widths, double totalWidth, int totalChars)
+    {
+        var lineCount = widths.Length;
+        var budgets = new int[lineCount];
+        if (totalChars <= 0 || lineCount == 0)
+            return budgets;
+
+        if (lineCount == 1)
+        {
+            budgets[0] = totalChars;
+            return budgets;
+        }
+
+        var last = lineCount - 1;
+        // Strict-ish cap for the last line (only +10% slack). Remainder goes earlier.
+        var lastMax = Math.Max(1, (int)Math.Floor(totalChars * (widths[last] / totalWidth) * 1.10));
+        lastMax = Math.Min(lastMax, Math.Max(1, totalChars - (lineCount - 1)));
+
+        var earlierChars = totalChars - lastMax;
+        var earlierWidth = 0.0;
+        for (var i = 0; i < last; i++)
+            earlierWidth += widths[i];
+        if (earlierWidth < 1)
+            earlierWidth = 1;
+
+        var assigned = 0;
+        for (var i = 0; i < last; i++)
+        {
+            if (i == last - 1)
+            {
+                budgets[i] = Math.Max(0, earlierChars - assigned);
+                break;
+            }
+
+            budgets[i] = Math.Max(1, (int)Math.Round(earlierChars * (widths[i] / earlierWidth)));
+            assigned += budgets[i];
+        }
+
+        budgets[last] = lastMax;
+        return budgets;
+    }
+
+    private static int SoftEarlierBudget(int budget) =>
+        Math.Max(budget, (int)Math.Ceiling(budget * 1.25));
 
     private static Dictionary<string, object> GetOrCreatePluginSettings(
         IApplicationProfile profile, string pluginId)

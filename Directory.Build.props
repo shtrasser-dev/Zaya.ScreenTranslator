@@ -10,6 +10,6 @@
 
     <!-- Host app default (Windows/Unix/Shared) when ZayaVersionRole is unset. -->
     <ZayaHostVersionMinor>0</ZayaHostVersionMinor>
-    <ZayaHostVersionPatch>4</ZayaHostVersionPatch>
+    <ZayaHostVersionPatch>5</ZayaHostVersionPatch>
   </PropertyGroup>
 </Project>

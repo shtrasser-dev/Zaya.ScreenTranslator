@@ -4,9 +4,9 @@ Real-time on-screen text translator for Windows. Captures a window or region, ru
 
 ## Version
 
-**1.0.4** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
+**1.0.5** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.0.4` / `app-v1.0-latest`. Plugin update channel: `plugin-v1.0-latest`.
+Host release tags: `app-v1.0.5` / `app-v1.0-latest`. Plugin update channel: `plugin-v1.0-latest`.
 
 ## Features
 
