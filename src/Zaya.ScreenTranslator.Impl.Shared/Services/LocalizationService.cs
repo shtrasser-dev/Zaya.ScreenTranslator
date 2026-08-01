@@ -45,6 +45,26 @@ public sealed class LocalizationService : ObservableObject
         return "en";
     }
 
+    /// <summary>
+    /// Picks a translation target from <see cref="Zaya.Primitives.Languages.All"/>
+    /// based on the Windows UI / system culture; otherwise English.
+    /// </summary>
+    public static string ResolveSystemTargetLanguage()
+    {
+        foreach (var culture in new[]
+                 {
+                     CultureInfo.CurrentUICulture,
+                     CultureInfo.InstalledUICulture,
+                     CultureInfo.CurrentCulture,
+                 })
+        {
+            if (TryMatchTargetLanguage(culture, out var code))
+                return code;
+        }
+
+        return "en";
+    }
+
     public static bool IsSupportedUiCulture(string? code)
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -68,6 +88,42 @@ public sealed class LocalizationService : ObservableObject
                     return true;
                 }
             }
+        }
+
+        code = "en";
+        return false;
+    }
+
+    private static bool TryMatchTargetLanguage(CultureInfo culture, out string code)
+    {
+        for (var c = culture; !Equals(c, CultureInfo.InvariantCulture); c = c.Parent)
+        {
+            if (Zaya.Primitives.Languages.Find(c.Name) is { } byName)
+            {
+                code = byName.Value;
+                return true;
+            }
+
+            if (c.TwoLetterISOLanguageName.Equals("zh", StringComparison.OrdinalIgnoreCase))
+            {
+                var name = c.Name;
+                code = name.Contains("Hant", StringComparison.OrdinalIgnoreCase)
+                       || name.Equals("zh-TW", StringComparison.OrdinalIgnoreCase)
+                       || name.Equals("zh-HK", StringComparison.OrdinalIgnoreCase)
+                       || name.Equals("zh-MO", StringComparison.OrdinalIgnoreCase)
+                    ? "zh-Hant"
+                    : "zh-Hans";
+                return true;
+            }
+
+            if (Zaya.Primitives.Languages.Find(c.TwoLetterISOLanguageName) is { } byIso)
+            {
+                code = byIso.Value;
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(c.Parent.Name) || ReferenceEquals(c.Parent, c))
+                break;
         }
 
         code = "en";

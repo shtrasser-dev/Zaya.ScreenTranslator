@@ -5,7 +5,8 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
 internal interface IStatusHost
 {
-    void SetStatus(string text, string? key = null);
+    void SetStatus(string text, string? key = null, bool isError = false);
+    void SetWindowError(string? message);
     LocalizedStrings Loc { get; }
 }
 

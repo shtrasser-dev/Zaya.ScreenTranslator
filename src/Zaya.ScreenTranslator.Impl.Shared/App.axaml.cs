@@ -139,6 +139,16 @@ public partial class App : Application
         localeService.SetCulture(_screenProfile.UiCulture);
 
         profileService.SetActiveProfile(_screenProfile.LastActiveProfileName);
+        if (profileService.ActiveProfile is not null)
+        {
+            var activeName = profileService.ActiveProfile.ScreenTranslatorSettings
+                .GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName);
+            if (!string.Equals(_screenProfile.LastActiveProfileName, activeName, StringComparison.Ordinal))
+            {
+                _screenProfile.LastActiveProfileName = activeName;
+                profileService.SaveScreenTranslatorProfile(_screenProfile);
+            }
+        }
 
         var vm = _serviceProvider.GetRequiredService<MainViewModel>();
         _mainWindow = new MainWindow(vm);

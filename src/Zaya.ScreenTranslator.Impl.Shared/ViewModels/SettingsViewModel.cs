@@ -67,7 +67,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         _selectedOverlayLayoutEngine = _availableOverlayLayoutEngines.FirstOrDefault(e => e.Id ==
             _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout))
             ?? _availableOverlayLayoutEngines.FirstOrDefault();
-        _targetFps = _originalProfile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.TargetFps);
+        _framePauseMs = _originalProfile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs);
+        _framePauseMsText = _framePauseMs.ToString(_loc.CurrentCulture);
         _targetProcess = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TargetProcess);
         _selectedUiLanguage = UiLanguages.FirstOrDefault(
             l => string.Equals(l.Code, _originalScreenProfile.UiCulture ?? "en", StringComparison.OrdinalIgnoreCase));
@@ -94,7 +95,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void ApplyChanges()
     {
         EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = SelectedProfileName;
-        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TargetFps] = TargetFps;
+        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.FramePauseMs] = FramePauseMs;
         EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TargetProcess] = TargetProcess?.Trim() ?? string.Empty;
         _settingsService.CommitEdit(EditingProfile);
         EditingScreenProfile.TargetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;

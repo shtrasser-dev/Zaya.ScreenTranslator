@@ -47,6 +47,7 @@ public sealed partial class MainViewModel
             else if (_statusKey == AppConstants.StatusState.Running)
                 SetStatus(Loc[LocalizationConstants.Status.Running], AppConstants.StatusState.Running);
             OnPropertyChanged(nameof(StatusLine));
+            OnPropertyChanged(nameof(StatusLabelText));
             RebuildDisplayModeOptions();
             _profilePicker.RefreshProfilePicker();
             _profilePicker.SetSelectedProfileSilent(_committedProfileName);

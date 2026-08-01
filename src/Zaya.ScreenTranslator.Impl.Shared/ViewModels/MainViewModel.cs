@@ -66,7 +66,7 @@ public sealed partial class MainViewModel :
         var screen = profileService.LoadScreenTranslatorProfile();
         var displayModeId = screen.DisplayMode is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
             ? screen.DisplayMode
-            : AppConstants.DisplayMode.TextWindow;
+            : AppConstants.DisplayMode.Overlay;
         RebuildDisplayModeOptions(displayModeId);
 
         _targetLanguages = BuildTargetLanguages();
@@ -98,22 +98,40 @@ public sealed partial class MainViewModel :
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StartStopButtonText))]
+    [NotifyPropertyChangedFor(nameof(IsStartButton))]
     private bool _isRunning;
 
     public string StartStopButtonText => IsRunning ? Loc[LocalizationConstants.Buttons.Stop] : Loc[LocalizationConstants.Buttons.Start];
+    public bool IsStartButton => !IsRunning;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusLine))]
     private string _statusText = string.Empty;
 
-    public string StatusLine => $"{Loc[LocalizationConstants.Status.Label]}: {StatusText}";
+    [ObservableProperty]
+    private bool _isStatusError;
 
-    void IStatusHost.SetStatus(string text, string? key) => SetStatus(text, key);
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasWindowError))]
+    private string _windowErrorMessage = string.Empty;
 
-    internal void SetStatus(string text, string? key = null)
+    public string StatusLabelText => $"{Loc[LocalizationConstants.Status.Label]}: ";
+    public string StatusLine => $"{StatusLabelText}{StatusText}";
+    public bool HasWindowError => !string.IsNullOrWhiteSpace(WindowErrorMessage);
+
+    void IStatusHost.SetStatus(string text, string? key, bool isError) => SetStatus(text, key, isError);
+    void IStatusHost.SetWindowError(string? message) => SetWindowError(message);
+
+    internal void SetStatus(string text, string? key = null, bool isError = false)
     {
         _statusKey = key;
+        IsStatusError = isError;
         StatusText = text;
+    }
+
+    internal void SetWindowError(string? message)
+    {
+        WindowErrorMessage = message?.Trim() ?? string.Empty;
     }
 
     void ITranslationSessionHost.SetLocalizedStatus(string resourceKey, string statusKey)
@@ -133,6 +151,8 @@ public sealed partial class MainViewModel :
         if (value is null && Windows.Count == 1 && Windows[0].IsLoadingPlaceholder)
             return;
         _lastSelectedWindow = value;
+        if (value is { IsLoadingPlaceholder: false })
+            SetWindowError(null);
         SetCurrentProcessCommand.NotifyCanExecuteChanged();
     }
 
@@ -182,7 +202,7 @@ public sealed partial class MainViewModel :
 
     /// <summary>Persisted display mode id (<c>textWindow</c> / <c>overlay</c>).</summary>
     public string SelectedDisplayMode =>
-        SelectedDisplayModeOption?.Id ?? ScreenTranslatorSettingDescriptors.DisplayModeTextWindow;
+        SelectedDisplayModeOption?.Id ?? ScreenTranslatorSettingDescriptors.DisplayModeOverlay;
 
     partial void OnSelectedDisplayModeOptionChanged(DisplayModeOption? value)
     {
@@ -190,7 +210,7 @@ public sealed partial class MainViewModel :
         var screen = _profileService.LoadScreenTranslatorProfile();
         screen.DisplayMode = value.Id is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
             ? value.Id
-            : AppConstants.DisplayMode.TextWindow;
+            : AppConstants.DisplayMode.Overlay;
         _profileService.SaveScreenTranslatorProfile(screen);
         _textOutput.OnDisplayModeChanged(value.Id);
     }
@@ -199,14 +219,14 @@ public sealed partial class MainViewModel :
     {
         var id = selectedId
             ?? SelectedDisplayModeOption?.Id
-            ?? ScreenTranslatorSettingDescriptors.DisplayModeTextWindow;
+            ?? ScreenTranslatorSettingDescriptors.DisplayModeOverlay;
         if (id is not (AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow))
-            id = ScreenTranslatorSettingDescriptors.DisplayModeTextWindow;
+            id = ScreenTranslatorSettingDescriptors.DisplayModeOverlay;
 
         DisplayModeOptions =
         [
-            new DisplayModeOption(ScreenTranslatorSettingDescriptors.DisplayModeTextWindow, Loc[LocalizationConstants.DisplayMode.TextWindow]),
             new DisplayModeOption(ScreenTranslatorSettingDescriptors.DisplayModeOverlay, Loc[LocalizationConstants.DisplayMode.Overlay]),
+            new DisplayModeOption(ScreenTranslatorSettingDescriptors.DisplayModeTextWindow, Loc[LocalizationConstants.DisplayMode.TextWindow]),
         ];
         OnPropertyChanged(nameof(DisplayModeOptions));
         SelectedDisplayModeOption = DisplayModeOptions.FirstOrDefault(o => o.Id == id)
@@ -238,7 +258,7 @@ public sealed partial class MainViewModel :
         }
 
         var profile = _profileService.ActiveProfile;
-        if (profile is null) { SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile]); return; }
+        if (profile is null) { SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true); return; }
 
         var target = await _captureResolver.ResolveCaptureTargetAsync(profile);
         if (target is null) return;

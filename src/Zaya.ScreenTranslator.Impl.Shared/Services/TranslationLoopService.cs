@@ -23,13 +23,13 @@ public sealed class TranslationLoopService
         IApplicationProfile profile,
         CancellationToken ct,
         Action<string> onTextUpdated,
-        Action<string> onStatus,
+        Action<(string Text, bool IsError)> onStatus,
         Action<double, double, double>? onTimings = null,
         string? targetLanguage = null,
         IOverlayLayoutSession? overlaySession = null,
         Action<IReadOnlyList<(string Source, string Translation)>>? onTranslatedPairs = null)
     {
-        onStatus(LocalizationService.Instance[LocalizationConstants.Status.CreatingSessions]);
+        onStatus((LocalizationService.Instance[LocalizationConstants.Status.CreatingSessions], false));
 
         var ocrSettings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
@@ -53,17 +53,18 @@ public sealed class TranslationLoopService
         var filter = TextFilterSession.Create(profile.ScreenTranslatorSettings);
         var passThrough = translator.EngineId == NoTranslationTranslatorService.EngineIdValue;
 
-        var fps = profile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.TargetFps);
-        var frameDelay = fps > 0
-            ? TimeSpan.FromMilliseconds(1000.0 / fps)
-            : TimeSpan.FromMilliseconds(66);
+        var pauseMs = Math.Clamp(
+            profile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs),
+            0,
+            10000);
+        var frameDelay = TimeSpan.FromMilliseconds(pauseMs);
 
         var captureTimes = new Queue<double>();
         var ocrTimes = new Queue<double>();
         var translatorTimes = new Queue<double>();
         const int windowSize = 10;
 
-        onStatus(AppConstants.LoopStatus.Running);
+        onStatus((AppConstants.LoopStatus.Running, false));
 
         while (!ct.IsCancellationRequested)
         {
@@ -158,15 +159,15 @@ public sealed class TranslationLoopService
             }
             catch (Exception ex)
             {
-                onStatus(string.Format(
+                onStatus((string.Format(
                     LocalizationService.Instance.CurrentCulture,
                     LocalizationService.Instance[LocalizationConstants.Status.Error],
-                    ex.Message));
+                    ex.Message), true));
                 await Task.Delay(1000, ct);
             }
         }
 
-        onStatus(LocalizationService.Instance[LocalizationConstants.Status.Stopped]);
+        onStatus((LocalizationService.Instance[LocalizationConstants.Status.Stopped], false));
     }
 
     private static List<OverlayItem> BuildOverlayItems(

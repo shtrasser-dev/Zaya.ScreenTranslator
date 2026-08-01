@@ -114,9 +114,17 @@ internal static class LocalizationConstants
     {
         public const string TargetProcess = "Settings_TargetProcess";
         public const string TargetProcessDesc = "Settings_TargetProcess_Desc";
+        public const string FramePauseMs = "Settings_FramePauseMs";
+        public const string FramePauseMsDesc = "Settings_FramePauseMs_Desc";
         public const string TranslatorNone = "Settings_TranslatorNone";
         public const string EnableCache = "Settings_EnableCache";
         public const string CacheTtlMinutes = "Settings_CacheTtlMinutes";
+    }
+
+    public static class Validation
+    {
+        public const string IntegerRange = "Validation_IntegerRange";
+        public const string IntegerMinOnly = "Validation_IntegerMinOnly";
     }
 
     public static class Timing

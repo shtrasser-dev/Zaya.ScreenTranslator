@@ -52,7 +52,7 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
             if (result.Theme is not AppConstants.Theme.Light and not AppConstants.Theme.Dark)
                 result.Theme = AppConstants.Theme.Light;
             if (result.DisplayMode is not AppConstants.DisplayMode.TextWindow and not AppConstants.DisplayMode.Overlay)
-                result.DisplayMode = AppConstants.DisplayMode.TextWindow;
+                result.DisplayMode = AppConstants.DisplayMode.Overlay;
             if (!LocalizationService.IsSupportedUiCulture(result.UiCulture))
                 result.UiCulture = "en";
             Debug.WriteLine($"[LoadScreen] UiCulture={result.UiCulture}, Theme={result.Theme}, DisplayMode={result.DisplayMode}, LastProfile={result.LastActiveProfileName}");
@@ -69,6 +69,7 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
         new()
         {
             UiCulture = LocalizationService.ResolveSystemUiCulture(),
+            TargetLanguage = LocalizationService.ResolveSystemTargetLanguage(),
         };
 
     public void SaveScreenTranslatorProfile(ScreenTranslatorProfile settings)
@@ -85,29 +86,53 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
 
     public void SetActiveProfile(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            name = SettingsConstants.EngineDefaults.ProfileName;
+
         var path = ProfilePath(name);
         if (!File.Exists(path))
         {
-            // First launch: auto-create default profile if none exist
             var names = ListProfileNames();
-            if (names.Count == 0)
+            var wantsDefault = string.Equals(
+                name, SettingsConstants.EngineDefaults.ProfileName, StringComparison.OrdinalIgnoreCase);
+
+            // Missing Default (first launch, or Default was deleted/renamed away while settings still point to it):
+            // create it whenever the requested name is the default profile name, or when no profiles exist at all.
+            if (wantsDefault || names.Count == 0)
             {
-                var defaultProfile = new ApplicationProfile();
+                var defaultProfile = CreateDefaultApplicationProfile(
+                    wantsDefault ? name : SettingsConstants.EngineDefaults.ProfileName);
                 Save(defaultProfile);
                 _activeProfile = defaultProfile;
                 OnPropertyChanged(nameof(ActiveProfile));
                 return;
             }
+
+            // Requested profile missing, but others exist — activate the first available.
+            ActivateFromFile(ProfilePath(names[0]!));
             return;
         }
 
+        ActivateFromFile(path);
+    }
+
+    private void ActivateFromFile(string path)
+    {
         var json = File.ReadAllText(path);
         var dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(json, JsonOptions);
-        if (dict is not null)
-        {
-            _activeProfile = new ApplicationProfile { Settings = dict };
-            OnPropertyChanged(nameof(ActiveProfile));
-        }
+        if (dict is null)
+            return;
+
+        _activeProfile = new ApplicationProfile { Settings = dict };
+        OnPropertyChanged(nameof(ActiveProfile));
+    }
+
+    private static ApplicationProfile CreateDefaultApplicationProfile(string name)
+    {
+        var profile = new ApplicationProfile();
+        // Persist profileName so the file name and embedded name stay aligned.
+        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = name;
+        return profile;
     }
 
     public void SetActiveProfile(IApplicationProfile profile)

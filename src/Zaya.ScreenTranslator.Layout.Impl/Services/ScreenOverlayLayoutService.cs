@@ -104,7 +104,7 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.Background, Loc("Overlay_Background"))
         {
             Description = Loc("Overlay_Background_Desc"),
-            DefaultValue = OverlayLayoutSettingKeys.BackgroundNone,
+            DefaultValue = OverlayLayoutSettingKeys.BackgroundSoft,
             Options =
             [
                 new(OverlayLayoutSettingKeys.BackgroundNone, Loc("Overlay_Background_None")),
@@ -119,7 +119,7 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
             MinValue = 0,
             MaxValue = 100,
             IsVisible = s => (s.GetValueOrDefault(OverlayLayoutSettingKeys.Background) as string
-                              ?? OverlayLayoutSettingKeys.BackgroundNone)
+                              ?? OverlayLayoutSettingKeys.BackgroundSoft)
                              != OverlayLayoutSettingKeys.BackgroundNone,
         },
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.TextColor, Loc("Overlay_TextColor"))

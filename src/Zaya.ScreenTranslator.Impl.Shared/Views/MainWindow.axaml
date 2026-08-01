@@ -42,6 +42,13 @@
             <Setter Property="MinWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
             <Setter Property="MaxWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
         </Style>
+        <Style Selector="TextBlock.status">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="TextBlock.status.error">
+            <Setter Property="Foreground" Value="#C62828" />
+        </Style>
         <Style Selector="Button.main-nav">
             <Setter Property="MinWidth" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
             <Setter Property="Padding" Value="14,10" />
@@ -49,6 +56,20 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.main-nav.start">
+            <Setter Property="Background" Value="#2E7D32" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.main-nav.start:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1B5E20" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.main-nav.start:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#145214" />
+            <Setter Property="Foreground" Value="White" />
         </Style>
     </Window.Styles>
 
@@ -85,6 +106,7 @@
                             Margin="0,12,0,0"
                             VerticalAlignment="Top">
                     <Button Classes="main-nav"
+                            Classes.start="{Binding IsStartButton}"
                             Command="{Binding StartStopCommand}"
                             Content="{Binding StartStopButtonText}" />
                     <Button Classes="main-nav"
@@ -97,8 +119,8 @@
 
                 <Border Grid.Column="1" Classes="settings-column" Margin="24,12,24,0">
                     <StackPanel>
-                        <Grid Classes="settings-row" ColumnDefinitions="*,*">
-                            <StackPanel Margin="0,0,12,0" Spacing="4">
+                        <Grid Classes="settings-row" ColumnDefinitions="*,*" VerticalAlignment="Top">
+                            <StackPanel Margin="0,0,12,0" Spacing="4" VerticalAlignment="Top">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Text="{Binding Loc[Picker_Profile]}"
                                                VerticalAlignment="Center"
@@ -120,59 +142,68 @@
                                            FontSize="12"
                                            TextWrapping="Wrap" />
                             </StackPanel>
-                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="12,0,0,0">
-                                <TextBlock Text="{Binding Loc[Picker_Window]}"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,16,0"
-                                           TextWrapping="Wrap" />
-                                <ComboBox Grid.Column="1"
-                                          Classes="settings-control window-picker"
-                                          ItemsSource="{Binding Windows}"
-                                          SelectedItem="{Binding SelectedWindow}"
-                                          DropDownOpened="OnWindowComboDropDownOpened">
-                                    <ComboBox.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ComboBox.ItemsPanel>
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate x:DataType="m:WindowInfo">
-                                            <Grid ColumnDefinitions="Auto,*" MinHeight="22">
-                                                <Panel Width="16" Height="16" Margin="0,0,8,0"
-                                                       VerticalAlignment="Center">
-                                                    <ProgressBar Width="14" Height="14"
-                                                                 IsIndeterminate="True"
-                                                                 IsVisible="{Binding IsLoadingPlaceholder}" />
-                                                    <Image Width="16" Height="16"
-                                                           Source="{Binding Icon}"
-                                                           IsVisible="{Binding HasIcon}" />
-                                                </Panel>
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding Title}"
-                                                           IsVisible="{Binding !IsLoadingPlaceholder}"
-                                                           VerticalAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                    <ComboBox.SelectionBoxItemTemplate>
-                                        <DataTemplate x:DataType="m:WindowInfo">
-                                            <Grid ColumnDefinitions="Auto,*" MinHeight="22">
-                                                <Panel Width="16" Height="16" Margin="0,0,8,0"
-                                                       VerticalAlignment="Center">
-                                                    <Image Width="16" Height="16"
-                                                           Source="{Binding Icon}"
-                                                           IsVisible="{Binding HasIcon}" />
-                                                </Panel>
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding Title}"
-                                                           VerticalAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ComboBox.SelectionBoxItemTemplate>
-                                </ComboBox>
-                            </Grid>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4" VerticalAlignment="Top">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Loc[Picker_Window]}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,16,0"
+                                               TextWrapping="Wrap" />
+                                    <ComboBox Grid.Column="1"
+                                              Classes="settings-control window-picker"
+                                              ItemsSource="{Binding Windows}"
+                                              SelectedItem="{Binding SelectedWindow}"
+                                              DropDownOpened="OnWindowComboDropDownOpened">
+                                        <ComboBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ComboBox.ItemsPanel>
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="m:WindowInfo">
+                                                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                                                    <Panel Width="16" Height="16" Margin="0,0,8,0"
+                                                           VerticalAlignment="Center">
+                                                        <ProgressBar Width="14" Height="14"
+                                                                     IsIndeterminate="True"
+                                                                     IsVisible="{Binding IsLoadingPlaceholder}" />
+                                                        <Image Width="16" Height="16"
+                                                               Source="{Binding Icon}"
+                                                               IsVisible="{Binding HasIcon}" />
+                                                    </Panel>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding Title}"
+                                                               IsVisible="{Binding !IsLoadingPlaceholder}"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                        <ComboBox.SelectionBoxItemTemplate>
+                                            <DataTemplate x:DataType="m:WindowInfo">
+                                                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                                                    <Panel Width="16" Height="16" Margin="0,0,8,0"
+                                                           VerticalAlignment="Center">
+                                                        <Image Width="16" Height="16"
+                                                               Source="{Binding Icon}"
+                                                               IsVisible="{Binding HasIcon}" />
+                                                    </Panel>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding Title}"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ComboBox.SelectionBoxItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                                <TextBlock Text="{Binding WindowErrorMessage}"
+                                           IsVisible="{Binding HasWindowError}"
+                                           Foreground="#C62828"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           HorizontalAlignment="Right"
+                                           MaxWidth="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+                            </StackPanel>
                         </Grid>
                         <Border Classes="settings-divider" />
 
@@ -212,9 +243,14 @@
                         Classes="settings-column"
                         Margin="24,0">
                     <StackPanel Spacing="2">
-                        <TextBlock Text="{Binding StatusLine}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   FontSize="12" />
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <TextBlock Classes="status"
+                                       Text="{Binding StatusLabelText}" />
+                            <TextBlock Classes="status"
+                                       Classes.error="{Binding IsStatusError}"
+                                       Text="{Binding StatusText}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
                         <TextBlock Text="{Binding TimingInfo}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                                    FontSize="11" />

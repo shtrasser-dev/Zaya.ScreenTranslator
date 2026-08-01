@@ -7,7 +7,7 @@ internal static class SettingsConstants
 
     public const string ProfileName = "profileName";
     public const string TargetProcess = "targetProcess";
-    public const string TargetFps = "targetFps";
+    public const string FramePauseMs = "framePauseMs";
     public const string Ocr = "ocr";
     public const string Capture = "capture";
     public const string TextLayout = "textLayout";

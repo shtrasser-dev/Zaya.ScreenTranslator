@@ -86,7 +86,7 @@ internal sealed class TranslationSessionCoordinator
             ocr?.Dispose();
             capture?.Dispose();
             AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.EngineNotFound]);
+            _host.SetStatus(_host.Loc[LocalizationConstants.Status.EngineNotFound], isError: true);
             return;
         }
 
@@ -97,7 +97,7 @@ internal sealed class TranslationSessionCoordinator
             ocr.Dispose();
             capture.Dispose();
             AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TextLayoutNotFound]);
+            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TextLayoutNotFound], isError: true);
             return;
         }
 
@@ -109,7 +109,7 @@ internal sealed class TranslationSessionCoordinator
             capture.Dispose();
             textLayout.Dispose();
             AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorNotFound]);
+            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorNotFound], isError: true);
             return;
         }
 
@@ -130,7 +130,7 @@ internal sealed class TranslationSessionCoordinator
                 translator.Dispose();
                 overlayLayout?.Dispose();
                 AbortPendingStart();
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable]);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
                 return;
             }
 
@@ -152,7 +152,7 @@ internal sealed class TranslationSessionCoordinator
                 translator.Dispose();
                 overlayLayout.Dispose();
                 AbortPendingStart();
-                _host.SetStatus(string.Format(_host.Loc[LocalizationConstants.Status.OverlayFailed], ex.Message));
+                _host.SetStatus(string.Format(_host.Loc[LocalizationConstants.Status.OverlayFailed], ex.Message), isError: true);
                 return;
             }
         }
@@ -180,10 +180,10 @@ internal sealed class TranslationSessionCoordinator
                 text => _textOutput.UpdateText(text),
                 status => Dispatcher.UIThread.Post(() =>
                 {
-                    if (string.Equals(status, AppConstants.LoopStatus.Running, StringComparison.Ordinal))
+                    if (string.Equals(status.Text, AppConstants.LoopStatus.Running, StringComparison.Ordinal))
                         _host.SetLocalizedStatus(LocalizationConstants.Status.Running, statusKeyRunning);
                     else
-                        _host.SetStatus(status);
+                        _host.SetStatus(status.Text, isError: status.IsError);
                 }),
                 (capMs, ocrMs, trMs) => Dispatcher.UIThread.Post(() =>
                     _host.TimingInfo = string.Format(

@@ -168,8 +168,17 @@
   <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Без перевода (только OCR)</value>
   </data>
-  <data name="Settings_TargetFps" xml:space="preserve">
-    <value>Целевой FPS</value>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>Пауза между обработкой кадров в миллисекундах</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>Увеличение этого параметра снижает нагрузку на систему, но уменьшает отзывчивость.</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>Введите число в диапазоне от {0} до {1}</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>Введите число в диапазоне от {0}</value>
   </data>
   <data name="Settings_TargetProcess" xml:space="preserve">
     <value>Название процесса</value>

@@ -3,6 +3,7 @@ using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -31,10 +32,18 @@ public sealed partial class SettingsViewModel
     [ObservableProperty] private LanguageItem? _selectedTargetLanguage;
     [ObservableProperty] private string _selectedTheme = AppConstants.Theme.Light;
     [ObservableProperty] private bool _checkUpdatesOnStartup = true;
-    [ObservableProperty] private int _targetFps;
+    [ObservableProperty] private int _framePauseMs;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFramePauseMsError))]
+    private string _framePauseMsText = string.Empty;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFramePauseMsError))]
+    private string _framePauseMsError = string.Empty;
     [ObservableProperty] private string _targetProcess = string.Empty;
     [ObservableProperty] private string _updateStatusMessage = string.Empty;
     [ObservableProperty] private bool _isCheckingUpdates;
+
+    public bool HasFramePauseMsError => !string.IsNullOrWhiteSpace(FramePauseMsError);
 
     partial void OnSelectedThemeChanged(string value)
     {
@@ -72,8 +81,36 @@ public sealed partial class SettingsViewModel
         ApplyChanges();
     }
 
-    partial void OnTargetFpsChanged(int value) => ApplyChanges();
+    partial void OnFramePauseMsTextChanged(string value)
+    {
+        var desc = FramePauseDescriptor;
+        if (!IntegerSettingValidation.TryParse(value, desc, out var parsed, out var error, _loc.CurrentCulture))
+        {
+            FramePauseMsError = error ?? string.Empty;
+            return;
+        }
+
+        FramePauseMsError = string.Empty;
+        if (FramePauseMs != parsed)
+            FramePauseMs = parsed;
+        else
+            ApplyChanges();
+    }
+
+    partial void OnFramePauseMsChanged(int value)
+    {
+        var text = value.ToString(_loc.CurrentCulture);
+        if (!string.Equals(FramePauseMsText, text, StringComparison.Ordinal))
+            FramePauseMsText = text;
+        ApplyChanges();
+    }
+
     partial void OnTargetProcessChanged(string value) => ApplyChanges();
+
+    private static IntegerSettingDescriptor FramePauseDescriptor =>
+        ScreenTranslatorSettingDescriptors.All
+            .OfType<IntegerSettingDescriptor>()
+            .First(d => d.Key == ScreenTranslatorSettingDescriptors.FramePauseMs);
 
     partial void OnSelectedProfileNameChanged(string value)
     {

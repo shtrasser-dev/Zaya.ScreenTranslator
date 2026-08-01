@@ -53,7 +53,7 @@ internal sealed class TextOutputPresenter
             if (overlaySession is not null)
                 overlaySession.SetVisible(_host.IsTextWindowVisible);
             else if (_host.IsTextWindowVisible)
-                _host.SetStatus(_host.Loc[LocalizationConstants.Overlay.NeedStart]);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Overlay.NeedStart], isError: true);
             return;
         }
 

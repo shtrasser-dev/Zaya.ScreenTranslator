@@ -19,6 +19,7 @@ internal sealed class CaptureWindowResolver
     {
         if (_host.SelectedWindow is { IsLoadingPlaceholder: false, Handle: not 0 } window)
         {
+            _host.SetWindowError(null);
             _host.Context.ActiveWindowHandle = window.Handle;
             _host.Context.ActiveWindowTitle = window.Title;
             return new CaptureTarget(window.Handle, window.Title, window.ProcessName);
@@ -29,10 +30,11 @@ internal sealed class CaptureWindowResolver
 
         if (string.IsNullOrEmpty(targetProcess))
         {
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.SelectTargetWindow]);
+            ReportSelectTargetWindowError();
             return null;
         }
 
+        _host.SetWindowError(null);
         _host.LoopCts = new CancellationTokenSource();
         var ct = _host.LoopCts.Token;
         _host.IsRunning = true;
@@ -44,6 +46,7 @@ internal sealed class CaptureWindowResolver
             {
                 if (CaptureProcessWindowHelpers.TryFindProcessMainWindow(targetProcess, out var handle, out var title))
                 {
+                    _host.SetWindowError(null);
                     _host.Context.ActiveWindowHandle = handle;
                     _host.Context.ActiveWindowTitle = title;
                     return new CaptureTarget(handle, title, targetProcess);
@@ -75,8 +78,13 @@ internal sealed class CaptureWindowResolver
         _host.IsRunning = false;
         _host.LoopCts?.Dispose();
         _host.LoopCts = null;
-        _host.SetStatus(_host.Loc[LocalizationConstants.Status.SelectTargetWindow]);
+        ReportSelectTargetWindowError();
         return null;
+    }
+
+    private void ReportSelectTargetWindowError()
+    {
+        _host.SetWindowError(_host.Loc[LocalizationConstants.Status.SelectTargetWindow]);
     }
 
     public async Task SyncWindowPickerAsync(CaptureTarget target)

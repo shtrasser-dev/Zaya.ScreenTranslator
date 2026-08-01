@@ -29,7 +29,7 @@ internal static class SettingEditorFactory
                 return CreateBoolEditor(boolDesc, currentValue, onChanged, culture, tableCell);
 
             case IntegerSettingDescriptor intDesc:
-                return CreateIntegerEditor(intDesc, currentValue, onChanged);
+                return CreateIntegerEditor(intDesc, currentValue, onChanged, culture);
 
             case StringSettingDescriptor stringDesc:
                 return CreateTextBoxEditor(
@@ -165,21 +165,45 @@ internal static class SettingEditorFactory
 
     private static Control CreateIntegerEditor(
         IntegerSettingDescriptor desc, object? currentValue,
-        Action<string, object?> onChanged)
+        Action<string, object?> onChanged, CultureInfo culture)
     {
         var tb = new TextBox
         {
             Text = currentValue is int i
-                ? i.ToString()
-                : desc.DefaultValue?.ToString() ?? "0",
+                ? i.ToString(culture)
+                : desc.DefaultValue?.ToString(culture) ?? "0",
             Width = SettingControlFactory.ControlWidth,
         };
+
+        var error = new TextBlock
+        {
+            Foreground = Brush.Parse("#C62828"),
+            FontSize = 12,
+            TextWrapping = TextWrapping.Wrap,
+            IsVisible = false,
+            MaxWidth = SettingControlFactory.ControlWidth,
+        };
+
         tb.TextChanged += (_, _) =>
         {
-            if (int.TryParse(tb.Text, out var val))
-                onChanged(desc.Key, val);
+            if (!IntegerSettingValidation.TryParse(tb.Text, desc, out var val, out var message, culture))
+            {
+                error.Text = message;
+                error.IsVisible = true;
+                return;
+            }
+
+            error.IsVisible = false;
+            error.Text = string.Empty;
+            onChanged(desc.Key, val);
         };
-        return tb;
+
+        return new StackPanel
+        {
+            Spacing = 4,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Children = { tb, error },
+        };
     }
 
     private static Control CreateTextBoxEditor(

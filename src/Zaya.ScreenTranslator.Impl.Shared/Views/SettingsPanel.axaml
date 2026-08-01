@@ -139,12 +139,12 @@
                 <tabs:SettingsTextLayoutTab />
             </TabItem>
 
-            <TabItem Header="{Binding Loc[Settings_Tab_Translator]}">
-                <tabs:SettingsTranslatorTab />
-            </TabItem>
-
             <TabItem Header="{Binding Loc[Settings_Tab_Filter]}">
                 <tabs:SettingsFilterTab />
+            </TabItem>
+
+            <TabItem Header="{Binding Loc[Settings_Tab_Translator]}">
+                <tabs:SettingsTranslatorTab />
             </TabItem>
 
             <TabItem Header="{Binding Loc[Settings_Tab_Overlay]}">

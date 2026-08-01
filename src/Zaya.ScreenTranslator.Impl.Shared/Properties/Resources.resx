@@ -168,8 +168,17 @@
   <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>No translation (OCR only)</value>
   </data>
-  <data name="Settings_TargetFps" xml:space="preserve">
-    <value>Target FPS</value>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>Pause between frame processing (ms)</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>Increasing this value reduces system load but decreases responsiveness.</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>Enter a number between {0} and {1}</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>Enter a number in the range from {0}</value>
   </data>
   <data name="Settings_TargetProcess" xml:space="preserve">
     <value>Process name</value>

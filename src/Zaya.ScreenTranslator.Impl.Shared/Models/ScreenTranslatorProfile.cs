@@ -28,7 +28,7 @@ public sealed class ScreenTranslatorProfile
     public string TargetLanguage { get; set; } = "en";
     public string LastActiveProfileName { get; set; } = "Default";
     /// <summary>Output mode: <c>textWindow</c> or <c>overlay</c>.</summary>
-    public string DisplayMode { get; set; } = AppConstants.DisplayMode.TextWindow;
+    public string DisplayMode { get; set; } = AppConstants.DisplayMode.Overlay;
     /// <summary>When true, check host/plugin updates on application startup.</summary>
     public bool CheckUpdatesOnStartup { get; set; } = true;
     /// <summary>UTC time of the last host/plugin update check (startup or manual).</summary>

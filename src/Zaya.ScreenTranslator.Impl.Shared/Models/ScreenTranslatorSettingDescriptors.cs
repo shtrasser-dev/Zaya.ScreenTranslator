@@ -9,7 +9,7 @@ public static class ScreenTranslatorSettingDescriptors
 
     public const string ProfileName = SettingsConstants.ProfileName;
     public const string TargetProcess = SettingsConstants.TargetProcess;
-    public const string TargetFps = SettingsConstants.TargetFps;
+    public const string FramePauseMs = SettingsConstants.FramePauseMs;
     public const string Ocr = SettingsConstants.Ocr;
     public const string Capture = SettingsConstants.Capture;
     public const string TextLayout = SettingsConstants.TextLayout;
@@ -63,11 +63,12 @@ public static class ScreenTranslatorSettingDescriptors
             DefaultValue = string.Empty,
             Description = Loc(LocalizationConstants.Settings.TargetProcessDesc),
         },
-        new IntegerSettingDescriptor(TargetFps, LocalizedString.Invariant(TargetFps))
+        new IntegerSettingDescriptor(FramePauseMs, Loc(LocalizationConstants.Settings.FramePauseMs))
         {
-            DefaultValue = 1,
-            MinValue = 1,
-            MaxValue = 120
+            Description = Loc(LocalizationConstants.Settings.FramePauseMsDesc),
+            DefaultValue = 100,
+            MinValue = 0,
+            MaxValue = 10000,
         },
         new StringSettingDescriptor(Ocr, LocalizedString.Invariant(Ocr))
         {
