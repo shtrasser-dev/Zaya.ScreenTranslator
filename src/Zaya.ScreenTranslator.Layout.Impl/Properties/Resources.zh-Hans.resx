@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>屏幕叠加层</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>按坐标在目标窗口上绘制文本</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>位置</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>相对于每个 bounds 矩形绘制文本的位置</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>覆盖</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>下方</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>字体缩放 (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>字体大小为 bounds 高度的百分比</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Y 偏移 (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>距 bounds 边缘的额外垂直间距</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>内边距</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>叠加文本周围的内边距</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>背景</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>叠加文本背后的背景</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>柔和</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>不透明</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>背景不透明度 (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>柔和/不透明背景的不透明度</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>文本颜色</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>叠加文本的前景色</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>描边</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>绘制描边/阴影以提高可读性</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>适配模式</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>如何将长文本适配到 bounds 宽度</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>缩小</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>换行</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>裁剪</value>
+  </data>
+</root>

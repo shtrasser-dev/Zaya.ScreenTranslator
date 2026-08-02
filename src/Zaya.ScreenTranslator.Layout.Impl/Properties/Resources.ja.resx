@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>画面オーバーレイ</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>座標に従って対象ウィンドウ上にテキストを描画します</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>配置</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>各 bounds 矩形に対してテキストをどこに描画するか</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>重ねる</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>フォント倍率 (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>bounds の高さに対するフォントサイズの割合</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Y オフセット (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>bounds 端からの追加の縦方向の余白</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>余白</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>オーバーレイテキスト周りの内側余白</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>背景</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>オーバーレイテキストの背景</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>なし</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>ソフト</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>不透明</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>背景の不透明度 (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>ソフト/不透明背景の不透明度</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>文字色</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>オーバーレイテキストの前景色</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>自動</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>明るい</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>暗い</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>輪郭</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>読みやすさのための輪郭/影を描画</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>フィットモード</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>長いテキストを bounds 幅にどう収めるか</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>縮小</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>折り返し</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>切り取り</value>
+  </data>
+</root>

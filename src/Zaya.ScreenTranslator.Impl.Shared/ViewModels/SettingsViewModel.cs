@@ -177,7 +177,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnIsCheckingUpdatesChanged(bool value) => CheckUpdatesCommand.NotifyCanExecuteChanged();
 
     private IReadOnlyList<LanguageItem> BuildUiLanguages()
-        => new[] { "en", "ru" }
+        => LocalizationService.SupportedUiCultures
             .Select(c => Languages.Find(c))
             .Where(o => o is not null)
             .Select(o => new LanguageItem(o!.Value, o.DisplayName.GetValue(_loc.CurrentCulture)))

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>Mostrar texto</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>Ocultar texto</value>
+  </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>Histórico</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>Histórico de traduções</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>Definições</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>Inativo</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Em execução</value>
+  </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Definições</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Geral</value>
+  </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — tradução de texto no ecrã.</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>Repositório GitHub</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>Agradecer ao autor</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>Módulo de captura de ecrã.</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>Módulo de reconhecimento de texto.</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>Módulo que agrupa palavras em linhas e linhas em parágrafos.</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>Módulo de tradução.</value>
+  </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>Módulo de cache de tradução (menos chamadas à API e estabilização do tremor OCR).</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>Módulo de filtro de texto.</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>Módulo de sobreposição no ecrã.</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>Reconhecimento</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>Captura</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>Traduzir</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>Filtro</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>Comprimento mínimo do texto</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>Regras de filtro</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>Ligado</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>Texto</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>Regex</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>Ignorar maiúsculas/minúsculas</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>Ação</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>Ignorar bloco</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>Remover correspondência</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>Adicionar regra</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Remover regra</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>Perfil:</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>Guardar como novo</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>Idioma da interface</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>Idioma de destino da tradução</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>Motor OCR</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>Motor de captura</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>Motor de layout</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>Motor de tradução</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>Sem tradução (apenas OCR)</value>
+  </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>Motor de cache</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>Sem cache</value>
+  </data>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>Pausa entre o processamento de frames (ms)</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>Aumentar este valor reduz a carga do sistema, mas diminui a capacidade de resposta.</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>Introduza um número entre {0} e {1}</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>Introduza um número a partir de {0}</value>
+  </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>Nome do processo</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>Ligar automaticamente ao processo especificado.</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>Definir processo atual</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>Selecione uma janela alvo</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>À espera do processo "{0}"</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>Texto reconhecido</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>Sempre no topo</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>Janela:</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>Perfil:</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>Nenhuma janela encontrada</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>Nenhum motor OCR disponível</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>Nenhum motor de captura disponível</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>Nenhuma janela alvo selecionada</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>Nome do novo perfil</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>O nome não pode estar vazio</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>O perfil já existe</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>Saída:</value>
+  </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>Criar novo perfil</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>Novo perfil</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>Não é possível criar mais de {1} perfis com base em "{0}". Renomeie ou elimine os existentes.</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>Eliminar perfil</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>Eliminar o perfil atual sem possibilidade de restauro</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>Eliminar perfil</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>Eliminar o perfil "{0}"? Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>Não é possível eliminar o último perfil.</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>Sobreposição</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>Motor de sobreposição</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>Inicie a tradução para mostrar a sobreposição</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Atualizações da aplicação e plugins</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>Procurar atualizações</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>Procurar atualizações ao iniciar</value>
+  </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>Ficheiros de definições guardados e plugins</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>Abrir pasta de ficheiros</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>Atualizações</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>A procurar atualizações…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Tudo está atualizado</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>Os plugins estão atualizados.</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>Os plugins foram atualizados. Reinicie a aplicação para os carregar.</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Falha na atualização.</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>A parar…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>Parado</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>A iniciar…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>A criar sessões…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>Nenhum perfil ativo</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>Motor não encontrado</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>Motor TextLayout não encontrado</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>Motor de tradução não encontrado</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>Motor de cache de tradução não encontrado</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>Motor de layout de sobreposição indisponível</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>Falha na sobreposição: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Erro: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Aguarde…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>Captura: {0:F0}ms | OCR: {1:F0}ms | Tradução: {2:F0}ms</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- conf. média: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>Janela de texto</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>Sobreposição</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>Sair</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>Atualização disponível</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>Está disponível uma versão mais recente do ScreenTranslator ({0}).
+
+Abrir a página de lançamento no browser?</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>{0} está disponível.
+
+Abrir a página de lançamento no browser?</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>Abrir página</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Mais tarde</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>A preparar plugins…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>A atualizar plugins…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>Plugins necessários</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>Falha ao preparar os plugins.</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>Erro de arranque</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>A remover plugins incompatíveis…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>A transferir {0}…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>A atualizar {0}…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>Falha na verificação de atualizações de {0}: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>Plugin opcional ignorado ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>Plugin obrigatório em falta: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>Não foi possível instalar os plugins obrigatórios. Verifique a ligação à rede e tente novamente.
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>Sem rede e os plugins obrigatórios não estão instalados.
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>Ficheiro obrigatório '{0}' não encontrado em {1}.</value>
+  </data>
+</root>

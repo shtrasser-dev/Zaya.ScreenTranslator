@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>显示文本</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>隐藏文本</value>
+  </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>历史</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>翻译历史</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>空闲</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>运行中</value>
+  </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — 屏幕文本翻译。</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>GitHub 仓库</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>感谢作者</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>屏幕图像捕获模块。</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>文本识别模块。</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>将词语分组为行、将行分组为段落的模块。</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>翻译模块。</value>
+  </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>翻译缓存模块（减少 API 调用并稳定 OCR 闪烁）。</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>文本过滤模块。</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>屏幕叠加层模块。</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>识别</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>捕获</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>布局</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>翻译</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>缓存</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>过滤</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>最小文本长度</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>过滤规则</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>开</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>文本</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>正则</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>忽略大小写</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>跳过块</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>去除匹配</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>说明</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>添加规则</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>删除规则</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>配置：</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>另存为新配置</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>界面语言</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>目标翻译语言</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>OCR 引擎</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>捕获引擎</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>布局引擎</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>翻译引擎</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>不翻译（仅 OCR）</value>
+  </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>缓存引擎</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>无缓存</value>
+  </data>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>帧处理间隔（毫秒）</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>增大该值可降低系统负载，但会降低响应速度。</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>请输入介于 {0} 和 {1} 之间的数字</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>请输入不小于 {0} 的数字</value>
+  </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>进程名称</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>自动连接到指定进程。</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>设为当前进程</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>选择目标窗口</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>正在等待进程“{0}”</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>已识别文本</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>始终置顶</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>窗口：</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>配置：</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>未找到窗口</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>没有可用的 OCR 引擎</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>没有可用的捕获引擎</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>未选择目标窗口</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>新配置名称</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>名称不能为空</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>配置已存在</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>输出：</value>
+  </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>创建新配置</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>新配置</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>基于“{0}”的配置不能超过 {1} 个。请重命名或删除现有配置。</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>删除配置</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>删除当前配置且无法恢复</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>删除配置</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>删除配置“{0}”？此操作无法撤销。</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>无法删除最后一个配置。</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>叠加层</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>叠加层引擎</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>启动翻译以显示叠加层</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>应用和插件更新</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>启动时检查更新</value>
+  </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>已保存的设置文件和插件</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>打开文件文件夹</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>正在检查更新…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>已是最新</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>插件已是最新。</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>插件已更新。请重启应用以加载它们。</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>更新失败。</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>正在停止…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>已停止</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>正在启动…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>正在创建会话…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>没有活动配置</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>未找到引擎</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>未找到 TextLayout 引擎</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>未找到翻译引擎</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>未找到翻译缓存引擎</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>叠加层布局引擎不可用</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>叠加层失败：{0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>错误：{0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>请稍候…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>捕获：{0:F0}ms | OCR：{1:F0}ms | 翻译：{2:F0}ms</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- 平均置信度：{0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>文本窗口</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>叠加层</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>有可用更新</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>有新的 ScreenTranslator 版本可用（{0}）。
+
+是否在浏览器中打开发布页面？</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>{0} 可用。
+
+是否在浏览器中打开发布页面？</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>打开页面</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>稍后</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>正在准备插件…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>正在更新插件…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>需要插件</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>未能准备插件。</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>启动错误</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>正在移除不兼容的插件…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>正在下载 {0}…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>正在更新 {0}…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>检查 {0} 的更新失败：{1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>已跳过可选插件（{0}）：{1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>缺少必需插件：{0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>无法安装必需插件。请检查网络连接后重试。
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>无网络且未安装必需插件。
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>在 {1} 中未找到必需文件“{0}”。</value>
+  </data>
+</root>

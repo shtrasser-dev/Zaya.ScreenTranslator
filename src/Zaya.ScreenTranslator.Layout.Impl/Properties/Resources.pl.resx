@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>Nakładka ekranowa</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>Rysuje tekst nad oknem docelowym według współrzędnych</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>Położenie</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>Gdzie rysować tekst względem prostokąta bounds</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>Nad</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>Na wierzchu</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>Pod</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>Skala czcionki (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>Rozmiar czcionki jako procent wysokości bounds</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Przesunięcie Y (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>Dodatkowy odstęp pionowy od krawędzi bounds</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>Wypełnienie</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>Wewnętrzne wypełnienie wokół tekstu nakładki</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>Tło</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>Tło za tekstem nakładki</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>Brak</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>Miękkie</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>Nieprzezroczyste</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>Nieprzezroczystość tła (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>Nieprzezroczystość miękkiego/nieprzezroczystego tła</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>Kolor tekstu</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>Kolor pierwszego planu tekstu nakładki</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>Jasny</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>Ciemny</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>Kontur</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>Rysuj kontur/cień dla czytelności</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>Tryb dopasowania</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>Jak dopasować długi tekst do szerokości bounds</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>Pomniejsz</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>Zawijaj</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>Przytnij</value>
+  </data>
+</root>

@@ -4,16 +4,19 @@ Real-time on-screen text translator for Windows. Captures a window or region, ru
 
 ## Version
 
-**1.0.5** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
+**1.0.7** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.0.5` / `app-v1.0-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.0-latest`).
+Host release tags: `app-v1.0.7` / `app-v1.0-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.0-latest`). Layout plugin (ships with host): `1.0.0.2`.
 
 ## Features
 
 - Capture via Windows Graphics Capture plugin
 - OCR (OneOCR, Windows Media OCR) + proximity text layout
 - Translation plugins (Google, Yandex) or built-in “No translation”
+- In-memory translation cache plugin
 - Overlay / text-window display modes
+- Text filter rules (skip / strip)
+- UI languages: en, ru, de, fr, ja, ko, pl, pt, tr, uk, zh-Hans
 - Per-application profiles
 - Plugin updater via GitHub Releases; host opens the release page for app updates (does not self-replace the exe)
 
@@ -25,12 +28,15 @@ Host release tags: `app-v1.0.5` / `app-v1.0-latest`. Plugin channels: `plugin-{I
 
 ## Dependencies
 
-Pinned in `Directory.Build.props` (currently **1.0.0**):
+Pinned in `Directory.Build.props`:
 
-- [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives)
-- [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot)
-- [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR)
-- [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator)
+| Package | Version |
+|---------|---------|
+| [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives) | 1.0.0 |
+| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.0.0 |
+| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.0.0 |
+| [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator) | 1.1.0 |
+| [Zaya.TranslatorCache](https://github.com/shtrasser-dev/Zaya.Translator) | 1.0.0 |
 
 ## Build
 
@@ -50,7 +56,7 @@ GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host versio
 build-plugins.cmd
 ```
 
-Builds sibling OCR / Screenshot / Translator plugin zips and copies them into `%AppData%\Zaya\ScreenTranslator\plugins`.
+Builds sibling OCR / Screenshot / Translator (+ cache) plugin zips and copies them into `%AppData%\Zaya\ScreenTranslator\plugins`.
 
 ## License
 

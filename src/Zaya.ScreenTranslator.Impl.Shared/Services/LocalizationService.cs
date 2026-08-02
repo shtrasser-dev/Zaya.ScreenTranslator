@@ -9,7 +9,8 @@ public sealed class LocalizationService : ObservableObject
     public static LocalizationService Instance { get; } = new();
 
     /// <summary>UI cultures that have resource satellites in this app.</summary>
-    public static IReadOnlyList<string> SupportedUiCultures { get; } = ["en", "ru"];
+    public static IReadOnlyList<string> SupportedUiCultures { get; } =
+        ["en", "ru", "de", "fr", "ja", "ko", "pl", "pt", "tr", "uk", "zh-Hans"];
 
     private readonly Properties.Resources _resources = Properties.Resources.Instance;
 
@@ -87,6 +88,30 @@ public sealed class LocalizationService : ObservableObject
                     code = supported;
                     return true;
                 }
+            }
+        }
+
+        // zh-CN / zh-TW etc. do not prefix-match "zh-Hans" / "zh-Hant".
+        if (culture.TwoLetterISOLanguageName.Equals("zh", StringComparison.OrdinalIgnoreCase))
+        {
+            var name = culture.Name;
+            var preferred = name.Contains("Hant", StringComparison.OrdinalIgnoreCase)
+                            || name.Equals("zh-TW", StringComparison.OrdinalIgnoreCase)
+                            || name.Equals("zh-HK", StringComparison.OrdinalIgnoreCase)
+                            || name.Equals("zh-MO", StringComparison.OrdinalIgnoreCase)
+                ? "zh-Hant"
+                : "zh-Hans";
+
+            if (SupportedUiCultures.Any(s => string.Equals(s, preferred, StringComparison.OrdinalIgnoreCase)))
+            {
+                code = preferred;
+                return true;
+            }
+
+            if (SupportedUiCultures.Any(s => string.Equals(s, "zh-Hans", StringComparison.OrdinalIgnoreCase)))
+            {
+                code = "zh-Hans";
+                return true;
             }
         }
 

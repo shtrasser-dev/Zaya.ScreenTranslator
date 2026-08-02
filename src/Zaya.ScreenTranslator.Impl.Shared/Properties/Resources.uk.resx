@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>Старт</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>Стоп</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>Показати текст</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>Сховати текст</value>
+  </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>Історія</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>Історія перекладів</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>Налаштування</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>Оновити</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>Очікування</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Працює</value>
+  </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Налаштування</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Загальні</value>
+  </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — переклад тексту з екрана.</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>Репозиторій на GitHub</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>Подякувати автору</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>Модуль захоплення зображення з екрана.</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>Модуль розпізнавання тексту.</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>Модуль об’єднання слів у рядки та рядків у абзаци.</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>Модуль перекладу.</value>
+  </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>Модуль кешу перекладу (менше запитів до API та стабілізація мерехтіння OCR).</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>Модуль фільтрації тексту.</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>Модуль накладання перекладу на екран.</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>Розпізнавання</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>Захоплення</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>Компонування</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>Переклад</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>Кеш</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>Фільтр</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>Мінімальна довжина тексту</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>Правила фільтра</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>Увімкнено</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>Регулярний вираз</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>Ігнорувати регістр</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>Дія</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>Пропустити блок</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>Вирізати збіг</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>Опис</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>Додати правило</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Видалити правило</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>Профіль:</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>Зберегти як новий</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>Мова інтерфейсу</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>Мова перекладу</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>OCR рушій</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>Рушій захоплення</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>Рушій компонування</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>Рушій перекладу</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>Без перекладу (лише OCR)</value>
+  </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>Рушій кешу</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>Без кешу</value>
+  </data>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>Пауза між обробкою кадрів у мілісекундах</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>Збільшення цього параметра знижує навантаження на систему, але зменшує відгук.</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>Введіть число в діапазоні від {0} до {1}</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>Введіть число в діапазоні від {0}</value>
+  </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>Назва процесу</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>Автоматично підключатися до вказаного процесу.</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>Встановити поточний процес</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>Виберіть цільове вікно</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>Очікуємо процес «{0}»</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>Розпізнаний текст</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>Поверх усіх вікон</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>Вікно:</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>Профіль:</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>Вікна не знайдено</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>OCR рушій недоступний</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>Рушій захоплення недоступний</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>Цільове вікно не вибрано</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>Назва нового профілю</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>Ім’я не може бути порожнім</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>Профіль уже існує</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>Вивід:</value>
+  </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>Створити новий профіль</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>Новий профіль</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>Не можна створити більше {1} профілів на основі «{0}». Перейменуйте або видаліть наявні.</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>Видалити профіль</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>Видалення поточного профілю без можливості відновлення</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>Видалення профілю</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>Видалити профіль «{0}»? Цю дію не можна скасувати.</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>Не можна видалити останній профіль.</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>Накладання</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>Рушій overlay</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>Запустіть переклад, щоб показати overlay</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Оновлення програми та плагінів</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>Перевірити оновлення</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>Перевіряти оновлення під час запуску</value>
+  </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>Збережені файли налаштувань і плагіни</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>Перейти до файлів</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>Оновлення</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Перевірка оновлень…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Усе актуально</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>Плагіни актуальні.</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>Плагіни оновлено. Перезапустіть програму, щоб завантажити їх.</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Не вдалося оновити.</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>Зупинка…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>Зупинено</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>Запуск…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>Створення сесій…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>Немає активного профілю</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>Рушій не знайдено</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>Рушій компонування не знайдено</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>Рушій перекладу не знайдено</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>Рушій кешу перекладу не знайдено</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>Рушій накладання недоступний</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>Помилка накладання: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Помилка: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Зачекайте…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>Захоплення: {0:F0}мс | OCR: {1:F0}мс | Переклад: {2:F0}мс</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- сер. впевненість: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>Текстове вікно</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>Накладання</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>Вихід</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>Доступне оновлення</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>Доступна нова версія ScreenTranslator ({0}).
+
+Відкрити сторінку релізу в браузері?</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>Доступно: {0}.
+
+Відкрити сторінку релізу в браузері?</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>Відкрити сторінку</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Пізніше</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>Підготовка плагінів…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>Оновлення плагінів…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>Потрібні плагіни</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>Не вдалося підготувати плагіни.</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>Помилка запуску</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>Видалення несумісних плагінів…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>Завантаження {0}…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>Оновлення {0}…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>Не вдалося перевірити оновлення для {0}: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>Опційний плагін пропущено ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>Відсутній обов’язковий плагін: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>Не вдалося встановити обов’язкові плагіни. Перевірте підключення до мережі та спробуйте знову.
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>Немає мережі, а обов’язкові плагіни не встановлено.
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>Обов’язковий файл «{0}» не знайдено в {1}.</value>
+  </data>
+</root>

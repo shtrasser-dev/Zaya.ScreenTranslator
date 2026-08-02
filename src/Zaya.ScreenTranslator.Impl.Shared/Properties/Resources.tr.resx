@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>Durdur</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>Metni göster</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>Metni gizle</value>
+  </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>Geçmiş</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>Çeviri geçmişi</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>Boşta</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Çalışıyor</value>
+  </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — ekrandaki metni çevirir.</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>GitHub deposu</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>Yazara teşekkür et</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>Ekran görüntüsü yakalama modülü.</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>Metin tanıma modülü.</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>Kelimeleri satırlara, satırları paragraflara gruplayan modül.</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>Çeviri modülü.</value>
+  </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>Çeviri önbelleği modülü (API çağrılarını azaltır ve OCR titremesini dengeler).</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>Metin filtresi modülü.</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>Ekran kaplaması modülü.</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>Tanıma</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>Yakalama</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>Düzen</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>Çevir</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>Önbellek</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>Filtre</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>Minimum metin uzunluğu</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>Filtre kuralları</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>Metin</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>Regex</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>Büyük/küçük harf yok say</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>Eylem</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>Bloğu atla</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>Eşleşmeyi kaldır</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>Kural ekle</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Kuralı kaldır</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>Profil:</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>Yeni olarak kaydet</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>Arayüz dili</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>Hedef çeviri dili</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>OCR motoru</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>Yakalama motoru</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>Düzen motoru</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>Çeviri motoru</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>Çeviri yok (yalnızca OCR)</value>
+  </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>Önbellek motoru</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>Önbellek yok</value>
+  </data>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>Kare işleme arasındaki duraklama (ms)</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>Bu değeri artırmak sistem yükünü azaltır ancak yanıt süresini düşürür.</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>{0} ile {1} arasında bir sayı girin</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>{0} değerinden başlayan bir sayı girin</value>
+  </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>İşlem adı</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>Belirtilen işleme otomatik bağlan.</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>Geçerli işlemi ayarla</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>Hedef pencere seçin</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>"{0}" işlemi bekleniyor</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>Tanınan metin</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>Her zaman üstte</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>Pencere:</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>Profil:</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>Pencere bulunamadı</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>Kullanılabilir OCR motoru yok</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>Kullanılabilir yakalama motoru yok</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>Hedef pencere seçilmedi</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>Yeni profil adı</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>Ad boş olamaz</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>Profil zaten var</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>Çıktı:</value>
+  </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>Yeni profil oluştur</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>Yeni profil</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>"{0}" temelinde en fazla {1} profil oluşturulabilir. Mevcut olanları yeniden adlandırın veya silin.</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>Profili sil</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>Geçerli profili geri yüklenemez şekilde sil</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>Profili sil</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>"{0}" profili silinsin mi? Bu işlem geri alınamaz.</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>Son profil silinemez.</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>Kaplama</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>Kaplama motoru</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>Kaplamayı göstermek için çeviriyi başlatın</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Uygulama ve eklenti güncellemeleri</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>Güncellemeleri denetle</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>Başlangıçta güncellemeleri denetle</value>
+  </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>Kayıtlı ayar dosyaları ve eklentiler</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>Dosya klasörünü aç</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>Güncellemeler</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Güncellemeler denetleniyor…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Her şey güncel</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>Eklentiler güncel.</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>Eklentiler güncellendi. Yüklemek için uygulamayı yeniden başlatın.</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Güncelleme başarısız.</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>Durduruluyor…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>Durduruldu</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>Başlatılıyor…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>Oturumlar oluşturuluyor…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>Etkin profil yok</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>Motor bulunamadı</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>TextLayout motoru bulunamadı</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>Çeviri motoru bulunamadı</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>Çeviri önbelleği motoru bulunamadı</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>Kaplama düzeni motoru kullanılamıyor</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>Kaplama başarısız: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Hata: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Lütfen bekleyin…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>Yakalama: {0:F0}ms | OCR: {1:F0}ms | Çeviri: {2:F0}ms</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- ort. güven: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>Metin penceresi</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>Kaplama</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>Güncelleme var</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>Daha yeni bir ScreenTranslator sürümü mevcut ({0}).
+
+Sürüm sayfası tarayıcıda açılsın mı?</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>{0} mevcut.
+
+Sürüm sayfası tarayıcıda açılsın mı?</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>Sayfayı aç</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Sonra</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>Eklentiler hazırlanıyor…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>Eklentiler güncelleniyor…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>Eklentiler gerekli</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>Eklentiler hazırlanamadı.</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>Başlangıç hatası</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>Uyumsuz eklentiler kaldırılıyor…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>{0} indiriliyor…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>{0} güncelleniyor…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>{0} için güncelleme denetimi başarısız: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>İsteğe bağlı eklenti atlandı ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>Gerekli eklenti eksik: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>Gerekli eklentiler yüklenemedi. Ağ bağlantınızı kontrol edip yeniden deneyin.
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>Ağ yok ve gerekli eklentiler yüklü değil.
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>Gerekli dosya '{0}' {1} içinde bulunamadı.</value>
+  </data>
+</root>

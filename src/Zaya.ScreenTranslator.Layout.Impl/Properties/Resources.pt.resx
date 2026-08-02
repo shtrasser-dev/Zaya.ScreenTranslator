@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>Sobreposição de ecrã</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>Desenha texto sobre a janela alvo pelas coordenadas</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>Posicionamento</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>Onde desenhar o texto relativamente a cada retângulo bounds</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>Acima</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>Por cima</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>Abaixo</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>Escala da fonte (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>Tamanho da fonte em percentagem da altura dos bounds</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Deslocamento Y (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>Espaço vertical extra desde a borda dos bounds</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>Preenchimento</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>Preenchimento interno à volta do texto da sobreposição</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>Fundo</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>Fundo atrás do texto da sobreposição</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>Nenhum</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>Suave</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>Opaco</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>Opacidade do fundo (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>Opacidade do fundo suave/opaco</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>Cor do texto</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>Cor de primeiro plano do texto da sobreposição</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>Escuro</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>Contorno</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>Desenhar contorno/sombra para legibilidade</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>Modo de ajuste</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>Como ajustar texto longo à largura dos bounds</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>Encolher</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>Quebrar</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>Cortar</value>
+  </data>
+</root>

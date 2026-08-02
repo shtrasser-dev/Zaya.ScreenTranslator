@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Overlay_EngineName" xml:space="preserve">
+    <value>Ekran kaplaması</value>
+  </data>
+  <data name="Overlay_EngineDesc" xml:space="preserve">
+    <value>Metni koordinatlara göre hedef pencerenin üzerine çizer</value>
+  </data>
+  <data name="Overlay_Placement" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="Overlay_Placement_Desc" xml:space="preserve">
+    <value>Metnin her bounds kutusuna göre nereye çizileceği</value>
+  </data>
+  <data name="Overlay_Placement_Above" xml:space="preserve">
+    <value>Üstte</value>
+  </data>
+  <data name="Overlay_Placement_Over" xml:space="preserve">
+    <value>Üzerinde</value>
+  </data>
+  <data name="Overlay_Placement_Below" xml:space="preserve">
+    <value>Altta</value>
+  </data>
+  <data name="Overlay_FontScale" xml:space="preserve">
+    <value>Yazı tipi ölçeği (%)</value>
+  </data>
+  <data name="Overlay_FontScale_Desc" xml:space="preserve">
+    <value>Yazı tipi boyutu, bounds yüksekliğinin yüzdesi olarak</value>
+  </data>
+  <data name="Overlay_OffsetY" xml:space="preserve">
+    <value>Y ofseti (px)</value>
+  </data>
+  <data name="Overlay_OffsetY_Desc" xml:space="preserve">
+    <value>Bounds kenarından ek dikey boşluk</value>
+  </data>
+  <data name="Overlay_Padding" xml:space="preserve">
+    <value>İç boşluk</value>
+  </data>
+  <data name="Overlay_Padding_Desc" xml:space="preserve">
+    <value>Kaplama metninin çevresindeki iç boşluk</value>
+  </data>
+  <data name="Overlay_Background" xml:space="preserve">
+    <value>Arka plan</value>
+  </data>
+  <data name="Overlay_Background_Desc" xml:space="preserve">
+    <value>Kaplama metninin arkasındaki arka plan</value>
+  </data>
+  <data name="Overlay_Background_None" xml:space="preserve">
+    <value>Yok</value>
+  </data>
+  <data name="Overlay_Background_Soft" xml:space="preserve">
+    <value>Yumuşak</value>
+  </data>
+  <data name="Overlay_Background_Opaque" xml:space="preserve">
+    <value>Opak</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity" xml:space="preserve">
+    <value>Arka plan opaklığı (%)</value>
+  </data>
+  <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
+    <value>Yumuşak/opak arka planın opaklığı</value>
+  </data>
+  <data name="Overlay_TextColor" xml:space="preserve">
+    <value>Metin rengi</value>
+  </data>
+  <data name="Overlay_TextColor_Desc" xml:space="preserve">
+    <value>Kaplama metni ön plan rengi</value>
+  </data>
+  <data name="Overlay_TextColor_Auto" xml:space="preserve">
+    <value>Otomatik</value>
+  </data>
+  <data name="Overlay_TextColor_Light" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Overlay_TextColor_Dark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
+  <data name="Overlay_Outline" xml:space="preserve">
+    <value>Kontur</value>
+  </data>
+  <data name="Overlay_Outline_Desc" xml:space="preserve">
+    <value>Okunabilirlik için kontur/gölge çiz</value>
+  </data>
+  <data name="Overlay_FitMode" xml:space="preserve">
+    <value>Sığdırma modu</value>
+  </data>
+  <data name="Overlay_FitMode_Desc" xml:space="preserve">
+    <value>Uzun metnin bounds genişliğine nasıl sığdırılacağı</value>
+  </data>
+  <data name="Overlay_FitMode_Shrink" xml:space="preserve">
+    <value>Küçült</value>
+  </data>
+  <data name="Overlay_FitMode_Wrap" xml:space="preserve">
+    <value>Kaydır</value>
+  </data>
+  <data name="Overlay_FitMode_Clip" xml:space="preserve">
+    <value>Kes</value>
+  </data>
+</root>

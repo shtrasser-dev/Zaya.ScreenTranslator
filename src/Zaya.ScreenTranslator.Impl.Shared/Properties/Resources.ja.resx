@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Zaya Screen Translator</value>
+  </data>
+  <data name="Btn_Start" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="Btn_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Btn_ShowText" xml:space="preserve">
+    <value>テキストを表示</value>
+  </data>
+  <data name="Btn_HideText" xml:space="preserve">
+    <value>テキストを隠す</value>
+  </data>
+  <data name="Btn_History" xml:space="preserve">
+    <value>履歴</value>
+  </data>
+  <data name="HistoryWindow_Title" xml:space="preserve">
+    <value>翻訳履歴</value>
+  </data>
+  <data name="Btn_Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Btn_Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Status_Idle" xml:space="preserve">
+    <value>待機中</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>実行中</value>
+  </data>
+  <data name="Status_Label" xml:space="preserve">
+    <value>状態</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>一般</value>
+  </data>
+  <data name="Settings_Desc_General" xml:space="preserve">
+    <value>ScreenTranslator — 画面上のテキストを翻訳します。</value>
+  </data>
+  <data name="Settings_Desc_General_Repo" xml:space="preserve">
+    <value>GitHub リポジトリ</value>
+  </data>
+  <data name="Settings_Desc_General_Thanks" xml:space="preserve">
+    <value>作者に感謝する</value>
+  </data>
+  <data name="Settings_Desc_Capture" xml:space="preserve">
+    <value>画面キャプチャモジュール。</value>
+  </data>
+  <data name="Settings_Desc_OCR" xml:space="preserve">
+    <value>テキスト認識モジュール。</value>
+  </data>
+  <data name="Settings_Desc_TextLayout" xml:space="preserve">
+    <value>単語を行に、行を段落にまとめるモジュール。</value>
+  </data>
+  <data name="Settings_Desc_Translator" xml:space="preserve">
+    <value>翻訳モジュール。</value>
+  </data>
+  <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
+    <value>翻訳キャッシュモジュール（API 呼び出しを減らし、OCR のちらつきを安定化）。</value>
+  </data>
+  <data name="Settings_Desc_Filter" xml:space="preserve">
+    <value>テキストフィルターモジュール。</value>
+  </data>
+  <data name="Settings_Desc_Overlay" xml:space="preserve">
+    <value>画面オーバーレイモジュール。</value>
+  </data>
+  <data name="Settings_Tab_OCR" xml:space="preserve">
+    <value>認識</value>
+  </data>
+  <data name="Settings_Tab_Capture" xml:space="preserve">
+    <value>キャプチャ</value>
+  </data>
+  <data name="Settings_Tab_TextLayout" xml:space="preserve">
+    <value>レイアウト</value>
+  </data>
+  <data name="Settings_Tab_Translator" xml:space="preserve">
+    <value>翻訳</value>
+  </data>
+  <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
+    <value>キャッシュ</value>
+  </data>
+  <data name="Settings_Tab_Filter" xml:space="preserve">
+    <value>フィルター</value>
+  </data>
+  <data name="Filter_MinLength" xml:space="preserve">
+    <value>最小テキスト長</value>
+  </data>
+  <data name="Filter_Rules" xml:space="preserve">
+    <value>フィルター規則</value>
+  </data>
+  <data name="Filter_Enabled" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="Filter_Pattern" xml:space="preserve">
+    <value>テキスト</value>
+  </data>
+  <data name="Filter_IsRegex" xml:space="preserve">
+    <value>正規表現</value>
+  </data>
+  <data name="Filter_IgnoreCase" xml:space="preserve">
+    <value>大文字小文字を無視</value>
+  </data>
+  <data name="Filter_Action" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Filter_Action_Skip" xml:space="preserve">
+    <value>ブロックをスキップ</value>
+  </data>
+  <data name="Filter_Action_Strip" xml:space="preserve">
+    <value>一致を除去</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>説明</value>
+  </data>
+  <data name="Filter_AddRule" xml:space="preserve">
+    <value>規則を追加</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>規則を削除</value>
+  </data>
+  <data name="Settings_ProfileName" xml:space="preserve">
+    <value>プロファイル:</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Settings_SaveAsNew" xml:space="preserve">
+    <value>新規として保存</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Settings_LangUI" xml:space="preserve">
+    <value>インターフェース言語</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+  <data name="Settings_TargetLang" xml:space="preserve">
+    <value>翻訳先言語</value>
+  </data>
+  <data name="Settings_OcrEngine" xml:space="preserve">
+    <value>OCR エンジン</value>
+  </data>
+  <data name="Settings_CaptureEngine" xml:space="preserve">
+    <value>キャプチャエンジン</value>
+  </data>
+  <data name="Settings_TextLayoutEngine" xml:space="preserve">
+    <value>レイアウトエンジン</value>
+  </data>
+  <data name="Settings_TranslatorEngine" xml:space="preserve">
+    <value>翻訳エンジン</value>
+  </data>
+  <data name="Settings_TranslatorNone" xml:space="preserve">
+    <value>翻訳なし（OCR のみ）</value>
+  </data>
+  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
+    <value>キャッシュエンジン</value>
+  </data>
+  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+    <value>キャッシュなし</value>
+  </data>
+  <data name="Settings_FramePauseMs" xml:space="preserve">
+    <value>フレーム処理間の一時停止 (ms)</value>
+  </data>
+  <data name="Settings_FramePauseMs_Desc" xml:space="preserve">
+    <value>値を大きくするとシステム負荷は減りますが、応答性は低下します。</value>
+  </data>
+  <data name="Validation_IntegerRange" xml:space="preserve">
+    <value>{0} から {1} の間の数値を入力してください</value>
+  </data>
+  <data name="Validation_IntegerMinOnly" xml:space="preserve">
+    <value>{0} 以上の数値を入力してください</value>
+  </data>
+  <data name="Settings_TargetProcess" xml:space="preserve">
+    <value>プロセス名</value>
+  </data>
+  <data name="Settings_TargetProcess_Desc" xml:space="preserve">
+    <value>指定したプロセスに自動接続します。</value>
+  </data>
+  <data name="Settings_SetCurrentProcess" xml:space="preserve">
+    <value>現在のプロセスを設定</value>
+  </data>
+  <data name="Status_SelectTargetWindow" xml:space="preserve">
+    <value>対象ウィンドウを選択</value>
+  </data>
+  <data name="Status_WaitingForProcess" xml:space="preserve">
+    <value>プロセス「{0}」を待機中</value>
+  </data>
+  <data name="TextWindow_Title" xml:space="preserve">
+    <value>認識されたテキスト</value>
+  </data>
+  <data name="TextWindow_Topmost" xml:space="preserve">
+    <value>常に最前面</value>
+  </data>
+  <data name="Picker_Window" xml:space="preserve">
+    <value>ウィンドウ:</value>
+  </data>
+  <data name="Picker_Profile" xml:space="preserve">
+    <value>プロファイル:</value>
+  </data>
+  <data name="Picker_NoWindows" xml:space="preserve">
+    <value>ウィンドウが見つかりません</value>
+  </data>
+  <data name="Error_NoOcr" xml:space="preserve">
+    <value>利用可能な OCR エンジンがありません</value>
+  </data>
+  <data name="Error_NoCapture" xml:space="preserve">
+    <value>利用可能なキャプチャエンジンがありません</value>
+  </data>
+  <data name="Error_NoWindow" xml:space="preserve">
+    <value>対象ウィンドウが選択されていません</value>
+  </data>
+  <data name="SaveAsNew_Title" xml:space="preserve">
+    <value>新しいプロファイル名</value>
+  </data>
+  <data name="SaveAsNew_Error_Empty" xml:space="preserve">
+    <value>名前を空にできません</value>
+  </data>
+  <data name="SaveAsNew_Error_Exists" xml:space="preserve">
+    <value>プロファイルは既に存在します</value>
+  </data>
+  <data name="SaveAsNew_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SaveAsNew_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Picker_DisplayMode" xml:space="preserve">
+    <value>出力:</value>
+  </data>
+  <data name="Profile_CreateNew" xml:space="preserve">
+    <value>新しいプロファイルを作成</value>
+  </data>
+  <data name="Profile_NewName" xml:space="preserve">
+    <value>新しいプロファイル</value>
+  </data>
+  <data name="Profile_CreateLimit" xml:space="preserve">
+    <value>「{0}」に基づくプロファイルは {1} 個までです。既存のものを名前変更または削除してください。</value>
+  </data>
+  <data name="Profile_Delete" xml:space="preserve">
+    <value>プロファイルを削除</value>
+  </data>
+  <data name="Profile_Delete_Section" xml:space="preserve">
+    <value>現在のプロファイルを復元不可で削除</value>
+  </data>
+  <data name="Profile_Delete_Title" xml:space="preserve">
+    <value>プロファイルを削除</value>
+  </data>
+  <data name="Profile_Delete_Confirm" xml:space="preserve">
+    <value>プロファイル「{0}」を削除しますか？この操作は取り消せません。</value>
+  </data>
+  <data name="Profile_Delete_Last" xml:space="preserve">
+    <value>最後のプロファイルは削除できません。</value>
+  </data>
+  <data name="Settings_Tab_Overlay" xml:space="preserve">
+    <value>オーバーレイ</value>
+  </data>
+  <data name="Settings_OverlayEngine" xml:space="preserve">
+    <value>オーバーレイエンジン</value>
+  </data>
+  <data name="Overlay_NeedStart" xml:space="preserve">
+    <value>オーバーレイを表示するには翻訳を開始してください</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>アプリとプラグインの更新</value>
+  </data>
+  <data name="Settings_CheckUpdatesBtn" xml:space="preserve">
+    <value>更新を確認</value>
+  </data>
+  <data name="Settings_CheckUpdatesOnStartup" xml:space="preserve">
+    <value>起動時に更新を確認</value>
+  </data>
+  <data name="Settings_Files" xml:space="preserve">
+    <value>保存された設定ファイルとプラグイン</value>
+  </data>
+  <data name="Settings_Files_Open" xml:space="preserve">
+    <value>ファイルフォルダーを開く</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>更新を確認中…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>すべて最新です</value>
+  </data>
+  <data name="Update_PluginsOk" xml:space="preserve">
+    <value>プラグインは最新です。</value>
+  </data>
+  <data name="Update_RestartRequired" xml:space="preserve">
+    <value>プラグインが更新されました。読み込むにはアプリを再起動してください。</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>更新に失敗しました。</value>
+  </data>
+  <data name="Status_Stopping" xml:space="preserve">
+    <value>停止中…</value>
+  </data>
+  <data name="Status_Stopped" xml:space="preserve">
+    <value>停止しました</value>
+  </data>
+  <data name="Status_Starting" xml:space="preserve">
+    <value>起動中…</value>
+  </data>
+  <data name="Status_CreatingSessions" xml:space="preserve">
+    <value>セッションを作成中…</value>
+  </data>
+  <data name="Status_NoActiveProfile" xml:space="preserve">
+    <value>アクティブなプロファイルがありません</value>
+  </data>
+  <data name="Status_EngineNotFound" xml:space="preserve">
+    <value>エンジンが見つかりません</value>
+  </data>
+  <data name="Status_TextLayoutNotFound" xml:space="preserve">
+    <value>TextLayout エンジンが見つかりません</value>
+  </data>
+  <data name="Status_TranslatorNotFound" xml:space="preserve">
+    <value>翻訳エンジンが見つかりません</value>
+  </data>
+  <data name="Status_TranslatorCacheNotFound" xml:space="preserve">
+    <value>翻訳キャッシュエンジンが見つかりません</value>
+  </data>
+  <data name="Status_OverlayUnavailable" xml:space="preserve">
+    <value>オーバーレイレイアウトエンジンが利用できません</value>
+  </data>
+  <data name="Status_OverlayFailed" xml:space="preserve">
+    <value>オーバーレイ失敗: {0}</value>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>エラー: {0}</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>お待ちください…</value>
+  </data>
+  <data name="Timing_Format" xml:space="preserve">
+    <value>キャプチャ: {0:F0}ms | OCR: {1:F0}ms | 翻訳: {2:F0}ms</value>
+  </data>
+  <data name="Text_AvgConfidence" xml:space="preserve">
+    <value>--- 平均信頼度: {0:F2} ---</value>
+  </data>
+  <data name="DisplayMode_TextWindow" xml:space="preserve">
+    <value>テキストウィンドウ</value>
+  </data>
+  <data name="DisplayMode_Overlay" xml:space="preserve">
+    <value>オーバーレイ</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Exit" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>更新があります</value>
+  </data>
+  <data name="Update_Available_Body" xml:space="preserve">
+    <value>新しい ScreenTranslator バージョンが利用可能です ({0})。
+
+ブラウザーでリリースページを開きますか？</value>
+  </data>
+  <data name="Update_Available_BodyNamed" xml:space="preserve">
+    <value>{0} が利用可能です。
+
+ブラウザーでリリースページを開きますか？</value>
+  </data>
+  <data name="Update_OpenPage" xml:space="preserve">
+    <value>ページを開く</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>後で</value>
+  </data>
+  <data name="Update_PreparingPlugins" xml:space="preserve">
+    <value>プラグインを準備中…</value>
+  </data>
+  <data name="Update_UpdatingPlugins" xml:space="preserve">
+    <value>プラグインを更新中…</value>
+  </data>
+  <data name="Update_PluginsRequired_Title" xml:space="preserve">
+    <value>プラグインが必要です</value>
+  </data>
+  <data name="Update_PluginsRequired_Body" xml:space="preserve">
+    <value>プラグインの準備に失敗しました。</value>
+  </data>
+  <data name="Update_StartupError_Title" xml:space="preserve">
+    <value>起動エラー</value>
+  </data>
+  <data name="Plugin_RemovingIncompatible" xml:space="preserve">
+    <value>非互換プラグインを削除中…</value>
+  </data>
+  <data name="Plugin_Downloading" xml:space="preserve">
+    <value>{0} をダウンロード中…</value>
+  </data>
+  <data name="Plugin_Updating" xml:space="preserve">
+    <value>{0} を更新中…</value>
+  </data>
+  <data name="Plugin_UpdateCheckFailed" xml:space="preserve">
+    <value>{0} の更新確認に失敗しました: {1}</value>
+  </data>
+  <data name="Plugin_OptionalSkipped" xml:space="preserve">
+    <value>オプションのプラグインをスキップしました ({0}): {1}</value>
+  </data>
+  <data name="Plugin_RequiredMissing" xml:space="preserve">
+    <value>必須プラグインがありません: {0}</value>
+  </data>
+  <data name="Plugin_RequiredInstallFailed" xml:space="preserve">
+    <value>必須プラグインをインストールできませんでした。ネットワーク接続を確認して再試行してください。
+{0}</value>
+  </data>
+  <data name="Plugin_NoNetwork" xml:space="preserve">
+    <value>ネットワークがなく、必須プラグインがインストールされていません。
+{0}</value>
+  </data>
+  <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
+    <value>必須ファイル「{0}」が {1} に見つかりません。</value>
+  </data>
+</root>
