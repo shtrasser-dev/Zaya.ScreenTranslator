@@ -435,4 +435,31 @@
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>Обязательный файл «{0}» не найден в {1}.</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>Области захвата</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>Области захвата</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>Удалить все области</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>Добавить область захвата</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>Добавить область игнорирования</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>Идет захват изображения. Переключитесь на целевое окно.</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>Области захвата заданы</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>Области захвата не заданы, захватывается все окно</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>Ожидание захвата…</value>
+  </data>
 </root>

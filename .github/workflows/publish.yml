@@ -2,6 +2,12 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      changelog:
+        description: 'Release notes (shown on GitHub Releases; optional)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -41,6 +47,8 @@ jobs:
           path: host
 
       - uses: actions/github-script@v7
+        env:
+          RELEASE_CHANGELOG: ${{ inputs.changelog }}
         with:
           script: |
             const fs = require('fs');
@@ -58,7 +66,8 @@ jobs:
             const tag = `app-v${version}`;
             const latestTag = `app-v${channel}-latest`;
             const releaseName = `Zaya.ScreenTranslator v${version}`;
-            const body = [
+            const changelog = (process.env.RELEASE_CHANGELOG || '').trim();
+            const meta = [
               `version: ${version}`,
               `primitivesChannel: ${channel}`,
               '',
@@ -68,6 +77,7 @@ jobs:
               '',
               'Host does not self-update: open this release page from the app when a newer version is available.',
             ].join('\n');
+            const body = changelog ? `${changelog}\n\n---\n\n${meta}` : meta;
 
             async function createOrReplaceRelease(tagName, name, releaseBody, makeLatest) {
               try {
@@ -102,7 +112,7 @@ jobs:
                 name,
                 body: releaseBody,
                 make_latest: makeLatest ? 'true' : 'false',
-                generate_release_notes: tagName === tag,
+                generate_release_notes: false,
               });
 
               await github.rest.repos.uploadReleaseAsset({

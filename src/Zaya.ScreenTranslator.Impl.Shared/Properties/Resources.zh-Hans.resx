@@ -435,4 +435,31 @@
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>在 {1} 中未找到必需文件“{0}”。</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>捕获区域</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>捕获区域</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>删除所有区域</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>添加捕获区域</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>添加忽略区域</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>正在捕获图像。请切换到目标窗口。</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>已设置捕获区域</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>未设置捕获区域，将捕获整个窗口</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>正在等待捕获…</value>
+  </data>
 </root>

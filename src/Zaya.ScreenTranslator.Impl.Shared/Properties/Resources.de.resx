@@ -435,4 +435,31 @@ Release-Seite im Browser öffnen?</value>
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>Erforderliche Datei „{0}“ nicht in {1} gefunden.</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>Aufnahmebereiche</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>Aufnahmebereiche</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>Alle Bereiche löschen</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>Aufnahmebereich hinzufügen</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>Ignorierbereich hinzufügen</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>Bild wird aufgenommen. Wechseln Sie zum Zielfenster.</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>Aufnahmebereiche sind festgelegt</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>Aufnahmebereiche sind nicht festgelegt; das gesamte Fenster wird erfasst</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>Warte auf Aufnahme…</value>
+  </data>
 </root>

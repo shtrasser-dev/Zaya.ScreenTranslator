@@ -435,4 +435,31 @@ Open the release page in your browser?</value>
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>Required asset '{0}' not found in {1}.</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>Capture regions</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>Capture regions</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>Delete all regions</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>Add capture region</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>Add ignore region</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>Capturing image. Switch to the target window.</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>Capture regions are set</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>Capture regions are not set; the entire window is captured</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>Waiting for capture…</value>
+  </data>
 </root>

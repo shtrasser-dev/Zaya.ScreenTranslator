@@ -20,6 +20,7 @@ public sealed partial class MainViewModel
 
     private void ReloadSettingsIfOpen()
     {
+        RefreshCaptureRegionsIndicator();
         if (!IsSettingsOpen) return;
         Settings = CreateSettingsViewModel();
     }
@@ -35,6 +36,7 @@ public sealed partial class MainViewModel
             OnPropertyChanged(nameof(StartStopButtonText));
             OnPropertyChanged(nameof(ShowHideTextButtonText));
             OnPropertyChanged(nameof(SettingsToggleText));
+            OnPropertyChanged(nameof(CaptureRegionsTooltip));
 
             var targetCode = SelectedTargetLanguage?.Code ?? "en";
             TargetLanguages = BuildTargetLanguages();

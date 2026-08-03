@@ -435,4 +435,31 @@
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>必須ファイル「{0}」が {1} に見つかりません。</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>キャプチャ領域</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>キャプチャ領域</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>すべての領域を削除</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>キャプチャ領域を追加</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>無視領域を追加</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>画像をキャプチャしています。対象ウィンドウに切り替えてください。</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>キャプチャ領域が設定されています</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>キャプチャ領域は未設定です。ウィンドウ全体がキャプチャされます</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>キャプチャを待機中…</value>
+  </data>
 </root>

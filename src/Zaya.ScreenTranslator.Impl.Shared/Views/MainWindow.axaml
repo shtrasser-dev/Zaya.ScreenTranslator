@@ -51,7 +51,7 @@
         </Style>
         <Style Selector="Button.main-nav">
             <Setter Property="MinWidth" Value="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
-            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Padding" Value="14,6" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="Transparent" />
@@ -70,6 +70,24 @@
         <Style Selector="Button.main-nav.start:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="#145214" />
             <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.main-nav.regions">
+            <!-- Reserve border space so a yellow outline does not grow the button. -->
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.main-nav.regions-active">
+            <Setter Property="BorderBrush" Value="#F9A825" />
+        </Style>
+        <Style Selector="Button.main-nav.regions-active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#F57F17" />
+        </Style>
+        <Style Selector="Button.main-nav.regions-active:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#E65100" />
         </Style>
     </Window.Styles>
 
@@ -115,6 +133,11 @@
                     <Button Classes="main-nav"
                             Command="{Binding OpenHistoryCommand}"
                             Content="{Binding Loc[Btn_History]}" />
+                    <Button Classes="main-nav regions"
+                            Classes.regions-active="{Binding HasCaptureRegionsConfigured}"
+                            Command="{Binding OpenCaptureRegionsCommand}"
+                            Content="{Binding Loc[Btn_CaptureRegions]}"
+                            ToolTip.Tip="{Binding CaptureRegionsTooltip}" />
                 </StackPanel>
 
                 <Border Grid.Column="1" Classes="settings-column" Margin="24,12,24,0">

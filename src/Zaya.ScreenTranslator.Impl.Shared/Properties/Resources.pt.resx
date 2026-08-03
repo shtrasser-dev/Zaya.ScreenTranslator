@@ -435,4 +435,31 @@ Abrir a página de lançamento no browser?</value>
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>Ficheiro obrigatório '{0}' não encontrado em {1}.</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>Áreas de captura</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>Áreas de captura</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>Eliminar todas as áreas</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>Adicionar área de captura</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>Adicionar área de ignorar</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>A capturar imagem. Mude para a janela alvo.</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>Áreas de captura definidas</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>Áreas de captura não definidas; toda a janela é capturada</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>A aguardar captura…</value>
+  </data>
 </root>

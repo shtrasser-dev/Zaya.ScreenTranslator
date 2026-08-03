@@ -9,6 +9,18 @@ internal static class LocalizationConstants
         public const string ShowText = "Btn_ShowText";
         public const string HideText = "Btn_HideText";
         public const string Settings = "Btn_Settings";
+        public const string CaptureRegions = "Btn_CaptureRegions";
+    }
+
+    public static class CaptureRegions
+    {
+        public const string Title = "CaptureRegions_Title";
+        public const string ClearAll = "CaptureRegions_ClearAll";
+        public const string AddCapture = "CaptureRegions_AddCapture";
+        public const string AddIgnore = "CaptureRegions_AddIgnore";
+        public const string WaitingCapture = "CaptureRegions_WaitingCapture";
+        public const string ConfiguredTooltip = "CaptureRegions_ConfiguredTooltip";
+        public const string NotConfiguredTooltip = "CaptureRegions_NotConfiguredTooltip";
     }
 
     public static class Status
@@ -30,6 +42,7 @@ internal static class LocalizationConstants
         public const string OverlayFailed = "Status_OverlayFailed";
         public const string SelectTargetWindow = "Status_SelectTargetWindow";
         public const string WaitingForProcess = "Status_WaitingForProcess";
+        public const string WaitingForCapture = "Status_WaitingForCapture";
         public const string PleaseWait = "Status_PleaseWait";
     }
 

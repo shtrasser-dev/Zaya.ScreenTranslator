@@ -22,6 +22,9 @@ internal static class SettingsConstants
     public const string FilterMinLength = "filterMinLength";
     public const string FilterRules = "filterRules";
 
+    public const string CaptureRegions = "captureRegions";
+    public const string IgnoreRegions = "ignoreRegions";
+
     public const string RuleEnabled = "enabled";
     public const string RulePattern = "pattern";
     public const string RuleIsRegex = "isRegex";

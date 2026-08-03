@@ -435,4 +435,31 @@
   <data name="Plugin_RequiredAssetMissing" xml:space="preserve">
     <value>필수 파일 '{0}'을(를) {1}에서 찾을 수 없습니다.</value>
   </data>
+  <data name="Btn_CaptureRegions" xml:space="preserve">
+    <value>캡처 영역</value>
+  </data>
+  <data name="CaptureRegions_Title" xml:space="preserve">
+    <value>캡처 영역</value>
+  </data>
+  <data name="CaptureRegions_ClearAll" xml:space="preserve">
+    <value>모든 영역 삭제</value>
+  </data>
+  <data name="CaptureRegions_AddCapture" xml:space="preserve">
+    <value>캡처 영역 추가</value>
+  </data>
+  <data name="CaptureRegions_AddIgnore" xml:space="preserve">
+    <value>무시 영역 추가</value>
+  </data>
+  <data name="CaptureRegions_WaitingCapture" xml:space="preserve">
+    <value>이미지를 캡처하는 중입니다. 대상 창으로 전환하세요.</value>
+  </data>
+  <data name="CaptureRegions_ConfiguredTooltip" xml:space="preserve">
+    <value>캡처 영역이 설정되어 있습니다</value>
+  </data>
+  <data name="CaptureRegions_NotConfiguredTooltip" xml:space="preserve">
+    <value>캡처 영역이 설정되지 않았습니다. 전체 창이 캡처됩니다</value>
+  </data>
+  <data name="Status_WaitingForCapture" xml:space="preserve">
+    <value>캡처 대기 중…</value>
+  </data>
 </root>

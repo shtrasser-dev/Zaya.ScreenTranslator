@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Zaya.Primitives;
@@ -5,6 +7,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
+using Zaya.ScreenTranslator.Impl.Shared.Views;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -76,6 +79,7 @@ public sealed partial class MainViewModel :
 
         _statusText = Loc[LocalizationConstants.Status.Idle];
         _statusKey = AppConstants.StatusState.Idle;
+        RefreshCaptureRegionsIndicator();
     }
 
     public sealed record TargetLanguageItem(string Code, string Name);
@@ -269,6 +273,67 @@ public sealed partial class MainViewModel :
 
     [RelayCommand] private void ShowHideText() => _textOutput.ToggleTextOutput();
     [RelayCommand] private void OpenHistory() => _textOutput.OpenHistory();
+
+    [RelayCommand(AllowConcurrentExecutions = true)]
+    private async Task OpenCaptureRegions()
+    {
+        if (SelectedWindow is not { IsLoadingPlaceholder: false, Handle: not 0 } window)
+        {
+            SetWindowError(Loc[LocalizationConstants.Status.SelectTargetWindow]);
+            return;
+        }
+
+        SetWindowError(null);
+
+        if (IsRunning)
+        {
+            SetStatus(Loc[LocalizationConstants.Status.Stopping]);
+            await StopLoopAsync();
+            SetStatus(Loc[LocalizationConstants.Status.Stopped]);
+        }
+
+        var profile = _profileService.ActiveProfile;
+        if (profile is null)
+        {
+            SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
+            return;
+        }
+
+        var owner = GetMainWindow();
+        if (owner is null)
+            return;
+
+        var initial = CaptureRegionsStore.Load(profile);
+        var result = await CaptureRegionsDialog.ShowAsync(owner, profile, window.Handle, initial);
+        if (result is null)
+            return;
+
+        CaptureRegionsStore.Save(profile, result);
+        _profileService.Save(profile);
+        RefreshCaptureRegionsIndicator();
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CaptureRegionsTooltip))]
+    private bool _hasCaptureRegionsConfigured;
+
+    public string CaptureRegionsTooltip => HasCaptureRegionsConfigured
+        ? Loc[LocalizationConstants.CaptureRegions.ConfiguredTooltip]
+        : Loc[LocalizationConstants.CaptureRegions.NotConfiguredTooltip];
+
+    internal void RefreshCaptureRegionsIndicator()
+    {
+        var profile = _profileService.ActiveProfile;
+        HasCaptureRegionsConfigured = profile is not null && !CaptureRegionsStore.Load(profile).IsEmpty;
+        OnPropertyChanged(nameof(CaptureRegionsTooltip));
+    }
+
+    private static Window? GetMainWindow()
+    {
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            return desktop.MainWindow;
+        return null;
+    }
 
     public void CloseAuxiliaryWindows() => _textOutput.CloseAuxiliaryWindows();
     public void CaptureTextWindowSettings(WindowSettings settings) => _textOutput.CaptureTextWindowSettings(settings);

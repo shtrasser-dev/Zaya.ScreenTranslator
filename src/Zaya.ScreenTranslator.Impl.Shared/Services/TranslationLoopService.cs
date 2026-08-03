@@ -1,7 +1,8 @@
-using Avalonia.Threading;
 using System.Diagnostics;
+using Avalonia.Threading;
 using Zaya.OCR.Models;
 using Zaya.OCR.Services;
+using Zaya.Primitives;
 using Zaya.Screenshot.Models;
 using Zaya.Screenshot.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
@@ -59,6 +60,7 @@ public sealed class TranslationLoopService
                 translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
 
         var filter = TextFilterSession.Create(profile.ScreenTranslatorSettings);
+        var captureRegions = CaptureRegionsStore.Load(profile);
         var passThrough = translator.EngineId == NoTranslationTranslatorService.EngineIdValue;
 
         var pauseMs = Math.Clamp(
@@ -90,73 +92,86 @@ public sealed class TranslationLoopService
 
                 using (frame)
                 {
-                    var ocrSw = Stopwatch.StartNew();
-                    var result = await ocrSession.RecognizeAsync(frame, ct);
-                    ocrSw.Stop();
-
-                    captureTimes.Enqueue(capSw.Elapsed.TotalMilliseconds);
-                    ocrTimes.Enqueue(ocrSw.Elapsed.TotalMilliseconds);
-                    if (captureTimes.Count > windowSize) captureTimes.Dequeue();
-                    if (ocrTimes.Count > windowSize) ocrTimes.Dequeue();
-
-                    var avgCaptureMs = captureTimes.Average();
-                    var avgOcrMs = ocrTimes.Average();
-
-                    var layoutResult = await layoutSession.ProcessAsync(result, ct);
-
-                    var batch = new List<(ITextParagraph Paragraph, string Text)>();
-                    foreach (var paragraph in layoutResult.Paragraphs)
+                    CaptureFrameProcessor.ProcessedFrame? processed = null;
+                    try
                     {
-                        var text = JoinParagraphForTranslation(paragraph);
-                        if (string.IsNullOrWhiteSpace(text))
-                            continue;
+                        processed = CaptureFrameProcessor.TryProcess(frame, captureRegions);
+                        var imageForOcr = (IRawImage)(processed ?? frame);
+                        var originX = processed?.OriginX ?? 0;
+                        var originY = processed?.OriginY ?? 0;
 
-                        if (!passThrough)
+                        var ocrSw = Stopwatch.StartNew();
+                        var result = await ocrSession.RecognizeAsync(imageForOcr, ct);
+                        ocrSw.Stop();
+
+                        captureTimes.Enqueue(capSw.Elapsed.TotalMilliseconds);
+                        ocrTimes.Enqueue(ocrSw.Elapsed.TotalMilliseconds);
+                        if (captureTimes.Count > windowSize) captureTimes.Dequeue();
+                        if (ocrTimes.Count > windowSize) ocrTimes.Dequeue();
+
+                        var avgCaptureMs = captureTimes.Average();
+                        var avgOcrMs = ocrTimes.Average();
+
+                        var layoutResult = await layoutSession.ProcessAsync(result, ct);
+
+                        var batch = new List<(ITextParagraph Paragraph, string Text)>();
+                        foreach (var paragraph in layoutResult.Paragraphs)
                         {
-                            var filtered = filter.Apply([text]);
-                            if (filtered.Count == 0)
+                            var text = JoinParagraphForTranslation(paragraph);
+                            if (string.IsNullOrWhiteSpace(text))
                                 continue;
-                            text = filtered[0];
+
+                            if (!passThrough)
+                            {
+                                var filtered = filter.Apply([text]);
+                                if (filtered.Count == 0)
+                                    continue;
+                                text = filtered[0];
+                            }
+
+                            batch.Add((paragraph, text));
                         }
 
-                        batch.Add((paragraph, text));
+                        var sourceTexts = batch.Select(b => b.Text).ToList();
+
+                        var trSw = Stopwatch.StartNew();
+                        var translatedTexts = sourceTexts.Count == 0
+                            ? Array.Empty<string>()
+                            : await translatorSession.TranslateAsync(sourceTexts, ct);
+                        trSw.Stop();
+
+                        translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
+                        if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
+                        var avgTranslateMs = translatorTimes.Average();
+
+                        var overlayItems = BuildOverlayItems(batch, translatedTexts, originX, originY);
+                        if (overlaySession is not null)
+                            await overlaySession.PresentAsync(overlayItems, ct);
+
+                        var pairs = new List<(string Source, string Translation)>(sourceTexts.Count);
+                        for (var i = 0; i < sourceTexts.Count; i++)
+                        {
+                            var translated = i < translatedTexts.Count ? translatedTexts[i] : sourceTexts[i];
+                            pairs.Add((sourceTexts[i], translated));
+                        }
+
+                        var confLine = string.Format(
+                            LocalizationService.Instance.CurrentCulture,
+                            LocalizationService.Instance[LocalizationConstants.Text.AvgConfidence],
+                            result.Confidence);
+                        var textOut = string.Join("\n\n", translatedTexts) + "\n" + confLine;
+
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            onTranslatedPairs?.Invoke(pairs);
+                            onTextUpdated(textOut);
+                            onTimings?.Invoke(avgCaptureMs, avgOcrMs, avgTranslateMs);
+                        });
                     }
-
-                    var sourceTexts = batch.Select(b => b.Text).ToList();
-
-                    var trSw = Stopwatch.StartNew();
-                    var translatedTexts = sourceTexts.Count == 0
-                        ? Array.Empty<string>()
-                        : await translatorSession.TranslateAsync(sourceTexts, ct);
-                    trSw.Stop();
-
-                    translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
-                    if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
-                    var avgTranslateMs = translatorTimes.Average();
-
-                    var overlayItems = BuildOverlayItems(batch, translatedTexts);
-                    if (overlaySession is not null)
-                        await overlaySession.PresentAsync(overlayItems, ct);
-
-                    var pairs = new List<(string Source, string Translation)>(sourceTexts.Count);
-                    for (var i = 0; i < sourceTexts.Count; i++)
+                    finally
                     {
-                        var translated = i < translatedTexts.Count ? translatedTexts[i] : sourceTexts[i];
-                        pairs.Add((sourceTexts[i], translated));
+                        processed?.Dispose();
                     }
-
-                    var confLine = string.Format(
-                        LocalizationService.Instance.CurrentCulture,
-                        LocalizationService.Instance[LocalizationConstants.Text.AvgConfidence],
-                        result.Confidence);
-                    var textOut = string.Join("\n\n", translatedTexts) + "\n" + confLine;
-
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        onTranslatedPairs?.Invoke(pairs);
-                        onTextUpdated(textOut);
-                        onTimings?.Invoke(avgCaptureMs, avgOcrMs, avgTranslateMs);
-                    });
                 }
 
                 await Task.Delay(frameDelay, ct);
@@ -180,7 +195,9 @@ public sealed class TranslationLoopService
 
     private static List<OverlayItem> BuildOverlayItems(
         IReadOnlyList<(ITextParagraph Paragraph, string Text)> batch,
-        IReadOnlyList<string> translatedTexts)
+        IReadOnlyList<string> translatedTexts,
+        int originX = 0,
+        int originY = 0)
     {
         var items = new List<OverlayItem>();
         for (var i = 0; i < batch.Count; i++)
@@ -194,10 +211,13 @@ public sealed class TranslationLoopService
             var parts = WrapTranslatedToLines(translated, lines);
             for (var li = 0; li < lines.Count; li++)
             {
+                var b = lines[li].Bounds;
                 items.Add(new OverlayItem
                 {
                     Text = parts[li],
-                    Bounds = lines[li].Bounds,
+                    Bounds = originX == 0 && originY == 0
+                        ? b
+                        : new System.Drawing.Rectangle(b.X + originX, b.Y + originY, b.Width, b.Height),
                 });
             }
         }
