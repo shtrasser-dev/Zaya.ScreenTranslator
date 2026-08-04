@@ -67,6 +67,9 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         };
     }
 
+    private static bool IsFixedFontSizeEnabled(IReadOnlyDictionary<string, object?> s)
+        => s.GetValueOrDefault(OverlayLayoutSettingKeys.FixedFontSize) is true;
+
     private static IReadOnlyList<SettingDescriptor> BuildSettings() =>
     [
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.Placement, Loc("Overlay_Placement"))
@@ -80,12 +83,34 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
                 new(OverlayLayoutSettingKeys.PlacementBelow, Loc("Overlay_Placement_Below")),
             ],
         },
+        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.FixedFontSize, Loc("Overlay_FixedFontSize"))
+        {
+            Description = Loc("Overlay_FixedFontSize_Desc"),
+            DefaultValue = false,
+        },
         new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontScale, Loc("Overlay_FontScale"))
         {
             Description = Loc("Overlay_FontScale_Desc"),
             DefaultValue = 60,
             MinValue = 20,
             MaxValue = 150,
+            IsVisible = s => !IsFixedFontSizeEnabled(s),
+        },
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontSize, Loc("Overlay_FontSize"))
+        {
+            Description = Loc("Overlay_FontSize_Desc"),
+            DefaultValue = 16,
+            MinValue = 8,
+            MaxValue = 200,
+            IsVisible = IsFixedFontSizeEnabled,
+        },
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetYPercent, Loc("Overlay_OffsetYPercent"))
+        {
+            Description = Loc("Overlay_OffsetYPercent_Desc"),
+            DefaultValue = 0,
+            MinValue = -200,
+            MaxValue = 200,
+            IsVisible = s => !IsFixedFontSizeEnabled(s),
         },
         new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetY, Loc("Overlay_OffsetY"))
         {
@@ -93,6 +118,7 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
             DefaultValue = 4,
             MinValue = -200,
             MaxValue = 200,
+            IsVisible = IsFixedFontSizeEnabled,
         },
         new IntegerSettingDescriptor(OverlayLayoutSettingKeys.Padding, Loc("Overlay_Padding"))
         {
@@ -125,12 +151,16 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.TextColor, Loc("Overlay_TextColor"))
         {
             Description = Loc("Overlay_TextColor_Desc"),
-            DefaultValue = OverlayLayoutSettingKeys.TextColorAuto,
+            DefaultValue = OverlayLayoutSettingKeys.TextColorLight,
             Options =
             [
-                new(OverlayLayoutSettingKeys.TextColorAuto, Loc("Overlay_TextColor_Auto")),
                 new(OverlayLayoutSettingKeys.TextColorLight, Loc("Overlay_TextColor_Light")),
                 new(OverlayLayoutSettingKeys.TextColorDark, Loc("Overlay_TextColor_Dark")),
+                new(OverlayLayoutSettingKeys.TextColorCream, Loc("Overlay_TextColor_Cream")),
+                new(OverlayLayoutSettingKeys.TextColorYellow, Loc("Overlay_TextColor_Yellow")),
+                new(OverlayLayoutSettingKeys.TextColorCyan, Loc("Overlay_TextColor_Cyan")),
+                new(OverlayLayoutSettingKeys.TextColorLime, Loc("Overlay_TextColor_Lime")),
+                new(OverlayLayoutSettingKeys.TextColorOrange, Loc("Overlay_TextColor_Orange")),
             ],
         },
         new BooleanSettingDescriptor(OverlayLayoutSettingKeys.Outline, Loc("Overlay_Outline"))

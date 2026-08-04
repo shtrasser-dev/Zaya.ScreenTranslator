@@ -30,8 +30,11 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         cancellationToken.ThrowIfCancellationRequested();
 
         var placement = _settings.GetValueAsString(OverlayLayoutSettingKeys.Placement);
+        var fixedFontSize = _settings.GetValueAsBool(OverlayLayoutSettingKeys.FixedFontSize);
         var fontScale = _settings.GetValueAsInt(OverlayLayoutSettingKeys.FontScale);
+        var fontSize = _settings.GetValueAsInt(OverlayLayoutSettingKeys.FontSize);
         var offsetY = _settings.GetValueAsInt(OverlayLayoutSettingKeys.OffsetY);
+        var offsetYPercent = _settings.GetValueAsInt(OverlayLayoutSettingKeys.OffsetYPercent);
         var padding = _settings.GetValueAsInt(OverlayLayoutSettingKeys.Padding);
         var background = _settings.GetValueAsString(OverlayLayoutSettingKeys.Background);
         var bgOpacity = _settings.GetValueAsInt(OverlayLayoutSettingKeys.BackgroundOpacity);
@@ -45,7 +48,7 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
             if (string.IsNullOrWhiteSpace(item.Text))
                 continue;
             specs.Add(OverlayLayoutMath.Compute(
-                item, placement, fontScale, offsetY, padding,
+                item, placement, fixedFontSize, fontScale, fontSize, offsetY, offsetYPercent, padding,
                 background, bgOpacity, textColor, outline, fitMode));
         }
 

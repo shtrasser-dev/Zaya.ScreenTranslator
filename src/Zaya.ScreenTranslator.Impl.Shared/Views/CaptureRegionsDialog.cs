@@ -245,7 +245,7 @@ internal static class CaptureRegionsDialog
                         waitingText.Text = string.Format(
                             loc.CurrentCulture,
                             loc[LocalizationConstants.Status.Error],
-                            ex.Message);
+                            loc.FormatExceptionMessage(ex));
                     });
                 }
             });

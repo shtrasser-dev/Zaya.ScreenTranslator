@@ -86,43 +86,65 @@ public sealed class OverlayWindow : Window
 
         _canvas.Children.Clear();
         var scaling = Math.Max(0.1, RenderScaling);
+        const double borderPad = 2; // Border.Padding on each side
 
         foreach (var spec in specs)
         {
+            var fontSizeDip = Math.Max(8, spec.FontSize / scaling);
+            var textBlock = new TextBlock
+            {
+                Text = spec.Text,
+                FontSize = fontSizeDip,
+                Foreground = ResolveForeground(spec),
+                TextWrapping = spec.FitMode == OverlayLayoutSettingKeys.FitWrap
+                    ? TextWrapping.Wrap
+                    : TextWrapping.NoWrap,
+                VerticalAlignment = ToAvaloniaVAlign(spec.VAlign),
+                Effect = spec.Outline
+                    ? new DropShadowEffect
+                    {
+                        BlurRadius = 5,
+                        OffsetX = 0,
+                        OffsetY = 0,
+                        Color = Colors.Black,
+                        Opacity = 1,
+                    }
+                    : null,
+            };
+
             var panel = new Border
             {
-                Padding = new Thickness(2),
+                Padding = new Thickness(borderPad),
                 ClipToBounds = false,
                 Background = CreateBackground(spec),
-                Child = new TextBlock
-                {
-                    Text = spec.Text,
-                    FontSize = Math.Max(8, spec.FontSize / scaling),
-                    Foreground = ResolveForeground(spec),
-                    TextWrapping = spec.FitMode == OverlayLayoutSettingKeys.FitWrap
-                        ? TextWrapping.Wrap
-                        : TextWrapping.NoWrap,
-                    VerticalAlignment = ToAvaloniaVAlign(spec.VAlign),
-                    Effect = spec.Outline
-                        ? new DropShadowEffect
-                        {
-                            BlurRadius = 2,
-                            OffsetX = 0,
-                            OffsetY = 0,
-                            Color = Colors.Black,
-                            Opacity = 0.85,
-                        }
-                        : null,
-                },
+                Child = textBlock,
             };
 
             // Snap to whole DIPs to reduce sub-pixel shimmer.
             var left = Math.Round(spec.DrawBounds.X / scaling);
             var top = Math.Round(spec.DrawBounds.Y / scaling);
+            var boxW = Math.Max(1, Math.Round(spec.DrawBounds.Width / scaling));
+            var boxH = Math.Max(1, Math.Round(spec.DrawBounds.Height / scaling));
+
+            // Pre-measure natural text width; expand beyond OCR bounds when translation is longer
+            // (Clip keeps the original box and hides overflow).
+            if (spec.FitMode != OverlayLayoutSettingKeys.FitClip)
+            {
+                var measureBlock = new TextBlock
+                {
+                    Text = spec.Text,
+                    FontSize = fontSizeDip,
+                    TextWrapping = TextWrapping.NoWrap,
+                };
+                measureBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                var needed = Math.Ceiling(measureBlock.DesiredSize.Width) + borderPad * 2;
+                if (needed > boxW)
+                    boxW = needed;
+            }
+
             Canvas.SetLeft(panel, left);
             Canvas.SetTop(panel, top);
-            panel.Width = Math.Max(1, Math.Round(spec.DrawBounds.Width / scaling));
-            var boxH = Math.Max(1, Math.Round(spec.DrawBounds.Height / scaling));
+            panel.Width = boxW;
             if (spec.FitMode == OverlayLayoutSettingKeys.FitClip)
             {
                 panel.Height = boxH;
@@ -180,9 +202,18 @@ public sealed class OverlayWindow : Window
 
     private static IBrush ResolveForeground(OverlayDrawSpec spec)
     {
-        var light = spec.TextColor is OverlayLayoutSettingKeys.TextColorLight
-            or OverlayLayoutSettingKeys.TextColorAuto;
-        return new SolidColorBrush(light ? Colors.White : Colors.Black);
+        var color = spec.TextColor switch
+        {
+            OverlayLayoutSettingKeys.TextColorDark => Colors.Black,
+            OverlayLayoutSettingKeys.TextColorCream => Color.FromRgb(0xFF, 0xF8, 0xE1),
+            OverlayLayoutSettingKeys.TextColorYellow => Color.FromRgb(0xFF, 0xEB, 0x3B),
+            OverlayLayoutSettingKeys.TextColorCyan => Color.FromRgb(0x00, 0xE5, 0xFF),
+            OverlayLayoutSettingKeys.TextColorLime => Color.FromRgb(0xB2, 0xFF, 0x59),
+            OverlayLayoutSettingKeys.TextColorOrange => Color.FromRgb(0xFF, 0xAB, 0x40),
+            // light, legacy "auto", or unknown
+            _ => Colors.White,
+        };
+        return new SolidColorBrush(color);
     }
 
     public static void RunOnUi(Action action)

@@ -4,9 +4,9 @@ Real-time on-screen text translator for Windows. Captures a window or region, ru
 
 ## Version
 
-**1.0.8** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
+**1.0.9** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.0.8` / `app-v1.0-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.0-latest`). Layout plugin (ships with host): `1.0.0.2`.
+Host release tags: `app-v1.0.9` / `app-v1.0-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.0-latest`). Layout plugin (ships with host): `1.0.0.4`.
 
 ## Features
 
@@ -16,7 +16,6 @@ Host release tags: `app-v1.0.8` / `app-v1.0-latest`. Plugin channels: `plugin-{I
 - Translation plugins (Google, Yandex) or built-in “No translation”
 - In-memory translation cache plugin
 - Overlay / text-window display modes
-- Text filter rules (skip / strip)
 - UI languages: en, ru, de, fr, ja, ko, pl, pt, tr, uk, zh-Hans
 - Per-application profiles
 - Plugin updater via GitHub Releases; host opens the release page for app updates (does not self-replace the exe)
@@ -45,11 +44,11 @@ Pinned in `Directory.Build.props`:
 build.cmd
 ```
 
-Publishes a single-file host and packs it into `out\Zaya.ScreenTranslator.zip` (contains `Zaya.ScreenTranslator.exe`). Also writes `out\version.txt` / `out\channel.txt`.
+Publishes a single-file host and packs it into `out\Zaya.ScreenTranslator-{version}.zip` (contains `Zaya.ScreenTranslator.exe`). Also writes `out\version.txt` / `out\channel.txt`.
 
 ## Publish
 
-GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, push, then run the workflow manually (optional **changelog** input becomes the GitHub Release notes). Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator.zip`.
+GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, push, then run the workflow manually (optional **changelog** input becomes the GitHub Release notes). Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator-{version}.zip`.
 
 ## Local plugins
 

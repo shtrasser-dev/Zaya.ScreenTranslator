@@ -9,7 +9,7 @@
         x:DataType="vm:MainViewModel"
         Title="{Binding Loc[MainWindow_Title]}"
         Icon="/Assets/app.ico"
-        Width="920" MinWidth="920"
+        Width="940" MinWidth="940"
         Height="240" MinHeight="0"
         SizeToContent="Height"
         WindowStartupLocation="Manual"

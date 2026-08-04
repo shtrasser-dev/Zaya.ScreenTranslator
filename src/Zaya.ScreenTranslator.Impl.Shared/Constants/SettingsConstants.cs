@@ -19,21 +19,8 @@ internal static class SettingsConstants
     /// <summary>Distinct from <see cref="TranslatorNone"/> so plugin setting bags do not collide.</summary>
     public const string TranslatorCacheNone = "cache-none";
 
-    public const string FilterMinLength = "filterMinLength";
-    public const string FilterRules = "filterRules";
-
     public const string CaptureRegions = "captureRegions";
     public const string IgnoreRegions = "ignoreRegions";
-
-    public const string RuleEnabled = "enabled";
-    public const string RulePattern = "pattern";
-    public const string RuleIsRegex = "isRegex";
-    public const string RuleIgnoreCase = "ignoreCase";
-    public const string RuleAction = "action";
-    public const string RuleDescription = "description";
-
-    public const string ActionStrip = "Strip";
-    public const string ActionSkip = "Skip";
 
     public static class EngineDefaults
     {

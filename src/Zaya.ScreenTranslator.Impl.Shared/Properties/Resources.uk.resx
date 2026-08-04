@@ -99,39 +99,6 @@
   <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
     <value>Кеш</value>
   </data>
-  <data name="Settings_Tab_Filter" xml:space="preserve">
-    <value>Фільтр</value>
-  </data>
-  <data name="Filter_MinLength" xml:space="preserve">
-    <value>Мінімальна довжина тексту</value>
-  </data>
-  <data name="Filter_Rules" xml:space="preserve">
-    <value>Правила фільтра</value>
-  </data>
-  <data name="Filter_Enabled" xml:space="preserve">
-    <value>Увімкнено</value>
-  </data>
-  <data name="Filter_Pattern" xml:space="preserve">
-    <value>Текст</value>
-  </data>
-  <data name="Filter_IsRegex" xml:space="preserve">
-    <value>Регулярний вираз</value>
-  </data>
-  <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>Ігнорувати регістр</value>
-  </data>
-  <data name="Filter_Action" xml:space="preserve">
-    <value>Дія</value>
-  </data>
-  <data name="Filter_Action_Skip" xml:space="preserve">
-    <value>Пропустити блок</value>
-  </data>
-  <data name="Filter_Action_Strip" xml:space="preserve">
-    <value>Вирізати збіг</value>
-  </data>
-  <data name="Filter_Description" xml:space="preserve">
-    <value>Опис</value>
-  </data>
   <data name="Filter_AddRule" xml:space="preserve">
     <value>Додати правило</value>
   </data>

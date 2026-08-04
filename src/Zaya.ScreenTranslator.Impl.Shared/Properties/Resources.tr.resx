@@ -99,39 +99,6 @@
   <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
     <value>Önbellek</value>
   </data>
-  <data name="Settings_Tab_Filter" xml:space="preserve">
-    <value>Filtre</value>
-  </data>
-  <data name="Filter_MinLength" xml:space="preserve">
-    <value>Minimum metin uzunluğu</value>
-  </data>
-  <data name="Filter_Rules" xml:space="preserve">
-    <value>Filtre kuralları</value>
-  </data>
-  <data name="Filter_Enabled" xml:space="preserve">
-    <value>Açık</value>
-  </data>
-  <data name="Filter_Pattern" xml:space="preserve">
-    <value>Metin</value>
-  </data>
-  <data name="Filter_IsRegex" xml:space="preserve">
-    <value>Regex</value>
-  </data>
-  <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>Büyük/küçük harf yok say</value>
-  </data>
-  <data name="Filter_Action" xml:space="preserve">
-    <value>Eylem</value>
-  </data>
-  <data name="Filter_Action_Skip" xml:space="preserve">
-    <value>Bloğu atla</value>
-  </data>
-  <data name="Filter_Action_Strip" xml:space="preserve">
-    <value>Eşleşmeyi kaldır</value>
-  </data>
-  <data name="Filter_Description" xml:space="preserve">
-    <value>Açıklama</value>
-  </data>
   <data name="Filter_AddRule" xml:space="preserve">
     <value>Kural ekle</value>
   </data>

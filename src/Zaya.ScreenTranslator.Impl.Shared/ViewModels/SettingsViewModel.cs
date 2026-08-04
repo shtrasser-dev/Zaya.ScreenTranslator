@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Text.Json;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
+using Zaya.ScreenTranslator.Impl.Shared.Converters;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
@@ -23,6 +25,13 @@ public sealed partial class SettingsViewModel : ObservableObject
     private IApplicationProfile _originalProfile;
     private ScreenTranslatorProfile _originalScreenProfile;
     private bool _suppressLanguageChange;
+    private string _translationSettingsFingerprint = string.Empty;
+
+    private static readonly JsonSerializerOptions TranslationFingerprintJsonOptions = new()
+    {
+        WriteIndented = false,
+        Converters = { new SettingsJsonConverter() },
+    };
 
     public sealed record LanguageItem(string Code, string Name);
 
@@ -90,11 +99,13 @@ public sealed partial class SettingsViewModel : ObservableObject
         _checkUpdatesOnStartup = _originalScreenProfile.CheckUpdatesOnStartup;
 
         ReloadAllDescriptors();
+        _translationSettingsFingerprint = ComputeTranslationSettingsFingerprint();
     }
 
     public LocalizationService Localization => _loc;
     public LocalizedStrings Loc { get; private set; }
     public Action? UiCultureChanged { get; set; }
+    public Action? TranslationSettingsChanged { get; set; }
     public Window? OwnerWindow { get; set; }
     public IAsyncRelayCommand? DeleteProfileCommand { get; set; }
     public IRelayCommand? SetCurrentProcessCommand { get; set; }
@@ -103,7 +114,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<LanguageItem> TargetLanguages { get; private set; }
     public IReadOnlyList<string> ThemeOptions { get; } = [AppConstants.Theme.Light, AppConstants.Theme.Dark];
 
-    public void ApplyChanges()
+    public void ApplyChanges(bool affectsTranslation = true)
     {
         EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = SelectedProfileName;
         EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.FramePauseMs] = FramePauseMs;
@@ -112,6 +123,20 @@ public sealed partial class SettingsViewModel : ObservableObject
         EditingScreenProfile.TargetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
         EditingScreenProfile.LastActiveProfileName = SelectedProfileName;
         _profileService.SaveScreenTranslatorProfile(EditingScreenProfile);
+
+        var fingerprint = ComputeTranslationSettingsFingerprint();
+        var translationChanged = !string.Equals(fingerprint, _translationSettingsFingerprint, StringComparison.Ordinal);
+        _translationSettingsFingerprint = fingerprint;
+
+        if (affectsTranslation && translationChanged)
+            TranslationSettingsChanged?.Invoke();
+    }
+
+    private string ComputeTranslationSettingsFingerprint()
+    {
+        var settingsJson = JsonSerializer.Serialize(EditingProfile.Settings, TranslationFingerprintJsonOptions);
+        var targetLanguage = EditingScreenProfile.TargetLanguage ?? string.Empty;
+        return settingsJson + "\n" + targetLanguage;
     }
 
     public void RefreshLocalizedLists()
@@ -160,7 +185,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         try
         {
             UpdateStatusMessage = await _updateChecker.CheckAsync(
-                OwnerWindow, EditingScreenProfile, ApplyChanges).ConfigureAwait(true);
+                OwnerWindow, EditingScreenProfile, () => ApplyChanges(affectsTranslation: false)).ConfigureAwait(true);
         }
         catch (Exception ex)
         {

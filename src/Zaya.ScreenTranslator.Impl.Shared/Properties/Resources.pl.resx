@@ -99,39 +99,6 @@
   <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
     <value>Cache</value>
   </data>
-  <data name="Settings_Tab_Filter" xml:space="preserve">
-    <value>Filtr</value>
-  </data>
-  <data name="Filter_MinLength" xml:space="preserve">
-    <value>Minimalna długość tekstu</value>
-  </data>
-  <data name="Filter_Rules" xml:space="preserve">
-    <value>Reguły filtra</value>
-  </data>
-  <data name="Filter_Enabled" xml:space="preserve">
-    <value>Wł.</value>
-  </data>
-  <data name="Filter_Pattern" xml:space="preserve">
-    <value>Tekst</value>
-  </data>
-  <data name="Filter_IsRegex" xml:space="preserve">
-    <value>Regex</value>
-  </data>
-  <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>Ignoruj wielkość liter</value>
-  </data>
-  <data name="Filter_Action" xml:space="preserve">
-    <value>Akcja</value>
-  </data>
-  <data name="Filter_Action_Skip" xml:space="preserve">
-    <value>Pomiń blok</value>
-  </data>
-  <data name="Filter_Action_Strip" xml:space="preserve">
-    <value>Usuń dopasowanie</value>
-  </data>
-  <data name="Filter_Description" xml:space="preserve">
-    <value>Opis</value>
-  </data>
   <data name="Filter_AddRule" xml:space="preserve">
     <value>Dodaj regułę</value>
   </data>

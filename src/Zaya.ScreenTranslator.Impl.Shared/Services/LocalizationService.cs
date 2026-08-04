@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Zaya.Primitives;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -25,6 +27,29 @@ public sealed class LocalizationService : ObservableObject
                 Debug.WriteLine($"[Loc] key={key}, culture={CurrentCulture.Name}, result='{result}'");
             return result;
         }
+    }
+
+    /// <summary>
+    /// User-facing text for an exception: localized plugin/host message when available.
+    /// </summary>
+    public string FormatExceptionMessage(Exception ex)
+        => ex is LocalizedException lex
+            ? lex.GetLocalizedMessage(CurrentCulture)
+            : ex.Message;
+
+    /// <summary>
+    /// Combines stopped + error status, e.g. "Stopped Error: …" / "Остановлено Ошибка: …".
+    /// </summary>
+    public string FormatStoppedWithError(Exception ex)
+        => FormatStoppedWithError(FormatExceptionMessage(ex));
+
+    /// <summary>
+    /// Combines stopped + error status, e.g. "Stopped Error: …" / "Остановлено Ошибка: …".
+    /// </summary>
+    public string FormatStoppedWithError(string detail)
+    {
+        var error = string.Format(CurrentCulture, this[LocalizationConstants.Status.Error], detail);
+        return $"{this[LocalizationConstants.Status.Stopped]} {error}";
     }
 
     /// <summary>

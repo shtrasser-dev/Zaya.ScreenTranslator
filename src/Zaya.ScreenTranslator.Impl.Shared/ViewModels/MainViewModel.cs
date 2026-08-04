@@ -34,6 +34,8 @@ public sealed partial class MainViewModel :
     private bool _suppressProfileChange;
     private string? _statusKey = AppConstants.StatusState.Idle;
     private bool _isRefreshingUiCulture;
+    private int _settingsRestartToken;
+    private CancellationTokenSource? _settingsRestartDebounceCts;
 
     public MainViewModel(
         IApplicationProfileService profileService,
@@ -96,8 +98,11 @@ public sealed partial class MainViewModel :
     {
         if (value is null) return;
         var screen = _profileService.LoadScreenTranslatorProfile();
+        if (string.Equals(screen.TargetLanguage, value.Code, StringComparison.OrdinalIgnoreCase))
+            return;
         screen.TargetLanguage = value.Code;
         _profileService.SaveScreenTranslatorProfile(screen);
+        ScheduleRestartTranslationIfRunning();
     }
 
     [ObservableProperty]
@@ -181,7 +186,16 @@ public sealed partial class MainViewModel :
     public bool HasProfileError => !string.IsNullOrEmpty(ProfileErrorMessage);
     public string CreateNewProfileLabel => Loc[LocalizationConstants.Profile.CreateNew];
 
-    public Task OnProfilePickedFromListAsync(string? name) => _profilePicker.OnProfilePickedFromListAsync(name);
+    public Task OnProfilePickedFromListAsync(string? name) => OnProfilePickedFromListCoreAsync(name);
+
+    private async Task OnProfilePickedFromListCoreAsync(string? name)
+    {
+        var previous = _committedProfileName;
+        await _profilePicker.OnProfilePickedFromListAsync(name).ConfigureAwait(true);
+        if (!string.Equals(previous, _committedProfileName, StringComparison.Ordinal))
+            ScheduleRestartTranslationIfRunning();
+    }
+
     public bool CommitProfileRename(string? editedText) => _profilePicker.CommitProfileRename(editedText);
 
     [RelayCommand(CanExecute = nameof(CanDeleteProfile))]
@@ -208,15 +222,18 @@ public sealed partial class MainViewModel :
     public string SelectedDisplayMode =>
         SelectedDisplayModeOption?.Id ?? ScreenTranslatorSettingDescriptors.DisplayModeOverlay;
 
-    partial void OnSelectedDisplayModeOptionChanged(DisplayModeOption? value)
+    partial void OnSelectedDisplayModeOptionChanged(DisplayModeOption? oldValue, DisplayModeOption? newValue)
     {
-        if (value is null) return;
+        if (newValue is null) return;
         var screen = _profileService.LoadScreenTranslatorProfile();
-        screen.DisplayMode = value.Id is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
-            ? value.Id
+        screen.DisplayMode = newValue.Id is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
+            ? newValue.Id
             : AppConstants.DisplayMode.Overlay;
         _profileService.SaveScreenTranslatorProfile(screen);
-        _textOutput.OnDisplayModeChanged(value.Id);
+        _textOutput.OnDisplayModeChanged(newValue.Id);
+        if (oldValue is not null
+            && !string.Equals(oldValue.Id, newValue.Id, StringComparison.OrdinalIgnoreCase))
+            ScheduleRestartTranslationIfRunning();
     }
 
     internal void RebuildDisplayModeOptions(string? selectedId = null)
@@ -250,9 +267,73 @@ public sealed partial class MainViewModel :
     public void CancelLoop() => _sessionCoordinator.CancelLoop();
     public Task StopLoopAsync() => _sessionCoordinator.StopLoopAsync();
 
+    private void CancelPendingSettingsRestart()
+    {
+        _settingsRestartToken++;
+        _settingsRestartDebounceCts?.Cancel();
+        _settingsRestartDebounceCts?.Dispose();
+        _settingsRestartDebounceCts = null;
+    }
+
+    private void ScheduleRestartTranslationIfRunning()
+    {
+        if (!IsRunning)
+            return;
+
+        var token = ++_settingsRestartToken;
+        _settingsRestartDebounceCts?.Cancel();
+        _settingsRestartDebounceCts?.Dispose();
+        var cts = new CancellationTokenSource();
+        _settingsRestartDebounceCts = cts;
+        _ = RestartTranslationAfterSettingsDebounceAsync(token, cts.Token);
+    }
+
+    private async Task RestartTranslationAfterSettingsDebounceAsync(int token, CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(400, ct).ConfigureAwait(true);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (token != _settingsRestartToken || !IsRunning)
+            return;
+
+        SetStatus(Loc[LocalizationConstants.Status.Stopping]);
+        await StopLoopAsync().ConfigureAwait(true);
+
+        if (token != _settingsRestartToken)
+            return;
+
+        await StartTranslationSessionAsync().ConfigureAwait(true);
+    }
+
+    private async Task StartTranslationSessionAsync()
+    {
+        var profile = _profileService.ActiveProfile;
+        if (profile is null)
+        {
+            SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
+            return;
+        }
+
+        var target = await _captureResolver.ResolveCaptureTargetAsync(profile).ConfigureAwait(true);
+        if (target is null)
+            return;
+
+        await _captureResolver.SyncWindowPickerAsync(target).ConfigureAwait(true);
+        await _sessionCoordinator.StartSessionAsync(profile, target.Handle, AppConstants.StatusState.Running)
+            .ConfigureAwait(true);
+    }
+
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task StartStop()
     {
+        CancelPendingSettingsRestart();
+
         if (IsRunning)
         {
             SetStatus(Loc[LocalizationConstants.Status.Stopping]);
@@ -261,14 +342,7 @@ public sealed partial class MainViewModel :
             return;
         }
 
-        var profile = _profileService.ActiveProfile;
-        if (profile is null) { SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true); return; }
-
-        var target = await _captureResolver.ResolveCaptureTargetAsync(profile);
-        if (target is null) return;
-
-        await _captureResolver.SyncWindowPickerAsync(target);
-        await _sessionCoordinator.StartSessionAsync(profile, target.Handle, AppConstants.StatusState.Running);
+        await StartTranslationSessionAsync().ConfigureAwait(true);
     }
 
     [RelayCommand] private void ShowHideText() => _textOutput.ToggleTextOutput();
@@ -285,7 +359,9 @@ public sealed partial class MainViewModel :
 
         SetWindowError(null);
 
-        if (IsRunning)
+        var wasRunning = IsRunning;
+        CancelPendingSettingsRestart();
+        if (wasRunning)
         {
             SetStatus(Loc[LocalizationConstants.Status.Stopping]);
             await StopLoopAsync();
@@ -311,6 +387,9 @@ public sealed partial class MainViewModel :
         CaptureRegionsStore.Save(profile, result);
         _profileService.Save(profile);
         RefreshCaptureRegionsIndicator();
+
+        if (wasRunning)
+            await StartTranslationSessionAsync().ConfigureAwait(true);
     }
 
     [ObservableProperty]

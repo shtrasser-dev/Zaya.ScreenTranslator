@@ -108,18 +108,8 @@ internal static class LocalizationConstants
         public const string Overlay = "DisplayMode_Overlay";
     }
 
-    public static class Filter
+    public static class Table
     {
-        public const string MinLength = "Filter_MinLength";
-        public const string Rules = "Filter_Rules";
-        public const string Enabled = "Filter_Enabled";
-        public const string Pattern = "Filter_Pattern";
-        public const string IsRegex = "Filter_IsRegex";
-        public const string IgnoreCase = "Filter_IgnoreCase";
-        public const string Action = "Filter_Action";
-        public const string ActionSkip = "Filter_Action_Skip";
-        public const string ActionStrip = "Filter_Action_Strip";
-        public const string Description = "Filter_Description";
         public const string AddRule = "Filter_AddRule";
         public const string RemoveRule = "Filter_RemoveRule";
     }

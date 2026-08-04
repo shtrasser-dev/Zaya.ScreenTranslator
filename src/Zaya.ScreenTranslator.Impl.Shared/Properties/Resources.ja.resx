@@ -99,39 +99,6 @@
   <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
     <value>キャッシュ</value>
   </data>
-  <data name="Settings_Tab_Filter" xml:space="preserve">
-    <value>フィルター</value>
-  </data>
-  <data name="Filter_MinLength" xml:space="preserve">
-    <value>最小テキスト長</value>
-  </data>
-  <data name="Filter_Rules" xml:space="preserve">
-    <value>フィルター規則</value>
-  </data>
-  <data name="Filter_Enabled" xml:space="preserve">
-    <value>オン</value>
-  </data>
-  <data name="Filter_Pattern" xml:space="preserve">
-    <value>テキスト</value>
-  </data>
-  <data name="Filter_IsRegex" xml:space="preserve">
-    <value>正規表現</value>
-  </data>
-  <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>大文字小文字を無視</value>
-  </data>
-  <data name="Filter_Action" xml:space="preserve">
-    <value>操作</value>
-  </data>
-  <data name="Filter_Action_Skip" xml:space="preserve">
-    <value>ブロックをスキップ</value>
-  </data>
-  <data name="Filter_Action_Strip" xml:space="preserve">
-    <value>一致を除去</value>
-  </data>
-  <data name="Filter_Description" xml:space="preserve">
-    <value>説明</value>
-  </data>
   <data name="Filter_AddRule" xml:space="preserve">
     <value>規則を追加</value>
   </data>

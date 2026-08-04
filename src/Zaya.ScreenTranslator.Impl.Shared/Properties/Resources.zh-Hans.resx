@@ -99,39 +99,6 @@
   <data name="Settings_Tab_TranslatorCache" xml:space="preserve">
     <value>缓存</value>
   </data>
-  <data name="Settings_Tab_Filter" xml:space="preserve">
-    <value>过滤</value>
-  </data>
-  <data name="Filter_MinLength" xml:space="preserve">
-    <value>最小文本长度</value>
-  </data>
-  <data name="Filter_Rules" xml:space="preserve">
-    <value>过滤规则</value>
-  </data>
-  <data name="Filter_Enabled" xml:space="preserve">
-    <value>开</value>
-  </data>
-  <data name="Filter_Pattern" xml:space="preserve">
-    <value>文本</value>
-  </data>
-  <data name="Filter_IsRegex" xml:space="preserve">
-    <value>正则</value>
-  </data>
-  <data name="Filter_IgnoreCase" xml:space="preserve">
-    <value>忽略大小写</value>
-  </data>
-  <data name="Filter_Action" xml:space="preserve">
-    <value>操作</value>
-  </data>
-  <data name="Filter_Action_Skip" xml:space="preserve">
-    <value>跳过块</value>
-  </data>
-  <data name="Filter_Action_Strip" xml:space="preserve">
-    <value>去除匹配</value>
-  </data>
-  <data name="Filter_Description" xml:space="preserve">
-    <value>说明</value>
-  </data>
   <data name="Filter_AddRule" xml:space="preserve">
     <value>添加规则</value>
   </data>

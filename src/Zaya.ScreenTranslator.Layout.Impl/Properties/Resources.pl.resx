@@ -39,11 +39,29 @@
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
     <value>Rozmiar czcionki jako procent wysokości bounds</value>
   </data>
+  <data name="Overlay_FixedFontSize" xml:space="preserve">
+    <value>Stały rozmiar czcionki</value>
+  </data>
+  <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
+    <value>Używaj wysokości czcionki i przesunięcia Y w pikselach zamiast procentów wysokości OCR/tekstu</value>
+  </data>
+  <data name="Overlay_FontSize" xml:space="preserve">
+    <value>Rozmiar czcionki (px)</value>
+  </data>
+  <data name="Overlay_FontSize_Desc" xml:space="preserve">
+    <value>Stała wysokość tekstu overlay w pikselach</value>
+  </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
     <value>Przesunięcie Y (px)</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Dodatkowy odstęp pionowy od krawędzi bounds</value>
+    <value>Dodatkowy odstęp pionowy od krawędzi bounds w pikselach</value>
+  </data>
+  <data name="Overlay_OffsetYPercent" xml:space="preserve">
+    <value>Przesunięcie Y (%)</value>
+  </data>
+  <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
+    <value>Dodatkowy odstęp pionowy jako procent wysokości tekstu</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>Wypełnienie</value>
@@ -78,14 +96,26 @@
   <data name="Overlay_TextColor_Desc" xml:space="preserve">
     <value>Kolor pierwszego planu tekstu nakładki</value>
   </data>
-  <data name="Overlay_TextColor_Auto" xml:space="preserve">
-    <value>Auto</value>
-  </data>
   <data name="Overlay_TextColor_Light" xml:space="preserve">
     <value>Jasny</value>
   </data>
   <data name="Overlay_TextColor_Dark" xml:space="preserve">
     <value>Ciemny</value>
+  </data>
+  <data name="Overlay_TextColor_Cream" xml:space="preserve">
+    <value>Kremowy</value>
+  </data>
+  <data name="Overlay_TextColor_Yellow" xml:space="preserve">
+    <value>Żółty</value>
+  </data>
+  <data name="Overlay_TextColor_Cyan" xml:space="preserve">
+    <value>Cyjan</value>
+  </data>
+  <data name="Overlay_TextColor_Lime" xml:space="preserve">
+    <value>Limonkowy</value>
+  </data>
+  <data name="Overlay_TextColor_Orange" xml:space="preserve">
+    <value>Pomarańczowy</value>
   </data>
   <data name="Overlay_Outline" xml:space="preserve">
     <value>Kontur</value>

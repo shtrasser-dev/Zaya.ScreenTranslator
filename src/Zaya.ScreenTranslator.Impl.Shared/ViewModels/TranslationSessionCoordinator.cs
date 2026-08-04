@@ -17,6 +17,7 @@ internal interface ITranslationSessionHost : IStatusHost
     CancellationTokenSource? LoopCts { get; set; }
     void SetLocalizedStatus(string resourceKey, string statusKey);
     void SetTextOutputVisible(bool visible);
+    Task ClearWindowSelectionIfProcessGoneAsync();
 }
 
 internal sealed class TranslationSessionCoordinator
@@ -186,7 +187,9 @@ internal sealed class TranslationSessionCoordinator
                 translatorCache.Dispose();
                 overlayLayout.Dispose();
                 AbortPendingStart();
-                _host.SetStatus(string.Format(_host.Loc[LocalizationConstants.Status.OverlayFailed], ex.Message), isError: true);
+                _host.SetStatus(string.Format(
+                    _host.Loc[LocalizationConstants.Status.OverlayFailed],
+                    LocalizationService.Instance.FormatExceptionMessage(ex)), isError: true);
                 return;
             }
         }
@@ -235,18 +238,23 @@ internal sealed class TranslationSessionCoordinator
             await _loopTask;
         }
         catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            // Safety net if RunAsync fails before posting status (should be rare).
+            _host.SetStatus(LocalizationService.Instance.FormatStoppedWithError(ex), isError: true);
+        }
         finally
         {
             DisposeEngines();
             _host.IsRunning = false;
             if (_host.LoopCts is not null)
             {
-                if (!_host.LoopCts.IsCancellationRequested)
-                    _host.SetStatus(_host.Loc[LocalizationConstants.Status.Stopped]);
+                // Status is set by the loop (Stopped / Stopped + Error) or by the caller on cancel.
                 _host.LoopCts.Dispose();
                 _host.LoopCts = null;
             }
             _loopTask = null;
+            await _host.ClearWindowSelectionIfProcessGoneAsync().ConfigureAwait(true);
         }
     }
 

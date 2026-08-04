@@ -22,11 +22,13 @@ internal static class Win32WindowBounds
     [DllImport("user32.dll")]
     private static extern bool IsIconic(IntPtr hWnd);
 
-    public static bool IsMinimized(IntPtr hWnd)
+    public static bool IsValidWindow(IntPtr hWnd)
         => OperatingSystem.IsWindows()
            && hWnd != IntPtr.Zero
-           && IsWindow(hWnd)
-           && IsIconic(hWnd);
+           && IsWindow(hWnd);
+
+    public static bool IsMinimized(IntPtr hWnd)
+        => IsValidWindow(hWnd) && IsIconic(hWnd);
 
     public static bool TryGetClientSize(IntPtr hWnd, out int width, out int height)
     {

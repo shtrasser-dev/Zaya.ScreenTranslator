@@ -52,13 +52,13 @@ public sealed partial class SettingsViewModel
     {
         EditingScreenProfile.Theme = value;
         ApplyTheme(value);
-        ApplyChanges();
+        ApplyChanges(affectsTranslation: false);
     }
 
     partial void OnCheckUpdatesOnStartupChanged(bool value)
     {
         EditingScreenProfile.CheckUpdatesOnStartup = value;
-        ApplyChanges();
+        ApplyChanges(affectsTranslation: false);
     }
 
     partial void OnSelectedUiLanguageChanged(LanguageItem? value)
@@ -68,12 +68,12 @@ public sealed partial class SettingsViewModel
         EditingScreenProfile.UiCulture = value.Code;
         if (IsCurrentCulture(value.Code))
         {
-            ApplyChanges();
+            ApplyChanges(affectsTranslation: false);
             return;
         }
 
         _loc.SetCulture(value.Code);
-        ApplyChanges();
+        ApplyChanges(affectsTranslation: false);
         UiCultureChanged?.Invoke();
     }
 
@@ -81,6 +81,9 @@ public sealed partial class SettingsViewModel
     {
         if (value is null || _suppressLanguageChange) return;
         EditingScreenProfile.TargetLanguage = value.Code;
+        var screen = _profileService.LoadScreenTranslatorProfile();
+        screen.TargetLanguage = value.Code;
+        _profileService.SaveScreenTranslatorProfile(screen);
         ApplyChanges();
     }
 

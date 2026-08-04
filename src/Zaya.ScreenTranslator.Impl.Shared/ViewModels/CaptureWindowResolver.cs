@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
+using Zaya.ScreenTranslator.Impl.Shared.Native;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
@@ -145,6 +146,28 @@ internal sealed class CaptureWindowResolver
         _host.SetSelectedWindow(previous is null
             ? null
             : list.FirstOrDefault(w => w.Handle == previous.Handle));
+    }
+
+    /// <summary>
+    /// Clears the Window picker when the selected process is gone or its window HWND is no longer valid.
+    /// </summary>
+    public Task ClearSelectedWindowIfProcessGoneAsync()
+    {
+        var selected = _host.SelectedWindow;
+        if (selected is null || selected.IsLoadingPlaceholder)
+            return Task.CompletedTask;
+
+        var processAlive = CaptureProcessWindowHelpers.IsProcessRunning(selected.ProcessName);
+        var windowAlive = Win32WindowBounds.IsValidWindow(selected.Handle);
+        if (processAlive && windowAlive)
+            return Task.CompletedTask;
+
+        _host.LastSelectedWindow = null;
+        _host.SetSelectedWindow(null);
+        _host.Context.ActiveWindowHandle = 0;
+        _host.Context.ActiveWindowTitle = null;
+        _host.NotifySetCurrentProcessCanExecuteChanged();
+        return LoadWindowsAsync();
     }
 
     public static List<WindowInfo> BuildWindowList()

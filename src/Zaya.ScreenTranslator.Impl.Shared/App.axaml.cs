@@ -21,7 +21,7 @@ public partial class App : Application
     public static string PluginsDirectory { get; set; } =
         Path.Combine(DataDirectory, "plugins");
 
-    private static readonly TimeSpan StartupUpdateCheckInterval = TimeSpan.FromHours(1);
+    private static readonly TimeSpan StartupUpdateCheckInterval = TimeSpan.FromHours(12);
 
     private ServiceProvider? _serviceProvider;
     private ScreenTranslatorProfile? _screenProfile;

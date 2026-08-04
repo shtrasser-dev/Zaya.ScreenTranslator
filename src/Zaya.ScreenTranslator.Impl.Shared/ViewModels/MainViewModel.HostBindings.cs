@@ -33,4 +33,6 @@ public sealed partial class MainViewModel
     bool ITranslationSessionHost.IsRunning { get => IsRunning; set => IsRunning = value; }
     void ITranslationSessionHost.SetTextOutputVisible(bool visible) => _textOutput.SetTextOutputVisible(visible);
     CancellationTokenSource? ITranslationSessionHost.LoopCts { get => LoopCts; set => LoopCts = value; }
+    Task ITranslationSessionHost.ClearWindowSelectionIfProcessGoneAsync()
+        => _captureResolver.ClearSelectedWindowIfProcessGoneAsync();
 }

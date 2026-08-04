@@ -10,7 +10,7 @@
 
     <ZayaVersionRole>plugin</ZayaVersionRole>
     <ZayaVersionImpMajor>0</ZayaVersionImpMajor>
-    <ZayaVersionImpMinor>2</ZayaVersionImpMinor>
+    <ZayaVersionImpMinor>4</ZayaVersionImpMinor>
     <ZayaInterfaceCsproj>$(MSBuildThisFileDirectory)..\Zaya.ScreenTranslator.Layout\Zaya.ScreenTranslator.Layout.csproj</ZayaInterfaceCsproj>
 
     <PackageId>Zaya.ScreenTranslator.Layout.Impl</PackageId>

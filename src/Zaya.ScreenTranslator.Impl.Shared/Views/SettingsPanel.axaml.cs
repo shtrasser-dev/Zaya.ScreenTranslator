@@ -12,6 +12,7 @@ public partial class SettingsPanel : UserControl
 {
     private SettingsViewModel? _viewModel;
     private bool _panelsWired;
+    private int _ignoreSettingControlCallbacks;
 
     public SettingsPanel()
     {
@@ -58,24 +59,42 @@ public partial class SettingsPanel : UserControl
         viewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(SettingsViewModel.OcrDescriptors))
-                RebuildPanel("OcrSettingsPanel", viewModel.OcrDescriptors,
+                RebuildPanelIgnoringCallbacks("OcrSettingsPanel", viewModel.OcrDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
             if (e.PropertyName == nameof(SettingsViewModel.CaptureDescriptors))
-                RebuildPanel("CaptureSettingsPanel", viewModel.CaptureDescriptors,
+                RebuildPanelIgnoringCallbacks("CaptureSettingsPanel", viewModel.CaptureDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
             if (e.PropertyName == nameof(SettingsViewModel.TextLayoutDescriptors))
-                RebuildPanel("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
+                RebuildPanelIgnoringCallbacks("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
             if (e.PropertyName == nameof(SettingsViewModel.TranslatorDescriptors))
-                RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
+                RebuildPanelIgnoringCallbacks("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
             if (e.PropertyName == nameof(SettingsViewModel.TranslatorCacheDescriptors))
-                RebuildPanel("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
+                RebuildPanelIgnoringCallbacks("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
             if (e.PropertyName == nameof(SettingsViewModel.OverlayLayoutDescriptors))
-                RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
+                RebuildPanelIgnoringCallbacks("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
                     () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
         };
+    }
+
+    private void RebuildPanelIgnoringCallbacks(
+        string panelName,
+        IReadOnlyList<SettingDescriptor>? descriptors,
+        Func<string> getPluginId)
+    {
+        _ignoreSettingControlCallbacks++;
+        try
+        {
+            RebuildPanel(panelName, descriptors, getPluginId);
+        }
+        finally
+        {
+            Dispatcher.UIThread.Post(
+                () => _ignoreSettingControlCallbacks = Math.Max(0, _ignoreSettingControlCallbacks - 1),
+                DispatcherPriority.Input);
+        }
     }
 
     private void ScheduleRebuildAll()
@@ -90,20 +109,29 @@ public partial class SettingsPanel : UserControl
             return;
 
         var viewModel = _viewModel;
-        RebuildPanel("OcrSettingsPanel", viewModel.OcrDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-        RebuildPanel("CaptureSettingsPanel", viewModel.CaptureDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
-        RebuildPanel("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
-        RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
-        RebuildPanel("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
-        RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
-            () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
-        RebuildPanel("FilterSettingsPanel", ScreenTranslatorSettingDescriptors.FilterDescriptors,
-            () => ScreenTranslatorSettingDescriptors.StKey);
+        _ignoreSettingControlCallbacks++;
+        try
+        {
+            RebuildPanel("OcrSettingsPanel", viewModel.OcrDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
+            RebuildPanel("CaptureSettingsPanel", viewModel.CaptureDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
+            RebuildPanel("TextLayoutSettingsPanel", viewModel.TextLayoutDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
+            RebuildPanel("TranslatorSettingsPanel", viewModel.TranslatorDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+            RebuildPanel("TranslatorCacheSettingsPanel", viewModel.TranslatorCacheDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
+            RebuildPanel("OverlaySettingsPanel", viewModel.OverlayLayoutDescriptors,
+                () => viewModel.EditingProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
+        }
+        finally
+        {
+            // ComboBox/Toggle may raise change events when attached after this method returns.
+            Dispatcher.UIThread.Post(
+                () => _ignoreSettingControlCallbacks = Math.Max(0, _ignoreSettingControlCallbacks - 1),
+                DispatcherPriority.Input);
+        }
     }
 
     private void RebuildPanel(string panelName,
@@ -141,6 +169,11 @@ public partial class SettingsPanel : UserControl
                 desc, currentValue, allSettings,
                 (_, newVal) =>
                 {
+                    if (_ignoreSettingControlCallbacks > 0)
+                        return;
+                    if (IsSettingValueUnchanged(pluginSettings, desc, newVal))
+                        return;
+
                     if (newVal is null)
                         pluginSettings.Remove(desc.Key);
                     else
@@ -155,6 +188,51 @@ public partial class SettingsPanel : UserControl
             panel.Children.Add(control);
         }
     }
+
+    private static bool IsSettingValueUnchanged(
+        IReadOnlyDictionary<string, object> pluginSettings,
+        SettingDescriptor desc,
+        object? newVal)
+    {
+        if (pluginSettings.TryGetValue(desc.Key, out var existing))
+            return SettingValuesEqual(existing, newVal);
+
+        return SettingValuesEqual(GetDescriptorDefault(desc), newVal);
+    }
+
+    private static object? GetDescriptorDefault(SettingDescriptor desc) => desc switch
+    {
+        EnumSettingDescriptor e => e.DefaultValue,
+        BooleanSettingDescriptor b => b.DefaultValue,
+        IntegerSettingDescriptor i => i.DefaultValue,
+        StringSettingDescriptor s => s.DefaultValue,
+        UrlSettingDescriptor u => u.DefaultValue,
+        DirectoryPathSettingDescriptor d => d.DefaultValue,
+        FilePathSettingDescriptor f => f.DefaultValue,
+        PasswordSettingDescriptor p => p.DefaultValue,
+        _ => null,
+    };
+
+    private static bool SettingValuesEqual(object? left, object? right)
+    {
+        if (ReferenceEquals(left, right))
+            return true;
+        if (left is null || right is null)
+            return false;
+        if (left.Equals(right))
+            return true;
+
+        if (IsNumeric(left) && IsNumeric(right))
+            return Convert.ToDecimal(left) == Convert.ToDecimal(right);
+
+        return string.Equals(
+            Convert.ToString(left, System.Globalization.CultureInfo.InvariantCulture),
+            Convert.ToString(right, System.Globalization.CultureInfo.InvariantCulture),
+            StringComparison.Ordinal);
+    }
+
+    private static bool IsNumeric(object value) =>
+        value is byte or sbyte or short or ushort or int or uint or long or ulong or float or double or decimal;
 
     private void UpdateVisibility(string panelName, Func<string> getPluginId)
     {

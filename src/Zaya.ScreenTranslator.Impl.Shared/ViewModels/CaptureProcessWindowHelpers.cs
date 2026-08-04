@@ -47,6 +47,32 @@ internal static class CaptureProcessWindowHelpers
         return value;
     }
 
+    public static bool IsProcessRunning(string processName)
+    {
+        var name = NormalizeProcessName(processName);
+        if (string.IsNullOrEmpty(name))
+            return false;
+
+        Process[]? processes = null;
+        try
+        {
+            processes = Process.GetProcessesByName(name);
+            return processes.Length > 0;
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            if (processes is not null)
+            {
+                foreach (var process in processes)
+                    process.Dispose();
+            }
+        }
+    }
+
     public static bool TryFindProcessMainWindow(string processName, out nint handle, out string title)
     {
         handle = 0;

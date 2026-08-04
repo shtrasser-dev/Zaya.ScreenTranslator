@@ -13,6 +13,7 @@ public sealed partial class MainViewModel
     {
         var vm = new SettingsViewModel(_settingsService, _profileService, Localization, _pluginUpdateService, _hostVersionChecker);
         vm.UiCultureChanged = RefreshUiForCulture;
+        vm.TranslationSettingsChanged = ScheduleRestartTranslationIfRunning;
         vm.DeleteProfileCommand = DeleteProfileCommand;
         vm.SetCurrentProcessCommand = SetCurrentProcessCommand;
         return vm;
@@ -56,7 +57,11 @@ public sealed partial class MainViewModel
 
             if (IsSettingsOpen)
             {
-                if (Settings is not null) Settings.UiCultureChanged = null;
+                if (Settings is not null)
+                {
+                    Settings.UiCultureChanged = null;
+                    Settings.TranslationSettingsChanged = null;
+                }
                 Settings = CreateSettingsViewModel();
             }
 
@@ -99,7 +104,11 @@ public sealed partial class MainViewModel
         var screen = _profileService.LoadScreenTranslatorProfile();
         RebuildDisplayModeOptions(screen.DisplayMode);
 
-        if (Settings is not null) Settings.UiCultureChanged = null;
+        if (Settings is not null)
+        {
+            Settings.UiCultureChanged = null;
+            Settings.TranslationSettingsChanged = null;
+        }
         Settings = null;
         IsSettingsOpen = false;
         ForceMainWindowRebind();

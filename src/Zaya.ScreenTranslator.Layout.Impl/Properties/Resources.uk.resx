@@ -39,11 +39,29 @@
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
     <value>Розмір шрифту у відсотках від висоти bounds</value>
   </data>
+  <data name="Overlay_FixedFontSize" xml:space="preserve">
+    <value>Фіксований розмір шрифту</value>
+  </data>
+  <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
+    <value>Використовувати висоту шрифту та зсув Y у пікселях замість відсотків від висоти OCR/тексту</value>
+  </data>
+  <data name="Overlay_FontSize" xml:space="preserve">
+    <value>Розмір шрифту (px)</value>
+  </data>
+  <data name="Overlay_FontSize_Desc" xml:space="preserve">
+    <value>Фіксована висота тексту overlay у пікселях</value>
+  </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
     <value>Зсув Y (px)</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Додатковий вертикальний відступ від краю bounds</value>
+    <value>Додатковий вертикальний відступ від краю bounds у пікселях</value>
+  </data>
+  <data name="Overlay_OffsetYPercent" xml:space="preserve">
+    <value>Зсув Y (%)</value>
+  </data>
+  <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
+    <value>Додатковий вертикальний відступ у відсотках від висоти тексту</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>Відступ</value>
@@ -78,14 +96,26 @@
   <data name="Overlay_TextColor_Desc" xml:space="preserve">
     <value>Колір тексту overlay</value>
   </data>
-  <data name="Overlay_TextColor_Auto" xml:space="preserve">
-    <value>Авто</value>
-  </data>
   <data name="Overlay_TextColor_Light" xml:space="preserve">
     <value>Світлий</value>
   </data>
   <data name="Overlay_TextColor_Dark" xml:space="preserve">
     <value>Темний</value>
+  </data>
+  <data name="Overlay_TextColor_Cream" xml:space="preserve">
+    <value>Кремовий</value>
+  </data>
+  <data name="Overlay_TextColor_Yellow" xml:space="preserve">
+    <value>Жовтий</value>
+  </data>
+  <data name="Overlay_TextColor_Cyan" xml:space="preserve">
+    <value>Блакитний</value>
+  </data>
+  <data name="Overlay_TextColor_Lime" xml:space="preserve">
+    <value>Лайм</value>
+  </data>
+  <data name="Overlay_TextColor_Orange" xml:space="preserve">
+    <value>Помаранчевий</value>
   </data>
   <data name="Overlay_Outline" xml:space="preserve">
     <value>Обводка</value>

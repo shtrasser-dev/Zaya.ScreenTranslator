@@ -29,7 +29,7 @@ jobs:
         with:
           name: host
           path: |
-            out/Zaya.ScreenTranslator.zip
+            out/Zaya.ScreenTranslator-*.zip
             out/version.txt
             out/channel.txt
           retention-days: 7
@@ -56,7 +56,7 @@ jobs:
 
             const version = fs.readFileSync('host/version.txt', 'utf8').trim();
             const channel = fs.readFileSync('host/channel.txt', 'utf8').trim();
-            const zipName = 'Zaya.ScreenTranslator.zip';
+            const zipName = `Zaya.ScreenTranslator-${version}.zip`;
             const zipPath = path.join('host', zipName);
             if (!fs.existsSync(zipPath)) {
               core.setFailed(`Missing ${zipName}`);
@@ -73,7 +73,7 @@ jobs:
               '',
               `Zaya.ScreenTranslator v${version} (Primitives channel ${channel}).`,
               '',
-              'Download `Zaya.ScreenTranslator.zip`, extract, and run `Zaya.ScreenTranslator.exe`.',
+              `Download \`${zipName}\`, extract, and run \`Zaya.ScreenTranslator.exe\`.`,
               '',
               'Host does not self-update: open this release page from the app when a newer version is available.',
             ].join('\n');

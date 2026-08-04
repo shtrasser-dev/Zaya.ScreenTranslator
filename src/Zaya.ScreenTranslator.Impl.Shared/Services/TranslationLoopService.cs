@@ -45,23 +45,81 @@ public sealed class TranslationLoopService
         var cacheSettings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
 
-        using var captureSession = await capture.CreateSessionAsync(region,
-            ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, captureSettings), ct);
-        using var ocrSession = await ocr.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, ocrSettings), ct);
-        using var layoutSession = await textLayout.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, tlSettings), ct);
-        var rawTranslatorSession = await translator.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(
-                translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
-        using var translatorSession = await translatorCache.WrapSessionAsync(
-            rawTranslatorSession,
-            ManagedSettingKeys.PrepareForEngine(
-                translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
+        ICaptureSession? captureSession = null;
+        IOCRSession? ocrSession = null;
+        ITextLayoutSession? layoutSession = null;
+        ITranslatorSession? translatorSession = null;
+        try
+        {
+            captureSession = await capture.CreateSessionAsync(region,
+                ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, captureSettings), ct);
+            ocrSession = await ocr.CreateSessionAsync(
+                ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, ocrSettings), ct);
+            layoutSession = await textLayout.CreateSessionAsync(
+                ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, tlSettings), ct);
+            var rawTranslatorSession = await translator.CreateSessionAsync(
+                ManagedSettingKeys.PrepareForEngine(
+                    translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
+            translatorSession = await translatorCache.WrapSessionAsync(
+                rawTranslatorSession,
+                ManagedSettingKeys.PrepareForEngine(
+                    translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
+        }
+        catch (OperationCanceledException)
+        {
+            captureSession?.Dispose();
+            ocrSession?.Dispose();
+            layoutSession?.Dispose();
+            translatorSession?.Dispose();
+            onStatus((LocalizationService.Instance[LocalizationConstants.Status.Stopped], false));
+            return;
+        }
+        catch (Exception ex)
+        {
+            captureSession?.Dispose();
+            ocrSession?.Dispose();
+            layoutSession?.Dispose();
+            translatorSession?.Dispose();
+            onStatus((LocalizationService.Instance.FormatStoppedWithError(ex), true));
+            return;
+        }
 
-        var filter = TextFilterSession.Create(profile.ScreenTranslatorSettings);
+        using (captureSession)
+        using (ocrSession)
+        using (layoutSession)
+        using (translatorSession)
+        {
+            await RunLoopAsync(
+                captureSession,
+                ocrSession,
+                layoutSession,
+                translatorSession,
+                translator,
+                profile,
+                ct,
+                onTextUpdated,
+                onStatus,
+                onTimings,
+                overlaySession,
+                onTranslatedPairs);
+        }
+    }
+
+    private static async Task RunLoopAsync(
+        ICaptureSession captureSession,
+        IOCRSession ocrSession,
+        ITextLayoutSession layoutSession,
+        ITranslatorSession translatorSession,
+        ITranslatorService translator,
+        IApplicationProfile profile,
+        CancellationToken ct,
+        Action<string> onTextUpdated,
+        Action<(string Text, bool IsError)> onStatus,
+        Action<double, double, double>? onTimings,
+        IOverlayLayoutSession? overlaySession,
+        Action<IReadOnlyList<(string Source, string Translation)>>? onTranslatedPairs)
+    {
         var captureRegions = CaptureRegionsStore.Load(profile);
-        var passThrough = translator.EngineId == NoTranslationTranslatorService.EngineIdValue;
 
         var pauseMs = Math.Clamp(
             profile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs),
@@ -76,6 +134,7 @@ public sealed class TranslationLoopService
 
         onStatus((AppConstants.LoopStatus.Running, false));
 
+        string? fatalError = null;
         while (!ct.IsCancellationRequested)
         {
             try
@@ -121,28 +180,36 @@ public sealed class TranslationLoopService
                             if (string.IsNullOrWhiteSpace(text))
                                 continue;
 
-                            if (!passThrough)
-                            {
-                                var filtered = filter.Apply([text]);
-                                if (filtered.Count == 0)
-                                    continue;
-                                text = filtered[0];
-                            }
-
                             batch.Add((paragraph, text));
                         }
 
                         var sourceTexts = batch.Select(b => b.Text).ToList();
 
-                        var trSw = Stopwatch.StartNew();
-                        var translatedTexts = sourceTexts.Count == 0
-                            ? Array.Empty<string>()
-                            : await translatorSession.TranslateAsync(sourceTexts, ct);
-                        trSw.Stop();
+                        IReadOnlyList<string> translatedTexts;
+                        double avgTranslateMs;
+                        try
+                        {
+                            var trSw = Stopwatch.StartNew();
+                            translatedTexts = sourceTexts.Count == 0
+                                ? Array.Empty<string>()
+                                : await translatorSession.TranslateAsync(sourceTexts, ct);
+                            trSw.Stop();
 
-                        translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
-                        if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
-                        var avgTranslateMs = translatorTimes.Average();
+                            translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
+                            if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
+                            avgTranslateMs = translatorTimes.Average();
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Transient translator failures: keep capturing/OCR and retry.
+                            onStatus((FormatStatusError(ex), true));
+                            await Task.Delay(1000, ct);
+                            continue;
+                        }
 
                         var overlayItems = BuildOverlayItems(batch, translatedTexts, originX, originY);
                         if (overlaySession is not null)
@@ -182,16 +249,27 @@ public sealed class TranslationLoopService
             }
             catch (Exception ex)
             {
-                onStatus((string.Format(
-                    LocalizationService.Instance.CurrentCulture,
-                    LocalizationService.Instance[LocalizationConstants.Status.Error],
-                    ex.Message), true));
-                await Task.Delay(1000, ct);
+                // Capture / OCR / layout / overlay: stop the session.
+                fatalError = LocalizationService.Instance.FormatExceptionMessage(ex);
+                break;
             }
         }
 
-        onStatus((LocalizationService.Instance[LocalizationConstants.Status.Stopped], false));
+        if (fatalError is not null)
+        {
+            onStatus((LocalizationService.Instance.FormatStoppedWithError(fatalError), true));
+        }
+        else
+        {
+            onStatus((LocalizationService.Instance[LocalizationConstants.Status.Stopped], false));
+        }
     }
+
+    private static string FormatStatusError(Exception ex)
+        => string.Format(
+            LocalizationService.Instance.CurrentCulture,
+            LocalizationService.Instance[LocalizationConstants.Status.Error],
+            LocalizationService.Instance.FormatExceptionMessage(ex));
 
     private static List<OverlayItem> BuildOverlayItems(
         IReadOnlyList<(ITextParagraph Paragraph, string Text)> batch,

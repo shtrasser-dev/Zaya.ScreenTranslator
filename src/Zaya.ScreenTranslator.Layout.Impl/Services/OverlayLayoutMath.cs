@@ -13,8 +13,11 @@ public static class OverlayLayoutMath
     public static OverlayDrawSpec Compute(
         OverlayItem item,
         string placement,
+        bool fixedFontSize,
         int fontScalePercent,
-        int offsetY,
+        int fontSizePx,
+        int offsetYPx,
+        int offsetYPercent,
         int padding,
         string background,
         int backgroundOpacity,
@@ -23,9 +26,14 @@ public static class OverlayLayoutMath
         string fitMode)
     {
         var bounds = item.Bounds;
-        var fontSize = Math.Max(8.0, bounds.Height * (fontScalePercent / 100.0));
-        // Natural separation from source; offsetY is extra px (positive = away, negative = toward/into).
+        var fontSize = fixedFontSize
+            ? Math.Max(8.0, fontSizePx)
+            : Math.Max(8.0, bounds.Height * (fontScalePercent / 100.0));
+        // Natural separation from source; offset is extra gap (positive = away, negative = toward/into).
         var baseGap = Math.Max(0, (int)(fontSize * 0.15));
+        var offsetY = fixedFontSize
+            ? offsetYPx
+            : (int)Math.Round(fontSize * (offsetYPercent / 100.0));
 
         // FontSize ≈ em-size; real glyph box (ascent+descent) is a bit taller.
         const double lineHeightFactor = 1.25;

@@ -310,11 +310,20 @@ namespace Zaya.ScreenTranslator.Layout.Impl.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto.
+        ///   Looks up a localized string similar to Cream.
         /// </summary>
-        internal static string Overlay_TextColor_Auto {
+        internal static string Overlay_TextColor_Cream {
             get {
-                return ResourceManager.GetString("Overlay_TextColor_Auto", resourceCulture);
+                return ResourceManager.GetString("Overlay_TextColor_Cream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cyan.
+        /// </summary>
+        internal static string Overlay_TextColor_Cyan {
+            get {
+                return ResourceManager.GetString("Overlay_TextColor_Cyan", resourceCulture);
             }
         }
         
@@ -342,6 +351,33 @@ namespace Zaya.ScreenTranslator.Layout.Impl.Properties {
         internal static string Overlay_TextColor_Light {
             get {
                 return ResourceManager.GetString("Overlay_TextColor_Light", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lime.
+        /// </summary>
+        internal static string Overlay_TextColor_Lime {
+            get {
+                return ResourceManager.GetString("Overlay_TextColor_Lime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orange.
+        /// </summary>
+        internal static string Overlay_TextColor_Orange {
+            get {
+                return ResourceManager.GetString("Overlay_TextColor_Orange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yellow.
+        /// </summary>
+        internal static string Overlay_TextColor_Yellow {
+            get {
+                return ResourceManager.GetString("Overlay_TextColor_Yellow", resourceCulture);
             }
         }
     }
