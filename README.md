@@ -6,7 +6,9 @@ Is it a bird? Is it a PLANE?!
 
 # It's the REAL-TIME SCREEN TRANSLATOR you didn't know you needed!
 
-![IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!](img/wow.gif)
+![Rotated and upside-down text overlay demo](img/wow.gif)
+
+*IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!*
 
 ## User Testimonials
 
