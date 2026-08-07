@@ -1,0 +1,68 @@
+{
+  "screenTranslator": {
+    "profileName": "Default",
+    "translatorCache": "memory-translator-cache",
+    "framePauseMs": 100,
+    "targetProcess": "",
+    "translator": "yandex",
+    "captureRegions": [],
+    "ignoreRegions": [],
+    "ocr": "oneocr",
+    "capture": "graphics-capture",
+    "textLayout": "proximity-text-layout",
+    "overlayLayout": "screen-overlay"
+  },
+  "screen-overlay": {
+    "background": "opaque",
+    "textColor": "dark",
+    "fitMode": "wrap",
+    "placement": "over",
+    "backgroundColor": "light",
+    "outline": false,
+    "debugMode": false
+  },
+  "oneocr": {
+    "minConfidence": 40
+  },
+  "graphics-capture": {},
+  "proximity-text-layout": {
+    "wordGapThreshold": 150,
+    "enableCenterAlignment": true,
+    "lineSpacingThreshold": 200,
+    "enableStabilization": true,
+    "firstLineIndentTolerance": 0,
+    "leftEdgeAlignmentTolerance": 300,
+    "baselineDriftTolerance": 20,
+    "holdNewBlocks": false,
+    "paragraphFilters": [
+      {
+        "enabled": true,
+        "pattern": "^.{0,2}$",
+        "isRegex": true,
+        "action": "Skip",
+        "description": ""
+      },
+      {
+        "enabled": true,
+        "pattern": "^\\d+$",
+        "isRegex": true,
+        "action": "Skip",
+        "description": ""
+      }
+    ],
+    "centerThresholdXPercent": 10,
+    "centerThresholdYPercent": 10,
+    "paragraphMergeHysteresisPercent": 120,
+    "minLength": 1,
+    "angleToleranceDegrees": 5,
+    "sameLineWordGapHysteresisPercent": 600,
+    "levenshteinThreshold": 10
+  },
+  "google": {
+    "autoDetectLanguage": false
+  },
+  "memory-translator-cache": {},
+  "yandex": {
+    "autoDetectLanguage": false
+  }
+}

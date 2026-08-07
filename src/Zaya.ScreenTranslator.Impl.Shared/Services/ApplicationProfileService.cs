@@ -129,10 +129,25 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
 
     private static ApplicationProfile CreateDefaultApplicationProfile(string name)
     {
-        var profile = new ApplicationProfile();
+        var settings = LoadDefaultProfileTemplate();
+        if (!settings.TryGetValue(ScreenTranslatorSettingDescriptors.StKey, out var st))
+            settings[ScreenTranslatorSettingDescriptors.StKey] = st = new();
+
         // Persist profileName so the file name and embedded name stay aligned.
-        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = name;
-        return profile;
+        st[ScreenTranslatorSettingDescriptors.ProfileName] = name;
+        return new ApplicationProfile { Settings = settings };
+    }
+
+    private static Dictionary<string, Dictionary<string, object>> LoadDefaultProfileTemplate()
+    {
+        var asm = typeof(ApplicationProfileService).Assembly;
+        const string resourceName = "Zaya.ScreenTranslator.Impl.Shared.Services.default-profile.json";
+
+        using var stream = asm.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
+
+        return JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(stream, JsonOptions)
+               ?? new Dictionary<string, Dictionary<string, object>>();
     }
 
     public void SetActiveProfile(IApplicationProfile profile)

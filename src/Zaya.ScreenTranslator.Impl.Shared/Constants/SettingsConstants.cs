@@ -28,7 +28,7 @@ internal static class SettingsConstants
         public const string Ocr = "oneocr";
         public const string Capture = "graphics-capture";
         public const string TextLayout = "proximity-text-layout";
-        public const string Translator = "google";
+        public const string Translator = "yandex";
         public const string TranslatorCache = "memory-translator-cache";
         public const string OverlayLayout = "screen-overlay";
     }
