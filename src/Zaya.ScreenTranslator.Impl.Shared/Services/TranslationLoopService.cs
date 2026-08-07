@@ -16,117 +16,53 @@ namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
 public sealed class TranslationLoopService
 {
-    public async Task RunAsync(
-        IOCRService ocr,
-        ICaptureService capture,
-        ITextLayoutService textLayout,
-        ITranslatorService translator,
-        ITranslatorCacheService translatorCache,
-        ICaptureRegion region,
-        IApplicationProfile profile,
+    internal async Task RunAsync(
+        TranslationLoopRuntime runtime,
+        Func<IApplicationProfile?> getProfile,
+        ITranslationModuleRefresh? moduleRefresh,
         CancellationToken ct,
         Action<string> onTextUpdated,
         Action<(string Text, bool IsError)> onStatus,
         Action<double, double, double>? onTimings = null,
-        string? targetLanguage = null,
-        IOverlayLayoutSession? overlaySession = null,
         Action<IReadOnlyList<(string Source, string Translation)>>? onTranslatedPairs = null)
     {
-        onStatus((LocalizationService.Instance[LocalizationConstants.Status.CreatingSessions], false));
-
-        var ocrSettings = GetOrCreatePluginSettings(profile,
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-        var captureSettings = GetOrCreatePluginSettings(profile,
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
-        var tlSettings = GetOrCreatePluginSettings(profile,
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
-        var trSettings = GetOrCreatePluginSettings(profile,
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
-        var cacheSettings = GetOrCreatePluginSettings(profile,
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
-
-        ICaptureSession? captureSession = null;
-        IOCRSession? ocrSession = null;
-        ITextLayoutSession? layoutSession = null;
-        ITranslatorSession? translatorSession = null;
         try
         {
-            captureSession = await capture.CreateSessionAsync(region,
-                ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, captureSettings), ct);
-            ocrSession = await ocr.CreateSessionAsync(
-                ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, ocrSettings), ct);
-            layoutSession = await textLayout.CreateSessionAsync(
-                ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, tlSettings), ct);
-            var rawTranslatorSession = await translator.CreateSessionAsync(
-                ManagedSettingKeys.PrepareForEngine(
-                    translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
-            translatorSession = await translatorCache.WrapSessionAsync(
-                rawTranslatorSession,
-                ManagedSettingKeys.PrepareForEngine(
-                    translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
-        }
-        catch (OperationCanceledException)
-        {
-            captureSession?.Dispose();
-            ocrSession?.Dispose();
-            layoutSession?.Dispose();
-            translatorSession?.Dispose();
-            onStatus((LocalizationService.Instance[LocalizationConstants.Status.Stopped], false));
-            return;
-        }
-        catch (Exception ex)
-        {
-            captureSession?.Dispose();
-            ocrSession?.Dispose();
-            layoutSession?.Dispose();
-            translatorSession?.Dispose();
-            onStatus((LocalizationService.Instance.FormatStoppedWithError(ex), true));
-            return;
-        }
-
-        using (captureSession)
-        using (ocrSession)
-        using (layoutSession)
-        using (translatorSession)
-        {
             await RunLoopAsync(
-                captureSession,
-                ocrSession,
-                layoutSession,
-                translatorSession,
-                translator,
-                profile,
+                runtime,
+                getProfile,
+                moduleRefresh,
                 ct,
                 onTextUpdated,
                 onStatus,
                 onTimings,
-                overlaySession,
                 onTranslatedPairs);
+        }
+        finally
+        {
+            DisposeQuietly(runtime.CaptureSession);
+            DisposeQuietly(runtime.OcrSession);
+            DisposeQuietly(runtime.LayoutSession);
+            DisposeQuietly(runtime.TranslatorSession);
+            // Overlay session is owned by the coordinator (may be swapped mid-run).
         }
     }
 
+    private static void DisposeQuietly(IDisposable? disposable)
+    {
+        try { disposable?.Dispose(); } catch { /* ignore */ }
+    }
+
     private static async Task RunLoopAsync(
-        ICaptureSession captureSession,
-        IOCRSession ocrSession,
-        ITextLayoutSession layoutSession,
-        ITranslatorSession translatorSession,
-        ITranslatorService translator,
-        IApplicationProfile profile,
+        TranslationLoopRuntime runtime,
+        Func<IApplicationProfile?> getProfile,
+        ITranslationModuleRefresh? moduleRefresh,
         CancellationToken ct,
         Action<string> onTextUpdated,
         Action<(string Text, bool IsError)> onStatus,
         Action<double, double, double>? onTimings,
-        IOverlayLayoutSession? overlaySession,
         Action<IReadOnlyList<(string Source, string Translation)>>? onTranslatedPairs)
     {
-        var captureRegions = CaptureRegionsStore.Load(profile);
-
-        var pauseMs = Math.Clamp(
-            profile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs),
-            0,
-            10000);
-        var frameDelay = TimeSpan.FromMilliseconds(pauseMs);
-
         var captureTimes = new Queue<double>();
         var ocrTimes = new Queue<double>();
         var translatorTimes = new Queue<double>();
@@ -139,8 +75,25 @@ public sealed class TranslationLoopService
         {
             try
             {
+                if (moduleRefresh is not null)
+                    await moduleRefresh.ApplyPendingAsync(runtime, ct).ConfigureAwait(false);
+
+                var profile = getProfile();
+                if (profile is null)
+                {
+                    await Task.Delay(200, ct).ConfigureAwait(false);
+                    continue;
+                }
+
+                var captureRegions = CaptureRegionsStore.Load(profile);
+                var pauseMs = Math.Clamp(
+                    profile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs),
+                    0,
+                    10000);
+                var frameDelay = TimeSpan.FromMilliseconds(pauseMs);
+
                 var capSw = Stopwatch.StartNew();
-                var frame = await captureSession.CaptureAsync(ct);
+                var frame = await runtime.CaptureSession.CaptureAsync(ct);
                 capSw.Stop();
 
                 if (frame is null)
@@ -151,16 +104,23 @@ public sealed class TranslationLoopService
 
                 using (frame)
                 {
+                    CaptureFrameProcessor.ProcessedFrame? clientAligned = null;
                     CaptureFrameProcessor.ProcessedFrame? processed = null;
                     try
                     {
-                        processed = CaptureFrameProcessor.TryProcess(frame, captureRegions);
-                        var imageForOcr = (IRawImage)(processed ?? frame);
+                        var windowHandleForAlign = runtime.WindowHandle;
+                        clientAligned = windowHandleForAlign != 0
+                            ? CaptureFrameProcessor.TryAlignToClientArea(frame, windowHandleForAlign)
+                            : null;
+                        var clientFrame = (IRawImage)(clientAligned ?? frame);
+
+                        processed = CaptureFrameProcessor.TryProcess(clientFrame, captureRegions);
+                        var imageForOcr = (IRawImage)(processed ?? clientFrame);
                         var originX = processed?.OriginX ?? 0;
                         var originY = processed?.OriginY ?? 0;
 
                         var ocrSw = Stopwatch.StartNew();
-                        var result = await ocrSession.RecognizeAsync(imageForOcr, ct);
+                        var result = await runtime.OcrSession.RecognizeAsync(imageForOcr, ct);
                         ocrSw.Stop();
 
                         captureTimes.Enqueue(capSw.Elapsed.TotalMilliseconds);
@@ -171,7 +131,7 @@ public sealed class TranslationLoopService
                         var avgCaptureMs = captureTimes.Average();
                         var avgOcrMs = ocrTimes.Average();
 
-                        var layoutResult = await layoutSession.ProcessAsync(result, ct);
+                        var layoutResult = await runtime.LayoutSession.ProcessAsync(result, ct);
 
                         var batch = new List<(ITextParagraph Paragraph, string Text)>();
                         foreach (var paragraph in layoutResult.Paragraphs)
@@ -192,7 +152,7 @@ public sealed class TranslationLoopService
                             var trSw = Stopwatch.StartNew();
                             translatedTexts = sourceTexts.Count == 0
                                 ? Array.Empty<string>()
-                                : await translatorSession.TranslateAsync(sourceTexts, ct);
+                                : await runtime.TranslatorSession.TranslateAsync(sourceTexts, ct);
                             trSw.Stop();
 
                             translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
@@ -212,8 +172,13 @@ public sealed class TranslationLoopService
                         }
 
                         var overlayItems = BuildOverlayItems(batch, translatedTexts, originX, originY);
+                        var overlaySession = runtime.OverlaySession;
                         if (overlaySession is not null)
-                            await overlaySession.PresentAsync(overlayItems, ct);
+                        {
+                            var debugWords = BuildOverlayDebugWords(result.Words, originX, originY);
+                            var debugMatchedLines = BuildOverlayDebugMatchedLines(layoutResult.Lines, originX, originY);
+                            await overlaySession.PresentAsync(overlayItems, debugWords, debugMatchedLines, ct);
+                        }
 
                         var pairs = new List<(string Source, string Translation)>(sourceTexts.Count);
                         for (var i = 0; i < sourceTexts.Count; i++)
@@ -238,6 +203,7 @@ public sealed class TranslationLoopService
                     finally
                     {
                         processed?.Dispose();
+                        clientAligned?.Dispose();
                     }
                 }
 
@@ -289,18 +255,75 @@ public sealed class TranslationLoopService
             var parts = WrapTranslatedToLines(translated, lines);
             for (var li = 0; li < lines.Count; li++)
             {
-                var b = lines[li].Bounds;
+                var b = OffsetBounds(lines[li].Bounds, originX, originY);
                 items.Add(new OverlayItem
                 {
                     Text = parts[li],
-                    Bounds = originX == 0 && originY == 0
-                        ? b
-                        : new System.Drawing.Rectangle(b.X + originX, b.Y + originY, b.Width, b.Height),
+                    Bounds = b,
                 });
             }
         }
 
         return items;
+    }
+
+    private static BoundingBox OffsetBounds(BoundingBox bounds, int originX, int originY)
+    {
+        if (originX == 0 && originY == 0)
+            return bounds;
+
+        var delta = new System.Numerics.Vector2(originX, originY);
+        return new BoundingBox(
+            bounds.P1 + delta,
+            bounds.P2 + delta,
+            bounds.P3 + delta,
+            bounds.P4 + delta);
+    }
+
+    private static IReadOnlyList<OverlayDebugWord> BuildOverlayDebugWords(
+        IReadOnlyList<IOCRWord> words,
+        int originX,
+        int originY)
+    {
+        if (words.Count == 0)
+            return [];
+
+        var list = new List<OverlayDebugWord>(words.Count);
+        foreach (var word in words)
+        {
+            if (string.IsNullOrWhiteSpace(word.Text) && word.Bounds.IsEmpty)
+                continue;
+            list.Add(new OverlayDebugWord
+            {
+                Text = word.Text,
+                Bounds = OffsetBounds(word.Bounds, originX, originY),
+            });
+        }
+
+        return list;
+    }
+
+    private static IReadOnlyList<OverlayDebugLine> BuildOverlayDebugMatchedLines(
+        IReadOnlyList<ITextLine> lines,
+        int originX,
+        int originY)
+    {
+        if (lines.Count == 0)
+            return [];
+
+        var list = new List<OverlayDebugLine>();
+        foreach (var line in lines)
+        {
+            if (!line.HasPreviousFrameMatch || line.Bounds.IsEmpty)
+                continue;
+            list.Add(new OverlayDebugLine
+            {
+                Text = line.Text,
+                Bounds = OffsetBounds(line.Bounds, originX, originY),
+            });
+        }
+
+        return list;
     }
 
     /// <summary>
@@ -495,7 +518,7 @@ public sealed class TranslationLoopService
         var totalWidth = 0.0;
         for (var i = 0; i < lineCount; i++)
         {
-            widths[i] = Math.Max(1.0, lines[i].Bounds.Width);
+            widths[i] = Math.Max(1.0, System.Numerics.Vector2.Distance(lines[i].Bounds.P5, lines[i].Bounds.P6));
             totalWidth += widths[i];
         }
 
@@ -651,12 +674,4 @@ public sealed class TranslationLoopService
 
     private static int SoftEarlierBudget(int budget) =>
         Math.Max(budget, (int)Math.Ceiling(budget * 1.25));
-
-    private static Dictionary<string, object> GetOrCreatePluginSettings(
-        IApplicationProfile profile, string pluginId)
-    {
-        if (!profile.Settings.TryGetValue(pluginId, out var settings))
-            profile.Settings[pluginId] = settings = new();
-        return settings;
-    }
 }

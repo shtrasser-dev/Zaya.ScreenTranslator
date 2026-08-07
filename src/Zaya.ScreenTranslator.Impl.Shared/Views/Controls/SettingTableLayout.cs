@@ -90,4 +90,15 @@ internal static class SettingTableLayout
 
         return rows;
     }
+
+    /// <summary>
+    /// Snapshot of editor rows for persistence (avoids sharing the mutable editor list with the profile).
+    /// </summary>
+    public static List<Dictionary<string, object>> CloneRows(IReadOnlyList<Dictionary<string, object>> rows)
+    {
+        var copy = new List<Dictionary<string, object>>(rows.Count);
+        foreach (var row in rows)
+            copy.Add(new Dictionary<string, object>(row));
+        return copy;
+    }
 }

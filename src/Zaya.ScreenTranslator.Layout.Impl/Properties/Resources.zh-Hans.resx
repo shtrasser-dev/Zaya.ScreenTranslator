@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>柔和/不透明背景的不透明度</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>背景颜色</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>半透明/不透明背景的颜色</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>文本颜色</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>绘制描边/阴影以提高可读性</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>调试模式</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>在译文上方用红色绘制 OCR 词框和文本</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>适配模式</value>

@@ -13,9 +13,11 @@ internal static class OverlayLayoutSettingKeys
     public const string Padding = "padding";
     public const string Background = "background";
     public const string BackgroundOpacity = "backgroundOpacity";
+    public const string BackgroundColor = "backgroundColor";
     public const string TextColor = "textColor";
     public const string Outline = "outline";
     public const string FitMode = "fitMode";
+    public const string DebugMode = "debugMode";
 
     public const string PlacementAbove = "above";
     public const string PlacementOver = "over";
@@ -24,6 +26,9 @@ internal static class OverlayLayoutSettingKeys
     public const string BackgroundNone = "none";
     public const string BackgroundSoft = "soft";
     public const string BackgroundOpaque = "opaque";
+
+    public const string BackgroundColorLight = "light";
+    public const string BackgroundColorDark = "dark";
 
     public const string TextColorLight = "light";
     public const string TextColorDark = "dark";

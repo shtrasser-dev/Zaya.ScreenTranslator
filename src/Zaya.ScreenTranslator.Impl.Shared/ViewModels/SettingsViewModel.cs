@@ -3,10 +3,8 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
-using System.Text.Json;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
-using Zaya.ScreenTranslator.Impl.Shared.Converters;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
@@ -25,13 +23,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private IApplicationProfile _originalProfile;
     private ScreenTranslatorProfile _originalScreenProfile;
     private bool _suppressLanguageChange;
-    private string _translationSettingsFingerprint = string.Empty;
-
-    private static readonly JsonSerializerOptions TranslationFingerprintJsonOptions = new()
-    {
-        WriteIndented = false,
-        Converters = { new SettingsJsonConverter() },
-    };
+    private Dictionary<string, Dictionary<string, object>> _committedSettingsSnapshot = new();
+    private string _committedTargetLanguage = string.Empty;
 
     public sealed record LanguageItem(string Code, string Name);
 
@@ -99,13 +92,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         _checkUpdatesOnStartup = _originalScreenProfile.CheckUpdatesOnStartup;
 
         ReloadAllDescriptors();
-        _translationSettingsFingerprint = ComputeTranslationSettingsFingerprint();
+        _committedSettingsSnapshot = SettingsSnapshot.Clone(EditingProfile.Settings);
+        _committedTargetLanguage = EditingScreenProfile.TargetLanguage ?? string.Empty;
     }
 
     public LocalizationService Localization => _loc;
     public LocalizedStrings Loc { get; private set; }
     public Action? UiCultureChanged { get; set; }
-    public Action? TranslationSettingsChanged { get; set; }
+    public Action<TranslationModuleKind>? TranslationModulesChanged { get; set; }
     public Window? OwnerWindow { get; set; }
     public IAsyncRelayCommand? DeleteProfileCommand { get; set; }
     public IRelayCommand? SetCurrentProcessCommand { get; set; }
@@ -114,29 +108,40 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<LanguageItem> TargetLanguages { get; private set; }
     public IReadOnlyList<string> ThemeOptions { get; } = [AppConstants.Theme.Light, AppConstants.Theme.Dark];
 
-    public void ApplyChanges(bool affectsTranslation = true)
+    public void ApplyChanges(bool affectsTranslation = true, TranslationModuleKind moduleHint = TranslationModuleKind.None)
     {
-        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = SelectedProfileName;
-        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.FramePauseMs] = FramePauseMs;
-        EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TargetProcess] = TargetProcess?.Trim() ?? string.Empty;
+        var st = EditingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey];
+        st[ScreenTranslatorSettingDescriptors.ProfileName] = SelectedProfileName;
+        st[ScreenTranslatorSettingDescriptors.FramePauseMs] = FramePauseMs;
+        st[ScreenTranslatorSettingDescriptors.TargetProcess] = TargetProcess?.Trim() ?? string.Empty;
+        if (SelectedOcrEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Ocr] = SelectedOcrEngine.Id;
+        if (SelectedCaptureEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Capture] = SelectedCaptureEngine.Id;
+        if (SelectedTextLayoutEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.TextLayout] = SelectedTextLayoutEngine.Id;
+        if (SelectedTranslatorEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Translator] = SelectedTranslatorEngine.Id;
+        if (SelectedTranslatorCacheEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.TranslatorCache] = SelectedTranslatorCacheEngine.Id;
+        if (SelectedOverlayLayoutEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.OverlayLayout] = SelectedOverlayLayoutEngine.Id;
+
         _settingsService.CommitEdit(EditingProfile);
         EditingScreenProfile.TargetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
         EditingScreenProfile.LastActiveProfileName = SelectedProfileName;
         _profileService.SaveScreenTranslatorProfile(EditingScreenProfile);
 
-        var fingerprint = ComputeTranslationSettingsFingerprint();
-        var translationChanged = !string.Equals(fingerprint, _translationSettingsFingerprint, StringComparison.Ordinal);
-        _translationSettingsFingerprint = fingerprint;
+        var modules = TranslationSettingsDiff.Detect(
+            _committedSettingsSnapshot,
+            EditingProfile.Settings,
+            _committedTargetLanguage,
+            EditingScreenProfile.TargetLanguage) | moduleHint;
+        _committedSettingsSnapshot = SettingsSnapshot.Clone(EditingProfile.Settings);
+        _committedTargetLanguage = EditingScreenProfile.TargetLanguage ?? string.Empty;
 
-        if (affectsTranslation && translationChanged)
-            TranslationSettingsChanged?.Invoke();
-    }
-
-    private string ComputeTranslationSettingsFingerprint()
-    {
-        var settingsJson = JsonSerializer.Serialize(EditingProfile.Settings, TranslationFingerprintJsonOptions);
-        var targetLanguage = EditingScreenProfile.TargetLanguage ?? string.Empty;
-        return settingsJson + "\n" + targetLanguage;
+        if (affectsTranslation && modules != TranslationModuleKind.None)
+            TranslationModulesChanged?.Invoke(modules);
     }
 
     public void RefreshLocalizedLists()

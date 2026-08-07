@@ -66,7 +66,7 @@ public partial class App : Application
             if (checkUpdatesOnStartup)
             {
                 // 1. Host update (open browser only — no self-replace)
-                var hostUpdate = await hostChecker.CheckAsync(channel).ConfigureAwait(true);
+                var hostUpdate = await hostChecker.CheckAsync().ConfigureAwait(true);
                 if (hostUpdate.UpdateAvailable && !string.IsNullOrEmpty(hostUpdate.ReleaseHtmlUrl))
                 {
                     progress?.Hide();

@@ -4,17 +4,17 @@
 
 | Artifact | Rule |
 |----------|------|
-| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.0.9` |
-| Release tags | `app-v{ver}` / `app-v{channel}-latest` (`channel` = `MAJOR.MINOR`); asset `Zaya.ScreenTranslator-{ver}.zip` |
+| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.1.0` |
+| Release tags | Immutable `app-v{ver}`; optional floating `app-v{channel}-latest` (`channel` = `MAJOR.MINOR`); asset `Zaya.ScreenTranslator-{ver}.zip` |
 
-Host does not self-replace the exe; it opens the GitHub release page when a newer `app-v*` exists.
+Host does not self-replace the exe; it opens the GitHub release page when a newer immutable `app-v*` exists (newest version across all channels).
 
 ## Layout plugin (in-repo)
 
 | Package | Properties | Version |
 |---------|------------|---------|
-| **Zaya.ScreenTranslator.Layout** | `ZayaVersionInterface` | `Major.Interface.0` → `1.0.0` |
-| **Zaya.ScreenTranslator.Layout.Impl** | `ZayaVersionImpMajor` / `ImpMinor` | `Major.Interface.ImpMajor.ImpMinor` → `1.0.0.4` |
+| **Zaya.ScreenTranslator.Layout** | `ZayaVersionInterface` | `Major.Interface.0` → `1.1.0` |
+| **Zaya.ScreenTranslator.Layout.Impl** | `ZayaVersionImpMajor` / `ImpMinor` | `Major.Interface.ImpMajor.ImpMinor` → `1.1.0.7` |
 
 Same rules as OCR / Screenshot / Translator plugins. Major comes from `ZayaPrimitivesVersion`.
 

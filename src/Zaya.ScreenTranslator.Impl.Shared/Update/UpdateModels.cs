@@ -128,7 +128,7 @@ public static class ReleaseVersionParser
 
 public static class HostChannel
 {
-    /// <summary>Primitives / plugin compatibility channel = MAJOR.MINOR of host Version.</summary>
+    /// <summary>Host app MAJOR.MINOR (used as plugin updater fallback channel).</summary>
     public static string Current
     {
         get

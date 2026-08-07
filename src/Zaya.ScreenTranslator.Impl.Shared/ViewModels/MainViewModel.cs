@@ -36,6 +36,7 @@ public sealed partial class MainViewModel :
     private bool _isRefreshingUiCulture;
     private int _settingsRestartToken;
     private CancellationTokenSource? _settingsRestartDebounceCts;
+    private TranslationModuleKind _pendingModuleRefresh;
 
     public MainViewModel(
         IApplicationProfileService profileService,
@@ -102,7 +103,7 @@ public sealed partial class MainViewModel :
             return;
         screen.TargetLanguage = value.Code;
         _profileService.SaveScreenTranslatorProfile(screen);
-        ScheduleRestartTranslationIfRunning();
+        ScheduleModulesRefreshIfRunning(TranslationModuleKind.Translator);
     }
 
     [ObservableProperty]
@@ -270,9 +271,59 @@ public sealed partial class MainViewModel :
     private void CancelPendingSettingsRestart()
     {
         _settingsRestartToken++;
+        _pendingModuleRefresh = TranslationModuleKind.None;
         _settingsRestartDebounceCts?.Cancel();
         _settingsRestartDebounceCts?.Dispose();
         _settingsRestartDebounceCts = null;
+    }
+
+    private void ScheduleModulesRefreshIfRunning(TranslationModuleKind modules)
+    {
+        if (!IsRunning || modules == TranslationModuleKind.None)
+            return;
+
+        if (modules.HasFlag(TranslationModuleKind.FullRestart))
+        {
+            _pendingModuleRefresh = TranslationModuleKind.None;
+            ScheduleRestartTranslationIfRunning();
+            return;
+        }
+
+        _pendingModuleRefresh |= modules;
+        var token = ++_settingsRestartToken;
+        _settingsRestartDebounceCts?.Cancel();
+        _settingsRestartDebounceCts?.Dispose();
+        var cts = new CancellationTokenSource();
+        _settingsRestartDebounceCts = cts;
+        _ = RefreshModulesAfterSettingsDebounceAsync(token, cts.Token);
+    }
+
+    private async Task RefreshModulesAfterSettingsDebounceAsync(int token, CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(400, ct).ConfigureAwait(true);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (token != _settingsRestartToken || !IsRunning)
+            return;
+
+        var modules = _pendingModuleRefresh;
+        _pendingModuleRefresh = TranslationModuleKind.None;
+        if (modules == TranslationModuleKind.None)
+            return;
+
+        if (modules.HasFlag(TranslationModuleKind.FullRestart))
+        {
+            await RestartTranslationAfterSettingsDebounceAsync(token, CancellationToken.None).ConfigureAwait(true);
+            return;
+        }
+
+        _sessionCoordinator.RequestModuleRefresh(modules);
     }
 
     private void ScheduleRestartTranslationIfRunning()
@@ -280,6 +331,7 @@ public sealed partial class MainViewModel :
         if (!IsRunning)
             return;
 
+        _pendingModuleRefresh = TranslationModuleKind.None;
         var token = ++_settingsRestartToken;
         _settingsRestartDebounceCts?.Cancel();
         _settingsRestartDebounceCts?.Dispose();
@@ -292,7 +344,8 @@ public sealed partial class MainViewModel :
     {
         try
         {
-            await Task.Delay(400, ct).ConfigureAwait(true);
+            if (ct.CanBeCanceled)
+                await Task.Delay(400, ct).ConfigureAwait(true);
         }
         catch (OperationCanceledException)
         {

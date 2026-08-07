@@ -32,7 +32,7 @@ internal sealed class SettingsUpdateChecker
         CancellationToken cancellationToken = default)
     {
         var channel = HostChannel.Current;
-        var hostUpdate = await _hostVersionChecker.CheckAsync(channel, cancellationToken).ConfigureAwait(true);
+        var hostUpdate = await _hostVersionChecker.CheckAsync(cancellationToken).ConfigureAwait(true);
         if (hostUpdate.UpdateAvailable && !string.IsNullOrEmpty(hostUpdate.ReleaseHtmlUrl))
         {
             var open = await UpdateDialogs.ShowHostUpdateAsync(

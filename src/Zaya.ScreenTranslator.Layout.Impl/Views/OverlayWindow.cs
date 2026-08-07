@@ -1,10 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Zaya.ScreenTranslator.Layout.Impl.Constants;
 using Zaya.ScreenTranslator.Layout.Impl.Models;
 using Zaya.ScreenTranslator.Layout.Impl.Native;
+using Zaya.ScreenTranslator.Layout.Models;
 
 namespace Zaya.ScreenTranslator.Layout.Impl.Views;
 
@@ -77,9 +79,12 @@ public sealed class OverlayWindow : Window
         return d >= -1 && d <= 1;
     }
 
-    public void RenderItems(IReadOnlyList<OverlayDrawSpec> specs)
+    public void RenderItems(
+        IReadOnlyList<OverlayDrawSpec> specs,
+        IReadOnlyList<OverlayDebugWord>? debugWords = null,
+        IReadOnlyList<OverlayDebugLine>? debugMatchedLines = null)
     {
-        var key = BuildRenderKey(specs);
+        var key = BuildRenderKey(specs, debugWords, debugMatchedLines);
         if (string.Equals(key, _lastRenderKey, StringComparison.Ordinal))
             return;
         _lastRenderKey = key;
@@ -156,7 +161,123 @@ public sealed class OverlayWindow : Window
                 panel.Height = boxH;
             }
 
+            if (Math.Abs(spec.AngleDegrees) >= 0.5f)
+            {
+                panel.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+                panel.RenderTransform = new RotateTransform(spec.AngleDegrees);
+            }
+
             _canvas.Children.Add(panel);
+        }
+
+        if (debugMatchedLines is { Count: > 0 })
+            RenderDebugMatchedLines(debugMatchedLines, scaling);
+
+        if (debugWords is { Count: > 0 })
+            RenderDebugWords(debugWords, scaling);
+    }
+
+    private void RenderDebugMatchedLines(IReadOnlyList<OverlayDebugLine> lines, double scaling)
+    {
+        var fill = new SolidColorBrush(Color.FromArgb(160, 0, 180, 0));
+        var stroke = new SolidColorBrush(Colors.Lime);
+        foreach (var line in lines)
+        {
+            if (line.Bounds.IsEmpty)
+                continue;
+
+            var b = line.Bounds;
+            var poly = new Polygon
+            {
+                Stroke = stroke,
+                StrokeThickness = 1.5,
+                Fill = fill,
+                Points =
+                [
+                    new Point(b.P1.X / scaling, b.P1.Y / scaling),
+                    new Point(b.P2.X / scaling, b.P2.Y / scaling),
+                    new Point(b.P3.X / scaling, b.P3.Y / scaling),
+                    new Point(b.P4.X / scaling, b.P4.Y / scaling),
+                ],
+            };
+            _canvas.Children.Add(poly);
+
+            if (string.IsNullOrWhiteSpace(line.Text))
+                continue;
+
+            var centerX = (b.P5.X + b.P6.X) * 0.5 / scaling;
+            var centerY = (b.P5.Y + b.P6.Y) * 0.5 / scaling;
+            var label = new TextBlock
+            {
+                Text = line.Text,
+                FontSize = 8,
+                Foreground = Brushes.Black,
+                TextWrapping = TextWrapping.NoWrap,
+            };
+            label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            var w = label.DesiredSize.Width;
+            var h = label.DesiredSize.Height;
+            Canvas.SetLeft(label, Math.Round(centerX - w * 0.5));
+            Canvas.SetTop(label, Math.Round(centerY - h * 0.5));
+            if (Math.Abs(b.AngleDegrees) >= 0.5f)
+            {
+                label.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+                label.RenderTransform = new RotateTransform(b.AngleDegrees);
+            }
+
+            _canvas.Children.Add(label);
+        }
+    }
+
+    private void RenderDebugWords(IReadOnlyList<OverlayDebugWord> debugWords, double scaling)
+    {
+        var stroke = new SolidColorBrush(Colors.Red);
+        foreach (var word in debugWords)
+        {
+            if (string.IsNullOrWhiteSpace(word.Text) && word.Bounds.IsEmpty)
+                continue;
+
+            var b = word.Bounds;
+            var poly = new Polygon
+            {
+                Stroke = stroke,
+                StrokeThickness = 1.5,
+                Fill = Brushes.Transparent,
+                Points =
+                [
+                    new Point(b.P1.X / scaling, b.P1.Y / scaling),
+                    new Point(b.P2.X / scaling, b.P2.Y / scaling),
+                    new Point(b.P3.X / scaling, b.P3.Y / scaling),
+                    new Point(b.P4.X / scaling, b.P4.Y / scaling),
+                ],
+            };
+            _canvas.Children.Add(poly);
+
+            if (string.IsNullOrWhiteSpace(word.Text))
+                continue;
+
+            var fontSizeDip = 8;
+            var centerX = (b.P5.X + b.P6.X) * 0.5 / scaling;
+            var centerY = (b.P5.Y + b.P6.Y) * 0.5 / scaling;
+            var label = new TextBlock
+            {
+                Text = word.Text,
+                FontSize = fontSizeDip,
+                Foreground = stroke,
+                TextWrapping = TextWrapping.NoWrap,
+            };
+            label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            var w = label.DesiredSize.Width;
+            var h = label.DesiredSize.Height;
+            Canvas.SetLeft(label, Math.Round(centerX - w * 0.5));
+            Canvas.SetTop(label, Math.Round(centerY - h * 0.5));
+            if (Math.Abs(b.AngleDegrees) >= 0.5f)
+            {
+                label.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+                label.RenderTransform = new RotateTransform(b.AngleDegrees);
+            }
+
+            _canvas.Children.Add(label);
         }
     }
 
@@ -166,15 +287,40 @@ public sealed class OverlayWindow : Window
         _canvas.Children.Clear();
     }
 
-    private static string BuildRenderKey(IReadOnlyList<OverlayDrawSpec> specs)
+    private static string BuildRenderKey(
+        IReadOnlyList<OverlayDrawSpec> specs,
+        IReadOnlyList<OverlayDebugWord>? debugWords,
+        IReadOnlyList<OverlayDebugLine>? debugMatchedLines)
     {
         // Integer geometry + rounded font — ignore sub-pixel noise.
-        var parts = new string[specs.Count];
+        var extra = (debugWords?.Count ?? 0) + (debugMatchedLines?.Count ?? 0);
+        var parts = new string[specs.Count + extra];
         for (var i = 0; i < specs.Count; i++)
         {
             var s = specs[i];
             parts[i] =
-                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.TextColor}|{s.Outline}|{s.FitMode}|{s.VAlign}";
+                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.AngleDegrees:F1}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.BackgroundColor}|{s.TextColor}|{s.Outline}|{s.FitMode}|{s.VAlign}";
+        }
+
+        var idx = specs.Count;
+        if (debugMatchedLines is not null)
+        {
+            foreach (var line in debugMatchedLines)
+            {
+                var b = line.Bounds;
+                parts[idx++] =
+                    $"dbgL|{line.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}";
+            }
+        }
+
+        if (debugWords is not null)
+        {
+            foreach (var w in debugWords)
+            {
+                var b = w.Bounds;
+                parts[idx++] =
+                    $"dbg|{w.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}";
+            }
         }
 
         return string.Join('\n', parts);
@@ -197,7 +343,11 @@ public sealed class OverlayWindow : Window
             ? (byte)255
             : (byte)Math.Clamp((int)(spec.BackgroundOpacity / 100.0 * 255), 0, 255);
 
-        return new SolidColorBrush(Color.FromArgb(alpha, 20, 20, 20));
+        var (r, g, b) = spec.BackgroundColor is OverlayLayoutSettingKeys.BackgroundColorLight
+            ? ((byte)245, (byte)245, (byte)245)
+            : ((byte)20, (byte)20, (byte)20);
+
+        return new SolidColorBrush(Color.FromArgb(alpha, r, g, b));
     }
 
     private static IBrush ResolveForeground(OverlayDrawSpec spec)

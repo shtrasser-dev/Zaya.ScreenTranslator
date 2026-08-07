@@ -25,6 +25,19 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     }
 
     public Task PresentAsync(IReadOnlyList<OverlayItem> items, CancellationToken cancellationToken = default)
+        => PresentAsync(items, debugWords: null, debugMatchedLines: null, cancellationToken);
+
+    public Task PresentAsync(
+        IReadOnlyList<OverlayItem> items,
+        IReadOnlyList<OverlayDebugWord>? debugWords,
+        CancellationToken cancellationToken = default)
+        => PresentAsync(items, debugWords, debugMatchedLines: null, cancellationToken);
+
+    public Task PresentAsync(
+        IReadOnlyList<OverlayItem> items,
+        IReadOnlyList<OverlayDebugWord>? debugWords,
+        IReadOnlyList<OverlayDebugLine>? debugMatchedLines,
+        CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         cancellationToken.ThrowIfCancellationRequested();
@@ -38,9 +51,11 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         var padding = _settings.GetValueAsInt(OverlayLayoutSettingKeys.Padding);
         var background = _settings.GetValueAsString(OverlayLayoutSettingKeys.Background);
         var bgOpacity = _settings.GetValueAsInt(OverlayLayoutSettingKeys.BackgroundOpacity);
+        var backgroundColor = _settings.GetValueAsString(OverlayLayoutSettingKeys.BackgroundColor);
         var textColor = _settings.GetValueAsString(OverlayLayoutSettingKeys.TextColor);
         var outline = _settings.GetValueAsBool(OverlayLayoutSettingKeys.Outline);
         var fitMode = _settings.GetValueAsString(OverlayLayoutSettingKeys.FitMode);
+        var debugMode = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode);
 
         var specs = new List<OverlayDrawSpec>(items.Count);
         foreach (var item in items)
@@ -49,8 +64,11 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
                 continue;
             specs.Add(OverlayLayoutMath.Compute(
                 item, placement, fixedFontSize, fontScale, fontSize, offsetY, offsetYPercent, padding,
-                background, bgOpacity, textColor, outline, fitMode));
+                background, bgOpacity, backgroundColor, textColor, outline, fitMode));
         }
+
+        var debug = debugMode ? debugWords : null;
+        var matchedLines = debugMode ? debugMatchedLines : null;
 
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         OverlayWindow.RunOnUi(() =>
@@ -59,7 +77,7 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 _window.SyncToTarget(_targetHwnd);
-                _window.RenderItems(specs);
+                _window.RenderItems(specs, debug, matchedLines);
                 if (_visible && !_window.IsVisible)
                     _window.Show();
                 tcs.TrySetResult();

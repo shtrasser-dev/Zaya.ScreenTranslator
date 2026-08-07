@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>Yumuşak/opak arka planın opaklığı</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>Arka plan rengi</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>Yumuşak/opak arka plan rengi</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>Metin rengi</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>Okunabilirlik için kontur/gölge çiz</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>Hata ayıklama modu</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>Çevirinin üzerine OCR sözcük kutularını ve metni kırmızı çiz</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Sığdırma modu</value>

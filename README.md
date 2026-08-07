@@ -1,12 +1,61 @@
+# OMG Whah is it ?!?!?
+
+Is it a bird? Is it a PLANE?!
+
+**NO.**
+
+# It's the REAL-TIME SCREEN TRANSLATOR you didn't know you needed!
+
+Tired of not understanding that error message? Annoyed by games in a foreign language? **Zaya.ScreenTranslator** captures anything on your screen, runs OCR, translates it instantly, and shows the result right on top. It's like having a universal subtitle generator for *life*.
+
+
+
+IT SUPPORTS ROTATED TEXT?! YES! 🤯
+And even text that's UPSIDE DOWN?!?!
+UNBELIEVABLE!!!! 🤯
+
+
+
+![WOW](img/wow.gif)
+
+## User Testimonials
+
+We were overwhelmed with emotion when we received this feedback:
+
+> **11/10! This is the most life-changing application I have EVER seen!**
+> I no longer have to alt-tab to translate things. It's like magic, but it's real. My productivity (and my game scores) have skyrocketed. *I can finally understand what my teammates are saying!*
+>
+> — *shtrasser-dev*, a very happy developer
+
+## Get Started in 5 Seconds
+
+Ready to join the future? It's ridiculously easy.
+
+1.  **Download:** Grab the latest `Zaya.ScreenTranslator-{version}.zip` from the [Releases](https://github.com/shtrasser-dev/Zaya.ScreenTranslator/releases) page or use the `app-v1.1-latest` tag.
+2.  **Extract:** Unzip the file anywhere you like.
+3.  **Run:** Double-click `Zaya.ScreenTranslator.exe`. That's it! The main window will appear, and you can start translating immediately.
+
+## For Developers and Tinkerers
+
+### Build from Source
+Want to contribute or see how the sausage is made? It's a standard .NET project.
+
+```powershell
+# Clone and build
+git clone https://github.com/shtrasser-dev/Zaya.ScreenTranslator.git
+cd Zaya.ScreenTranslator
+build.cmd
+```
+
 # Zaya.ScreenTranslator
 
 Real-time on-screen text translator for Windows. Captures a window or region, runs OCR, optionally translates, and shows the result in a text window or overlay.
 
 ## Version
 
-**1.0.9** — Primitives compatibility channel `1.0`. See [versioning](docs/versioning.md).
+**1.1.0** — Host channel `1.1`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.0.9` / `app-v1.0-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.0-latest`). Layout plugin (ships with host): `1.0.0.4`.
+Host release tags: `app-v1.1.0` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.1.0.7`.
 
 ## Features
 
@@ -33,8 +82,8 @@ Pinned in `Directory.Build.props`:
 | Package | Version |
 |---------|---------|
 | [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives) | 1.0.0 |
-| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.0.0 |
-| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.0.0 |
+| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.1.0 |
+| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.1.0 |
 | [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator) | 1.1.0 |
 | [Zaya.TranslatorCache](https://github.com/shtrasser-dev/Zaya.Translator) | 1.0.0 |
 

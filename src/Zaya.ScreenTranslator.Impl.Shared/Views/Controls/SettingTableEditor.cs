@@ -28,7 +28,8 @@ internal static class SettingTableEditor
         Grid.SetIsSharedSizeScope(rowsPanel, true);
         root.Children.Add(rowsPanel);
 
-        void Persist() => onChanged(tableDesc.Key, rows);
+        // Clone so profile storage does not share the editor's mutable list (ReferenceEquals / ToString traps).
+        void Persist() => onChanged(tableDesc.Key, SettingTableLayout.CloneRows(rows));
 
         void RebuildRows()
         {

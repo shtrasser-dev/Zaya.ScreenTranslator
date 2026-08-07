@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>Прозрачность soft/opaque фона</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>Цвет фона</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>Цвет полупрозрачного/непрозрачного фона</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>Светлый</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>Тёмный</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>Цвет текста</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>Обводка/тень для читаемости</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>Режим отладки</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>Рисовать рамки и текст IOCRWord поверх перевода (красным)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Подгонка</value>

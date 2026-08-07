@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Numerics;
 using Zaya.ScreenTranslator.Layout.Impl.Constants;
 using Zaya.ScreenTranslator.Layout.Impl.Models;
 using Zaya.ScreenTranslator.Layout.Models;
@@ -21,14 +22,20 @@ public static class OverlayLayoutMath
         int padding,
         string background,
         int backgroundOpacity,
+        string backgroundColor,
         string textColor,
         bool outline,
         string fitMode)
     {
         var bounds = item.Bounds;
+        var textHeight = Math.Max(1.0, bounds.TextHeight);
+        var alongWidth = Math.Max(1.0, Vector2.Distance(bounds.P5, bounds.P6));
+        var center = (bounds.P5 + bounds.P6) * 0.5f;
+        var normal = bounds.Normal;
+
         var fontSize = fixedFontSize
             ? Math.Max(8.0, fontSizePx)
-            : Math.Max(8.0, bounds.Height * (fontScalePercent / 100.0));
+            : Math.Max(8.0, textHeight * (fontScalePercent / 100.0));
         // Natural separation from source; offset is extra gap (positive = away, negative = toward/into).
         var baseGap = Math.Max(0, (int)(fontSize * 0.15));
         var offsetY = fixedFontSize
@@ -38,29 +45,31 @@ public static class OverlayLayoutMath
         // FontSize ≈ em-size; real glyph box (ascent+descent) is a bit taller.
         const double lineHeightFactor = 1.25;
         var drawHeight = (int)Math.Ceiling(fontSize * lineHeightFactor) + padding * 2 + 4; // +4 for Border padding
-        var drawWidth = Math.Max(bounds.Width, 1);
-        int drawX = bounds.X;
-        int drawY;
+        var drawWidth = (int)Math.Max(1, Math.Round(alongWidth));
         OverlayVAlign vAlign;
 
+        Vector2 drawCenter;
         switch (placement)
         {
             case OverlayLayoutSettingKeys.PlacementOver:
-                drawY = bounds.Y + offsetY;
-                drawHeight = Math.Max(drawHeight, bounds.Height);
+                drawHeight = Math.Max(drawHeight, (int)Math.Ceiling(textHeight));
+                drawCenter = center + normal * offsetY;
                 vAlign = OverlayVAlign.Center;
                 break;
             case OverlayLayoutSettingKeys.PlacementBelow:
-                // Positive offsetY pushes further down; negative pulls up toward/into source.
-                drawY = bounds.Bottom + baseGap + offsetY;
+                // Positive offsetY pushes further down the glyph normal; negative pulls toward/into source.
+                drawCenter = center + normal * (float)(textHeight * 0.5 + baseGap + offsetY + drawHeight * 0.5);
                 vAlign = OverlayVAlign.Top;
                 break;
             default: // above
-                // Positive offsetY pushes further up; negative pulls down toward/into source.
-                drawY = bounds.Y - baseGap - offsetY - drawHeight;
+                // Positive offsetY pushes further up (-Normal); negative pulls toward/into source.
+                drawCenter = center - normal * (float)(textHeight * 0.5 + baseGap + offsetY + drawHeight * 0.5);
                 vAlign = OverlayVAlign.Bottom;
                 break;
         }
+
+        var drawX = (int)Math.Round(drawCenter.X - drawWidth * 0.5);
+        var drawY = (int)Math.Round(drawCenter.Y - drawHeight * 0.5);
 
         return new OverlayDrawSpec(
             item.Text,
@@ -68,9 +77,11 @@ public static class OverlayLayoutMath
             fontSize,
             background,
             backgroundOpacity,
+            backgroundColor,
             textColor,
             outline,
             fitMode,
-            vAlign);
+            vAlign,
+            bounds.AngleDegrees);
     }
 }

@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>Непрозорість soft/opaque тла</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>Колір фону</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>Колір напівпрозорого/непрозорого фону</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>Світлий</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>Темний</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>Колір тексту</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>Обводка/тінь для читабельності</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>Режим налагодження</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>Малювати рамки та текст IOCRWord поверх перекладу (червоним)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Підгонка</value>

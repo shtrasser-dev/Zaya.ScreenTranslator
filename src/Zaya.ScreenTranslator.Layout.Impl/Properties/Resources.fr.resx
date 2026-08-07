@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>Opacité de l’arrière-plan doux/opaque</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>Couleur d'arrière-plan</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>Couleur du fond soft/opaque</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>Clair</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>Foncé</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>Couleur du texte</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>Dessiner un contour/ombre pour la lisibilité</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>Mode débogage</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>Dessiner les cadres et le texte OCR au-dessus de la traduction (rouge)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Mode d’ajustement</value>

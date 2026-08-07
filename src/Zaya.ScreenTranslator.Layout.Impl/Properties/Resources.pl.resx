@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>Nieprzezroczystość miękkiego/nieprzezroczystego tła</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>Kolor tła</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>Kolor miękkiego/nieprzezroczystego tła</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>Jasny</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>Ciemny</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>Kolor tekstu</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>Rysuj kontur/cień dla czytelności</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>Tryb debugowania</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>Rysuj ramki i tekst OCR nad tłumaczeniem (czerwony)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Tryb dopasowania</value>

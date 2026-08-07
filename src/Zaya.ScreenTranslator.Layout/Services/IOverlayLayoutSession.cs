@@ -8,6 +8,18 @@ namespace Zaya.ScreenTranslator.Layout.Services;
 public interface IOverlayLayoutSession : IDisposable
 {
     Task PresentAsync(IReadOnlyList<OverlayItem> items, CancellationToken cancellationToken = default);
+
+    Task PresentAsync(
+        IReadOnlyList<OverlayItem> items,
+        IReadOnlyList<OverlayDebugWord>? debugWords,
+        CancellationToken cancellationToken = default);
+
+    Task PresentAsync(
+        IReadOnlyList<OverlayItem> items,
+        IReadOnlyList<OverlayDebugWord>? debugWords,
+        IReadOnlyList<OverlayDebugLine>? debugMatchedLines,
+        CancellationToken cancellationToken = default);
+
     void SetVisible(bool visible);
     void Clear();
 }

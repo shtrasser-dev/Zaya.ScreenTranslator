@@ -14,6 +14,7 @@ public enum OverlayVAlign
 
 /// <summary>
 /// Computed draw instructions for one overlay item (capture-pixel space).
+/// <see cref="DrawBounds"/> is the unrotated local box; <see cref="AngleDegrees"/> rotates it around the box center.
 /// </summary>
 public readonly record struct OverlayDrawSpec(
     string Text,
@@ -21,7 +22,9 @@ public readonly record struct OverlayDrawSpec(
     double FontSize,
     string Background,
     int BackgroundOpacity,
+    string BackgroundColor,
     string TextColor,
     bool Outline,
     string FitMode,
-    OverlayVAlign VAlign);
+    OverlayVAlign VAlign,
+    float AngleDegrees);

@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>ソフト/不透明背景の不透明度</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>背景色</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>半透明/不透明背景の色</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>明るい</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>暗い</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>文字色</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>読みやすさのための輪郭/影を描画</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>デバッグモード</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>翻訳の上にOCR単語の枠とテキストを赤で描画</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>フィットモード</value>

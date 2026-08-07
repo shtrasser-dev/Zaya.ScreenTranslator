@@ -179,7 +179,7 @@ public partial class SettingsPanel : UserControl
                     else
                         pluginSettings[desc.Key] = newVal;
                     UpdateVisibility(panelName, getPluginId);
-                    _viewModel.ApplyChanges();
+                    _viewModel.ApplyChanges(moduleHint: ModuleKindForPanel(panelName));
                 },
                 _viewModel.Localization.CurrentCulture);
 
@@ -188,6 +188,17 @@ public partial class SettingsPanel : UserControl
             panel.Children.Add(control);
         }
     }
+
+    private static TranslationModuleKind ModuleKindForPanel(string panelName) => panelName switch
+    {
+        "OcrSettingsPanel" => TranslationModuleKind.Ocr,
+        "CaptureSettingsPanel" => TranslationModuleKind.Capture,
+        "TextLayoutSettingsPanel" => TranslationModuleKind.TextLayout,
+        "TranslatorSettingsPanel" => TranslationModuleKind.Translator,
+        "TranslatorCacheSettingsPanel" => TranslationModuleKind.Translator,
+        "OverlaySettingsPanel" => TranslationModuleKind.Overlay,
+        _ => TranslationModuleKind.None,
+    };
 
     private static bool IsSettingValueUnchanged(
         IReadOnlyDictionary<string, object> pluginSettings,
@@ -210,6 +221,7 @@ public partial class SettingsPanel : UserControl
         DirectoryPathSettingDescriptor d => d.DefaultValue,
         FilePathSettingDescriptor f => f.DefaultValue,
         PasswordSettingDescriptor p => p.DefaultValue,
+        TableSettingDescriptor => new List<Dictionary<string, object>>(),
         _ => null,
     };
 
@@ -219,6 +231,10 @@ public partial class SettingsPanel : UserControl
             return true;
         if (left is null || right is null)
             return false;
+
+        if (TryCompareStructured(left, right, out var structuredEqual))
+            return structuredEqual;
+
         if (left.Equals(right))
             return true;
 
@@ -229,6 +245,75 @@ public partial class SettingsPanel : UserControl
             Convert.ToString(left, System.Globalization.CultureInfo.InvariantCulture),
             Convert.ToString(right, System.Globalization.CultureInfo.InvariantCulture),
             StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Deep-compare lists/dicts. <see cref="Convert.ToString(object?)"/> on a List is the type name,
+    /// so scalar string equality falsely treats distinct table instances as unchanged.
+    /// </summary>
+    private static bool TryCompareStructured(object left, object right, out bool equal)
+    {
+        equal = false;
+
+        if (left is System.Collections.IDictionary leftMap && right is System.Collections.IDictionary rightMap)
+        {
+            if (leftMap.Count != rightMap.Count)
+            {
+                equal = false;
+                return true;
+            }
+
+            foreach (System.Collections.DictionaryEntry entry in leftMap)
+            {
+                if (entry.Key is not string key)
+                {
+                    equal = false;
+                    return true;
+                }
+
+                if (!rightMap.Contains(key) || !SettingValuesEqual(entry.Value, rightMap[key]))
+                {
+                    equal = false;
+                    return true;
+                }
+            }
+
+            equal = true;
+            return true;
+        }
+
+        if (left is System.Collections.IEnumerable leftSeq and not string
+            && right is System.Collections.IEnumerable rightSeq and not string
+            && left is not System.Collections.IDictionary
+            && right is not System.Collections.IDictionary)
+        {
+            using var leftEnum = leftSeq.Cast<object?>().GetEnumerator();
+            using var rightEnum = rightSeq.Cast<object?>().GetEnumerator();
+            while (true)
+            {
+                var leftMoved = leftEnum.MoveNext();
+                var rightMoved = rightEnum.MoveNext();
+                if (leftMoved != rightMoved)
+                {
+                    equal = false;
+                    return true;
+                }
+
+                if (!leftMoved)
+                {
+                    equal = true;
+                    return true;
+                }
+
+                if (!SettingValuesEqual(leftEnum.Current, rightEnum.Current))
+                {
+                    equal = false;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static bool IsNumeric(object value) =>

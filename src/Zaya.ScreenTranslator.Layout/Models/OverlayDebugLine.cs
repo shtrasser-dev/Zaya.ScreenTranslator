@@ -3,9 +3,9 @@ using Zaya.OCR.Models;
 namespace Zaya.ScreenTranslator.Layout.Models;
 
 /// <summary>
-/// A single text block to draw: content and its source oriented bounds (capture/client pixels).
+/// Layout line drawn in overlay debug mode when it matched the previous frame.
 /// </summary>
-public sealed class OverlayItem
+public sealed class OverlayDebugLine
 {
     public required string Text { get; init; }
     public required BoundingBox Bounds { get; init; }

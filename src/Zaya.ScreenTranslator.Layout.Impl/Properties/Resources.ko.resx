@@ -90,6 +90,18 @@
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
     <value>반투명/불투명 배경의 불투명도</value>
   </data>
+  <data name="Overlay_BackgroundColor" xml:space="preserve">
+    <value>배경색</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
+    <value>반투명/불투명 배경 색</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
+    <value>밝게</value>
+  </data>
+  <data name="Overlay_BackgroundColor_Dark" xml:space="preserve">
+    <value>어둡게</value>
+  </data>
   <data name="Overlay_TextColor" xml:space="preserve">
     <value>텍스트 색</value>
   </data>
@@ -122,6 +134,12 @@
   </data>
   <data name="Overlay_Outline_Desc" xml:space="preserve">
     <value>가독성을 위한 외곽선/그림자 그리기</value>
+  </data>
+  <data name="Overlay_DebugMode" xml:space="preserve">
+    <value>디버그 모드</value>
+  </data>
+  <data name="Overlay_DebugMode_Desc" xml:space="preserve">
+    <value>번역 위에 OCR 단어 박스와 텍스트를 빨간색으로 표시</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>맞춤 모드</value>

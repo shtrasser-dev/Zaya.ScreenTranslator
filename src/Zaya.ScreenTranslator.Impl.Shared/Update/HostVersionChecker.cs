@@ -13,18 +13,19 @@ public sealed class HostVersionChecker
         _hostRepo = hostRepo;
     }
 
-    public async Task<HostUpdateInfo> CheckAsync(
-        string channel,
-        CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Compares the local host version to the newest immutable <c>app-v*</c> release (any channel).
+    /// </summary>
+    public async Task<HostUpdateInfo> CheckAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var release = await _client.GetChannelLatestAsync(_hostRepo, channel, "app-v", cancellationToken)
+            var release = await _client.GetHostLatestAsync(_hostRepo, cancellationToken)
                 .ConfigureAwait(false);
             if (release is null)
                 return new HostUpdateInfo { UpdateAvailable = false };
 
-            var remote = release.ParsedVersion;
+            var remote = TryParseHostVersion(release);
             if (remote is null)
                 return new HostUpdateInfo { UpdateAvailable = false };
 
@@ -46,6 +47,24 @@ public sealed class HostVersionChecker
             return new HostUpdateInfo { UpdateAvailable = false };
         }
     }
+
+    private static Version? TryParseHostVersion(GitHubReleaseInfo release)
+    {
+        const string tagPrefix = "app-v";
+        if (release.TagName.StartsWith(tagPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            var rest = release.TagName[tagPrefix.Length..];
+            if (Version.TryParse(rest, out var fromTag))
+                return NormalizeThreePart(fromTag);
+        }
+
+        return release.ParsedVersion is { } parsed
+            ? NormalizeThreePart(parsed)
+            : null;
+    }
+
+    private static Version NormalizeThreePart(Version v) =>
+        new(v.Major, v.Minor, Math.Max(v.Build, 0));
 
     public static void OpenReleasePage(string htmlUrl)
     {

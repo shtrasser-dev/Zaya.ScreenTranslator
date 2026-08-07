@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Drawing;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
+using Zaya.ScreenTranslator.Impl.Shared.Native;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -12,6 +13,8 @@ namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 /// </summary>
 public static class CaptureFrameProcessor
 {
+    private const int SizeTolerancePx = 2;
+
     public sealed class ProcessedFrame : IRawImage
     {
         private readonly byte[] _data;
@@ -56,6 +59,60 @@ public static class CaptureFrameProcessor
                 ArrayPool<byte>.Shared.Return(_data);
             _disposed = true;
         }
+    }
+
+    /// <summary>
+    /// Crops WGC chrome (title/menu) so the frame matches the window client area used by the overlay.
+    /// Returns null when the frame already matches the client (typical for browsers with in-client chrome).
+    /// Origin is 0 — the cropped image is already in client space.
+    /// </summary>
+    public static ProcessedFrame? TryAlignToClientArea(IRawImage source, nint windowHandle)
+    {
+        if (windowHandle == 0
+            || !Win32WindowBounds.TryGetClientAlignMetrics(
+                windowHandle,
+                out var outerW, out var outerH,
+                out var insetX, out var insetY,
+                out var clientW, out var clientH))
+            return null;
+
+        var srcW = source.Width;
+        var srcH = source.Height;
+        if (srcW <= 0 || srcH <= 0)
+            return null;
+
+        // Already client-sized — nothing to do (Edge/Chrome-style windows).
+        if (WithinTolerance(srcW, clientW) && WithinTolerance(srcH, clientH))
+            return null;
+
+        // No non-client inset and frame isn't larger than client — cannot map.
+        if (insetX <= 0 && insetY <= 0)
+            return null;
+
+        if (insetX < 0 || insetY < 0 || outerW <= 0 || outerH <= 0)
+            return null;
+
+        var scaleX = srcW / (double)outerW;
+        var scaleY = srcH / (double)outerH;
+        var cropX = (int)Math.Round(insetX * scaleX);
+        var cropY = (int)Math.Round(insetY * scaleY);
+        var cropW = (int)Math.Round(clientW * scaleX);
+        var cropH = (int)Math.Round(clientH * scaleY);
+
+        cropX = Math.Clamp(cropX, 0, srcW - 1);
+        cropY = Math.Clamp(cropY, 0, srcH - 1);
+        cropW = Math.Clamp(cropW, 1, srcW - cropX);
+        cropH = Math.Clamp(cropH, 1, srcH - cropY);
+
+        // Crop must be a no-op or meaningfully closer to the client size.
+        if (cropX == 0 && cropY == 0 && cropW == srcW && cropH == srcH)
+            return null;
+        if (!WithinTolerance(cropW, clientW) && Math.Abs(cropW - clientW) >= Math.Abs(srcW - clientW))
+            return null;
+        if (!WithinTolerance(cropH, clientH) && Math.Abs(cropH - clientH) >= Math.Abs(srcH - clientH))
+            return null;
+
+        return Crop(source, cropX, cropY, cropW, cropH, originX: 0, originY: 0);
     }
 
     /// <summary>
@@ -172,6 +229,33 @@ public static class CaptureFrameProcessor
             100.0 * px.Width / windowW,
             100.0 * px.Height / windowH).Clamp();
     }
+
+    private static ProcessedFrame? Crop(IRawImage source, int cropX, int cropY, int cropW, int cropH, int originX, int originY)
+    {
+        var bpp = source.Format.BytesPerPixel;
+        if (bpp <= 0)
+            return null;
+
+        var srcW = source.Width;
+        var srcH = source.Height;
+        var src = source.GetPixelData();
+        var srcStride = source.Stride;
+        var dstStride = cropW * bpp;
+        var dst = ArrayPool<byte>.Shared.Rent(dstStride * cropH);
+        try
+        {
+            CopyRect(src, srcStride, bpp, srcW, srcH, cropX, cropY, cropW, cropH, dst, dstStride, 0, 0);
+            return new ProcessedFrame(dst, cropW, cropH, dstStride, source.Format, originX, originY, pooled: true);
+        }
+        catch
+        {
+            ArrayPool<byte>.Shared.Return(dst);
+            throw;
+        }
+    }
+
+    private static bool WithinTolerance(int a, int b)
+        => Math.Abs(a - b) <= SizeTolerancePx;
 
     private static void CopyRect(
         ReadOnlySpan<byte> src, int srcStride, int bpp, int srcW, int srcH,

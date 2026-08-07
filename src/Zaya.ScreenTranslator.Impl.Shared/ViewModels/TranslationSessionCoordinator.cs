@@ -1,11 +1,15 @@
 using Avalonia.Threading;
+using Zaya.OCR.Services;
 using Zaya.Primitives;
 using Zaya.Screenshot.Models;
+using Zaya.Screenshot.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Layout.Impl.Services;
 using Zaya.ScreenTranslator.Layout.Services;
+using Zaya.Translator.Services;
+using Zaya.TranslatorCache.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -20,13 +24,14 @@ internal interface ITranslationSessionHost : IStatusHost
     Task ClearWindowSelectionIfProcessGoneAsync();
 }
 
-internal sealed class TranslationSessionCoordinator
+internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 {
     private readonly IApplicationProfileService _profileService;
     private readonly TranslationLoopService _loopService;
     private readonly TranslationHistoryService _history;
     private readonly TextOutputPresenter _textOutput;
     private readonly ITranslationSessionHost _host;
+    private readonly object _refreshLock = new();
 
     private Task? _loopTask;
     private IDisposable? _ocrEngine;
@@ -36,6 +41,8 @@ internal sealed class TranslationSessionCoordinator
     private IDisposable? _translatorCacheEngine;
     private IOverlayLayoutService? _overlayLayoutEngine;
     private IOverlayLayoutSession? _overlaySession;
+    private TranslationModuleKind _pendingRefresh;
+    private nint _sessionWindowHandle;
 
     public TranslationSessionCoordinator(
         IApplicationProfileService profileService,
@@ -53,10 +60,22 @@ internal sealed class TranslationSessionCoordinator
 
     public IOverlayLayoutSession? OverlaySession => _overlaySession;
 
+    public void RequestModuleRefresh(TranslationModuleKind modules)
+    {
+        if (modules == TranslationModuleKind.None)
+            return;
+
+        lock (_refreshLock)
+            _pendingRefresh |= modules;
+    }
+
     public void CancelLoop() => _ = StopLoopAsync();
 
     public async Task StopLoopAsync()
     {
+        lock (_refreshLock)
+            _pendingRefresh = TranslationModuleKind.None;
+
         var cts = _host.LoopCts;
         if (cts is not null && !cts.IsCancellationRequested)
             cts.Cancel();
@@ -73,125 +92,152 @@ internal sealed class TranslationSessionCoordinator
         _textOutput.CloseTextWindow();
     }
 
+    public async Task ApplyPendingAsync(TranslationLoopRuntime runtime, CancellationToken cancellationToken)
+    {
+        TranslationModuleKind pending;
+        lock (_refreshLock)
+        {
+            pending = _pendingRefresh;
+            _pendingRefresh = TranslationModuleKind.None;
+        }
+
+        if (pending == TranslationModuleKind.None)
+            return;
+
+        // FullRestart is handled by MainViewModel (stop/start); ignore if somehow queued.
+        pending &= ~TranslationModuleKind.FullRestart;
+        if (pending == TranslationModuleKind.None)
+            return;
+
+        var profile = _profileService.ActiveProfile;
+        if (profile is null)
+            return;
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (pending.HasFlag(TranslationModuleKind.Capture))
+            await RecreateCaptureAsync(runtime, profile, cancellationToken).ConfigureAwait(false);
+
+        if (pending.HasFlag(TranslationModuleKind.Ocr))
+            await RecreateOcrAsync(runtime, profile, cancellationToken).ConfigureAwait(false);
+
+        if (pending.HasFlag(TranslationModuleKind.TextLayout))
+            await RecreateTextLayoutAsync(runtime, profile, cancellationToken).ConfigureAwait(false);
+
+        if (pending.HasFlag(TranslationModuleKind.Translator))
+            await RecreateTranslatorAsync(runtime, profile, cancellationToken).ConfigureAwait(false);
+
+        if (pending.HasFlag(TranslationModuleKind.Overlay))
+            await RecreateOverlayAsync(runtime, profile, cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task StartSessionAsync(
         IApplicationProfile profile,
         nint handle,
         string statusKeyRunning)
     {
-        var ocr = EngineFactory.CreateOcr(
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-        var capture = EngineFactory.CreateCapture(
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
+        lock (_refreshLock)
+            _pendingRefresh = TranslationModuleKind.None;
 
-        if (ocr is null || capture is null)
-        {
-            ocr?.Dispose();
-            capture?.Dispose();
-            AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.EngineNotFound], isError: true);
-            return;
-        }
+        _sessionWindowHandle = handle;
+        _host.SetStatus(_host.Loc[LocalizationConstants.Status.CreatingSessions], isError: false);
 
-        var textLayout = EngineFactory.CreateTextLayout(
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
-        if (textLayout is null)
-        {
-            ocr.Dispose();
-            capture.Dispose();
-            AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TextLayoutNotFound], isError: true);
-            return;
-        }
-
-        var translator = EngineFactory.CreateTranslator(
-            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
-        if (translator is null)
-        {
-            ocr.Dispose();
-            capture.Dispose();
-            textLayout.Dispose();
-            AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorNotFound], isError: true);
-            return;
-        }
-
-        var translatorCacheId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
-        if (string.IsNullOrWhiteSpace(translatorCacheId)
-            || string.Equals(translatorCacheId, "none", StringComparison.OrdinalIgnoreCase))
-        {
-            // Legacy profiles used translator "none" id for cache-off; prefer Memory by default.
-            translatorCacheId = SettingsConstants.EngineDefaults.TranslatorCache;
-        }
-
-        // Keep the chosen engine id persisted so settings UI and runtime stay aligned.
-        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
-            = translatorCacheId;
-
-        var translatorCache = EngineFactory.CreateTranslatorCache(translatorCacheId);
-        if (translatorCache is null
-            && !string.Equals(translatorCacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
-        {
-            // Memory plugin missing → fall back to no-cache rather than aborting the session.
-            translatorCache = new NoTranslatorCacheService();
-            translatorCacheId = NoTranslatorCacheService.EngineIdValue;
-        }
-        if (translatorCache is null)
-        {
-            ocr.Dispose();
-            capture.Dispose();
-            textLayout.Dispose();
-            translator.Dispose();
-            AbortPendingStart();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorCacheNotFound], isError: true);
-            return;
-        }
-
+        IOCRService? ocr = null;
+        ICaptureService? capture = null;
+        ITextLayoutService? textLayout = null;
+        ITranslatorService? translator = null;
+        ITranslatorCacheService? translatorCache = null;
         IOverlayLayoutService? overlayLayout = null;
         IOverlayLayoutSession? overlaySession = null;
-        if (_host.IsOverlayMode)
+        ICaptureSession? captureSession = null;
+        IOCRSession? ocrSession = null;
+        ITextLayoutSession? layoutSession = null;
+        ITranslatorSession? translatorSession = null;
+
+        try
         {
-            var overlayId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout);
-            if (string.IsNullOrWhiteSpace(overlayId))
-                overlayId = ScreenOverlayLayoutService.EngineIdValue;
+            ocr = EngineFactory.CreateOcr(
+                profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
+            capture = EngineFactory.CreateCapture(
+                profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
 
-            overlayLayout = EngineFactory.CreateOverlayLayout(overlayId);
-            if (overlayLayout is null || !overlayLayout.IsAvailable)
+            if (ocr is null || capture is null)
             {
-                ocr.Dispose();
-                capture.Dispose();
-                textLayout.Dispose();
-                translator.Dispose();
-                translatorCache.Dispose();
-                overlayLayout?.Dispose();
-                AbortPendingStart();
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
+                AbortPendingStart(ocr, capture, null, null, null, null);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Status.EngineNotFound], isError: true);
                 return;
             }
 
-            var overlaySettings = new Dictionary<string, object>(GetOrCreatePluginSettings(profile, overlayId));
-            overlaySettings[ManagedSettingKeys.TargetWindowHandle] = handle.ToInt64();
-            GetOrCreatePluginSettings(profile, overlayId).Remove(ManagedSettingKeys.TargetWindowHandle);
-
-            try
+            textLayout = EngineFactory.CreateTextLayout(
+                profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
+            if (textLayout is null)
             {
-                overlaySession = await overlayLayout.CreateSessionAsync(overlaySettings);
-                _host.SetTextOutputVisible(true);
-                overlaySession.SetVisible(true);
-            }
-            catch (Exception ex)
-            {
-                ocr.Dispose();
-                capture.Dispose();
-                textLayout.Dispose();
-                translator.Dispose();
-                translatorCache.Dispose();
-                overlayLayout.Dispose();
-                AbortPendingStart();
-                _host.SetStatus(string.Format(
-                    _host.Loc[LocalizationConstants.Status.OverlayFailed],
-                    LocalizationService.Instance.FormatExceptionMessage(ex)), isError: true);
+                AbortPendingStart(ocr, capture, null, null, null, null);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TextLayoutNotFound], isError: true);
                 return;
             }
+
+            translator = EngineFactory.CreateTranslator(
+                profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+            if (translator is null)
+            {
+                AbortPendingStart(ocr, capture, textLayout, null, null, null);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorNotFound], isError: true);
+                return;
+            }
+
+            var translatorCacheId = ResolveTranslatorCacheId(profile);
+            translatorCache = EngineFactory.CreateTranslatorCache(translatorCacheId);
+            if (translatorCache is null
+                && !string.Equals(translatorCacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
+            {
+                translatorCache = new NoTranslatorCacheService();
+                translatorCacheId = NoTranslatorCacheService.EngineIdValue;
+            }
+
+            if (translatorCache is null)
+            {
+                AbortPendingStart(ocr, capture, textLayout, translator, null, null);
+                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorCacheNotFound], isError: true);
+                return;
+            }
+
+            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
+                = translatorCacheId;
+
+            if (_host.IsOverlayMode)
+            {
+                var created = await TryCreateOverlayAsync(profile, handle).ConfigureAwait(true);
+                if (created is null)
+                {
+                    AbortPendingStart(ocr, capture, textLayout, translator, translatorCache, null);
+                    return;
+                }
+
+                overlayLayout = created.Value.Service;
+                overlaySession = created.Value.Session;
+            }
+
+            var region = new FullScreenWindowRegion { WindowHandle = handle };
+            var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+            var ctProbe = CancellationToken.None;
+
+            captureSession = await CreateCaptureSessionAsync(capture, region, profile, ctProbe).ConfigureAwait(true);
+            ocrSession = await CreateOcrSessionAsync(ocr, profile, ctProbe).ConfigureAwait(true);
+            layoutSession = await CreateTextLayoutSessionAsync(textLayout, profile, ctProbe).ConfigureAwait(true);
+            translatorSession = await CreateTranslatorSessionAsync(
+                translator, translatorCache, profile, targetLanguage, ctProbe).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            captureSession?.Dispose();
+            ocrSession?.Dispose();
+            layoutSession?.Dispose();
+            translatorSession?.Dispose();
+            try { overlaySession?.Dispose(); } catch { /* ignore */ }
+            AbortPendingStart(ocr, capture, textLayout, translator, translatorCache, overlayLayout);
+            _host.SetStatus(LocalizationService.Instance.FormatStoppedWithError(ex), isError: true);
+            return;
         }
 
         _ocrEngine = ocr;
@@ -202,8 +248,21 @@ internal sealed class TranslationSessionCoordinator
         _overlayLayoutEngine = overlayLayout;
         _overlaySession = overlaySession;
 
-        var region = new FullScreenWindowRegion { WindowHandle = handle };
-        var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+        var runtime = new TranslationLoopRuntime
+        {
+            Capture = capture!,
+            Ocr = ocr!,
+            TextLayout = textLayout!,
+            Translator = translator!,
+            TranslatorCache = translatorCache!,
+            Region = new FullScreenWindowRegion { WindowHandle = handle },
+            CaptureSession = captureSession!,
+            OcrSession = ocrSession!,
+            LayoutSession = layoutSession!,
+            TranslatorSession = translatorSession!,
+            OverlaySession = overlaySession,
+            WindowHandle = handle,
+        };
 
         _host.LoopCts ??= new CancellationTokenSource();
         var ct = _host.LoopCts.Token;
@@ -214,7 +273,10 @@ internal sealed class TranslationSessionCoordinator
         _loopTask = Task.Run(async () =>
         {
             await _loopService.RunAsync(
-                ocr, capture, textLayout, translator, translatorCache, region, profile, ct,
+                runtime,
+                () => _profileService.ActiveProfile,
+                this,
+                ct,
                 text => _textOutput.UpdateText(text),
                 status => Dispatcher.UIThread.Post(() =>
                 {
@@ -228,8 +290,6 @@ internal sealed class TranslationSessionCoordinator
                         LocalizationService.Instance.CurrentCulture,
                         _host.Loc[LocalizationConstants.Timing.Format],
                         capMs, ocrMs, trMs)),
-                targetLanguage,
-                overlaySession,
                 pairs => _history.AddRange(pairs));
         });
 
@@ -240,7 +300,6 @@ internal sealed class TranslationSessionCoordinator
         catch (OperationCanceledException) { }
         catch (Exception ex)
         {
-            // Safety net if RunAsync fails before posting status (should be rare).
             _host.SetStatus(LocalizationService.Instance.FormatStoppedWithError(ex), isError: true);
         }
         finally
@@ -249,7 +308,6 @@ internal sealed class TranslationSessionCoordinator
             _host.IsRunning = false;
             if (_host.LoopCts is not null)
             {
-                // Status is set by the loop (Stopped / Stopped + Error) or by the caller on cancel.
                 _host.LoopCts.Dispose();
                 _host.LoopCts = null;
             }
@@ -258,8 +316,240 @@ internal sealed class TranslationSessionCoordinator
         }
     }
 
-    private void AbortPendingStart()
+    private async Task RecreateCaptureAsync(
+        TranslationLoopRuntime runtime, IApplicationProfile profile, CancellationToken ct)
     {
+        var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture);
+        if (string.IsNullOrWhiteSpace(engineId))
+            engineId = SettingsConstants.EngineDefaults.Capture;
+        var capture = EngineFactory.CreateCapture(engineId)
+            ?? throw new InvalidOperationException("Capture engine not found.");
+        var session = await CreateCaptureSessionAsync(capture, runtime.Region, profile, ct).ConfigureAwait(false);
+
+        DisposeQuietly(runtime.CaptureSession);
+        DisposeQuietly(_captureEngine);
+        _captureEngine = capture;
+        runtime.Capture = capture;
+        runtime.CaptureSession = session;
+    }
+
+    private async Task RecreateOcrAsync(
+        TranslationLoopRuntime runtime, IApplicationProfile profile, CancellationToken ct)
+    {
+        var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr);
+        if (string.IsNullOrWhiteSpace(engineId))
+            engineId = SettingsConstants.EngineDefaults.Ocr;
+        var ocr = EngineFactory.CreateOcr(engineId)
+            ?? throw new InvalidOperationException("OCR engine not found.");
+        var session = await CreateOcrSessionAsync(ocr, profile, ct).ConfigureAwait(false);
+
+        DisposeQuietly(runtime.OcrSession);
+        DisposeQuietly(_ocrEngine);
+        _ocrEngine = ocr;
+        runtime.Ocr = ocr;
+        runtime.OcrSession = session;
+    }
+
+    private async Task RecreateTextLayoutAsync(
+        TranslationLoopRuntime runtime, IApplicationProfile profile, CancellationToken ct)
+    {
+        var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout);
+        if (string.IsNullOrWhiteSpace(engineId))
+            engineId = SettingsConstants.EngineDefaults.TextLayout;
+        var textLayout = EngineFactory.CreateTextLayout(engineId)
+            ?? throw new InvalidOperationException("Text layout engine not found.");
+        var session = await CreateTextLayoutSessionAsync(textLayout, profile, ct).ConfigureAwait(false);
+
+        DisposeQuietly(runtime.LayoutSession);
+        DisposeQuietly(_textLayoutEngine);
+        _textLayoutEngine = textLayout;
+        runtime.TextLayout = textLayout;
+        runtime.LayoutSession = session;
+    }
+
+    private async Task RecreateTranslatorAsync(
+        TranslationLoopRuntime runtime, IApplicationProfile profile, CancellationToken ct)
+    {
+        var translatorId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator);
+        if (string.IsNullOrWhiteSpace(translatorId))
+            translatorId = SettingsConstants.EngineDefaults.Translator;
+        var translator = EngineFactory.CreateTranslator(translatorId)
+            ?? throw new InvalidOperationException("Translator engine not found.");
+
+        var cacheId = ResolveTranslatorCacheId(profile);
+        var translatorCache = EngineFactory.CreateTranslatorCache(cacheId);
+        if (translatorCache is null
+            && !string.Equals(cacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
+            translatorCache = new NoTranslatorCacheService();
+        if (translatorCache is null)
+        {
+            translator.Dispose();
+            throw new InvalidOperationException("Translator cache engine not found.");
+        }
+
+        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
+            = cacheId;
+        var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+        var session = await CreateTranslatorSessionAsync(
+            translator, translatorCache, profile, targetLanguage, ct).ConfigureAwait(false);
+
+        DisposeQuietly(runtime.TranslatorSession);
+        DisposeQuietly(_translatorEngine);
+        DisposeQuietly(_translatorCacheEngine);
+        _translatorEngine = translator;
+        _translatorCacheEngine = translatorCache;
+        runtime.Translator = translator;
+        runtime.TranslatorCache = translatorCache;
+        runtime.TranslatorSession = session;
+    }
+
+    private async Task RecreateOverlayAsync(
+        TranslationLoopRuntime runtime, IApplicationProfile profile, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        if (!_host.IsOverlayMode)
+        {
+            var old = runtime.OverlaySession;
+            runtime.OverlaySession = null;
+            _overlaySession = null;
+            DisposeQuietly(old);
+            DisposeQuietly(_overlayLayoutEngine);
+            _overlayLayoutEngine = null;
+            return;
+        }
+
+        var created = await TryCreateOverlayAsync(profile, _sessionWindowHandle).ConfigureAwait(false);
+        if (created is null)
+            throw new InvalidOperationException("Overlay layout unavailable.");
+
+        var oldSession = runtime.OverlaySession;
+        var oldEngine = _overlayLayoutEngine;
+        _overlayLayoutEngine = created.Value.Service;
+        _overlaySession = created.Value.Session;
+        runtime.OverlaySession = created.Value.Session;
+
+        DisposeQuietly(oldSession);
+        DisposeQuietly(oldEngine);
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            _host.SetTextOutputVisible(true);
+            created.Value.Session.SetVisible(true);
+        }).GetTask().ConfigureAwait(false);
+    }
+
+    private async Task<(IOverlayLayoutService Service, IOverlayLayoutSession Session)?> TryCreateOverlayAsync(
+        IApplicationProfile profile,
+        nint handle)
+    {
+        var overlayId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout);
+        if (string.IsNullOrWhiteSpace(overlayId))
+            overlayId = ScreenOverlayLayoutService.EngineIdValue;
+
+        var overlayLayout = EngineFactory.CreateOverlayLayout(overlayId);
+        if (overlayLayout is null || !overlayLayout.IsAvailable)
+        {
+            overlayLayout?.Dispose();
+            _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
+            return null;
+        }
+
+        var overlaySettings = new Dictionary<string, object>(GetOrCreatePluginSettings(profile, overlayId));
+        overlaySettings[ManagedSettingKeys.TargetWindowHandle] = handle.ToInt64();
+        GetOrCreatePluginSettings(profile, overlayId).Remove(ManagedSettingKeys.TargetWindowHandle);
+
+        try
+        {
+            var overlaySession = await overlayLayout.CreateSessionAsync(overlaySettings).ConfigureAwait(false);
+            return (overlayLayout, overlaySession);
+        }
+        catch (Exception ex)
+        {
+            overlayLayout.Dispose();
+            _host.SetStatus(string.Format(
+                _host.Loc[LocalizationConstants.Status.OverlayFailed],
+                LocalizationService.Instance.FormatExceptionMessage(ex)), isError: true);
+            return null;
+        }
+    }
+
+    private static string ResolveTranslatorCacheId(IApplicationProfile profile)
+    {
+        var translatorCacheId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
+        if (string.IsNullOrWhiteSpace(translatorCacheId)
+            || string.Equals(translatorCacheId, "none", StringComparison.OrdinalIgnoreCase))
+            translatorCacheId = SettingsConstants.EngineDefaults.TranslatorCache;
+        return translatorCacheId;
+    }
+
+    private static async Task<ICaptureSession> CreateCaptureSessionAsync(
+        ICaptureService capture,
+        ICaptureRegion region,
+        IApplicationProfile profile,
+        CancellationToken ct)
+    {
+        var settings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
+        return await capture.CreateSessionAsync(region,
+            ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, settings), ct);
+    }
+
+    private static async Task<IOCRSession> CreateOcrSessionAsync(
+        IOCRService ocr,
+        IApplicationProfile profile,
+        CancellationToken ct)
+    {
+        var settings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
+        return await ocr.CreateSessionAsync(
+            ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, settings), ct);
+    }
+
+    private static async Task<ITextLayoutSession> CreateTextLayoutSessionAsync(
+        ITextLayoutService textLayout,
+        IApplicationProfile profile,
+        CancellationToken ct)
+    {
+        var settings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
+        return await textLayout.CreateSessionAsync(
+            ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, settings), ct);
+    }
+
+    private static async Task<ITranslatorSession> CreateTranslatorSessionAsync(
+        ITranslatorService translator,
+        ITranslatorCacheService translatorCache,
+        IApplicationProfile profile,
+        string? targetLanguage,
+        CancellationToken ct)
+    {
+        var trSettings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+        var cacheSettings = GetOrCreatePluginSettings(profile,
+            profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
+
+        var raw = await translator.CreateSessionAsync(
+            ManagedSettingKeys.PrepareForEngine(translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
+        return await translatorCache.WrapSessionAsync(
+            raw,
+            ManagedSettingKeys.PrepareForEngine(translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
+    }
+
+    private void AbortPendingStart(
+        IDisposable? ocr,
+        IDisposable? capture,
+        IDisposable? textLayout,
+        IDisposable? translator,
+        IDisposable? translatorCache,
+        IDisposable? overlayLayout)
+    {
+        DisposeQuietly(ocr);
+        DisposeQuietly(capture);
+        DisposeQuietly(textLayout);
+        DisposeQuietly(translator);
+        DisposeQuietly(translatorCache);
+        DisposeQuietly(overlayLayout);
         _host.IsRunning = false;
         if (_host.LoopCts is null)
             return;
@@ -273,18 +563,23 @@ internal sealed class TranslationSessionCoordinator
         try { _overlaySession?.Dispose(); } catch { }
         _overlaySession = null;
 
-        _ocrEngine?.Dispose();
-        _captureEngine?.Dispose();
-        _textLayoutEngine?.Dispose();
-        _translatorEngine?.Dispose();
-        _translatorCacheEngine?.Dispose();
-        _overlayLayoutEngine?.Dispose();
+        DisposeQuietly(_ocrEngine);
+        DisposeQuietly(_captureEngine);
+        DisposeQuietly(_textLayoutEngine);
+        DisposeQuietly(_translatorEngine);
+        DisposeQuietly(_translatorCacheEngine);
+        DisposeQuietly(_overlayLayoutEngine);
         _ocrEngine = null;
         _captureEngine = null;
         _textLayoutEngine = null;
         _translatorEngine = null;
         _translatorCacheEngine = null;
         _overlayLayoutEngine = null;
+    }
+
+    private static void DisposeQuietly(IDisposable? disposable)
+    {
+        try { disposable?.Dispose(); } catch { /* ignore */ }
     }
 
     private static Dictionary<string, object> GetOrCreatePluginSettings(IApplicationProfile profile, string pluginId)

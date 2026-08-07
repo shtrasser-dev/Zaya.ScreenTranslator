@@ -13,7 +13,7 @@ public sealed partial class MainViewModel
     {
         var vm = new SettingsViewModel(_settingsService, _profileService, Localization, _pluginUpdateService, _hostVersionChecker);
         vm.UiCultureChanged = RefreshUiForCulture;
-        vm.TranslationSettingsChanged = ScheduleRestartTranslationIfRunning;
+        vm.TranslationModulesChanged = ScheduleModulesRefreshIfRunning;
         vm.DeleteProfileCommand = DeleteProfileCommand;
         vm.SetCurrentProcessCommand = SetCurrentProcessCommand;
         return vm;
@@ -60,7 +60,7 @@ public sealed partial class MainViewModel
                 if (Settings is not null)
                 {
                     Settings.UiCultureChanged = null;
-                    Settings.TranslationSettingsChanged = null;
+                    Settings.TranslationModulesChanged = null;
                 }
                 Settings = CreateSettingsViewModel();
             }
@@ -107,7 +107,7 @@ public sealed partial class MainViewModel
         if (Settings is not null)
         {
             Settings.UiCultureChanged = null;
-            Settings.TranslationSettingsChanged = null;
+            Settings.TranslationModulesChanged = null;
         }
         Settings = null;
         IsSettingsOpen = false;

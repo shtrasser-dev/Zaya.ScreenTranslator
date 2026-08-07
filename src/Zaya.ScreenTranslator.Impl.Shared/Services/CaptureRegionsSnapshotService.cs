@@ -60,11 +60,13 @@ public static class CaptureRegionsSnapshotService
                     && !IsFullyBlack(frame)
                     && IsUsableFrameSize(frame, windowHandle))
                 {
-                    var size = (frame.Width, frame.Height);
+                    using var aligned = CaptureFrameProcessor.TryAlignToClientArea(frame, windowHandle);
+                    var image = (IRawImage)(aligned ?? frame);
+                    var size = (image.Width, image.Height);
                     if (lastGoodSize is { } prev && prev.Width == size.Width && prev.Height == size.Height)
                     {
-                        var bmp = ToWriteableBitmap(frame);
-                        return new Snapshot(bmp, frame.Width, frame.Height);
+                        var bmp = ToWriteableBitmap(image);
+                        return new Snapshot(bmp, image.Width, image.Height);
                     }
 
                     lastGoodSize = size;

@@ -9,7 +9,7 @@
     <NoWarn>CS1591</NoWarn>
 
     <ZayaVersionRole>interface</ZayaVersionRole>
-    <ZayaVersionInterface>0</ZayaVersionInterface>
+    <ZayaVersionInterface>1</ZayaVersionInterface>
 
     <PackageId>Zaya.ScreenTranslator.Layout</PackageId>
     <Title>Zaya Screen Translator — Overlay Layout Abstractions</Title>
@@ -21,8 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
   </ItemGroup>
 
 </Project>

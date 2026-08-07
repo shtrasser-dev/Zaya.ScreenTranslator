@@ -70,6 +70,11 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
     private static bool IsFixedFontSizeEnabled(IReadOnlyDictionary<string, object?> s)
         => s.GetValueOrDefault(OverlayLayoutSettingKeys.FixedFontSize) is true;
 
+    private static bool IsBackgroundEnabled(IReadOnlyDictionary<string, object?> s)
+        => (s.GetValueOrDefault(OverlayLayoutSettingKeys.Background) as string
+            ?? OverlayLayoutSettingKeys.BackgroundSoft)
+           != OverlayLayoutSettingKeys.BackgroundNone;
+
     private static IReadOnlyList<SettingDescriptor> BuildSettings() =>
     [
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.Placement, Loc("Overlay_Placement"))
@@ -144,9 +149,18 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
             DefaultValue = 70,
             MinValue = 0,
             MaxValue = 100,
-            IsVisible = s => (s.GetValueOrDefault(OverlayLayoutSettingKeys.Background) as string
-                              ?? OverlayLayoutSettingKeys.BackgroundSoft)
-                             != OverlayLayoutSettingKeys.BackgroundNone,
+            IsVisible = IsBackgroundEnabled,
+        },
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.BackgroundColor, Loc("Overlay_BackgroundColor"))
+        {
+            Description = Loc("Overlay_BackgroundColor_Desc"),
+            DefaultValue = OverlayLayoutSettingKeys.BackgroundColorDark,
+            Options =
+            [
+                new(OverlayLayoutSettingKeys.BackgroundColorLight, Loc("Overlay_BackgroundColor_Light")),
+                new(OverlayLayoutSettingKeys.BackgroundColorDark, Loc("Overlay_BackgroundColor_Dark")),
+            ],
+            IsVisible = IsBackgroundEnabled,
         },
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.TextColor, Loc("Overlay_TextColor"))
         {
@@ -167,6 +181,11 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         {
             Description = Loc("Overlay_Outline_Desc"),
             DefaultValue = true,
+        },
+        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.DebugMode, Loc("Overlay_DebugMode"))
+        {
+            Description = Loc("Overlay_DebugMode_Desc"),
+            DefaultValue = false,
         },
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.FitMode, Loc("Overlay_FitMode"))
         {

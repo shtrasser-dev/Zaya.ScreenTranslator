@@ -72,9 +72,35 @@ public sealed class GitHubReleasesClient : IDisposable
     }
 
     /// <summary>
+    /// Newest immutable host release across all channels (<c>app-v{MAJOR.MINOR.PATCH}</c>).
+    /// Floating <c>app-v{channel}-latest</c> tags are ignored.
+    /// </summary>
+    public async Task<GitHubReleaseInfo?> GetHostLatestAsync(
+        string ownerRepo,
+        CancellationToken cancellationToken = default)
+    {
+        const string tagPrefix = "app-v";
+        var releases = await ListReleasesAsync(ownerRepo, cancellationToken).ConfigureAwait(false);
+        return releases
+            .Where(r => !r.Prerelease
+                        && r.TagName.StartsWith(tagPrefix, StringComparison.OrdinalIgnoreCase)
+                        && !r.TagName.EndsWith("-latest", StringComparison.OrdinalIgnoreCase))
+            .Select(r =>
+            {
+                var fromTag = TryParseTagVersion(r.TagName, tagPrefix);
+                var version = fromTag ?? r.ParsedVersion;
+                return (Release: r, Version: version);
+            })
+            .Where(x => x.Version is not null)
+            .OrderByDescending(x => x.Version)
+            .Select(x => x.Release)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
     /// Channel floating tag first; on 404 fall back to max immutable
     /// <c>{tagPrefix}{channel}.*</c> (e.g. <c>plugin-Zaya.OCR-v1.0-latest</c> /
-    /// <c>plugin-Zaya.OCR-v1.0.0.2</c>, or host <c>app-v1.0-latest</c>).
+    /// <c>plugin-Zaya.OCR-v1.0.0.2</c>).
     /// </summary>
     public async Task<GitHubReleaseInfo?> GetChannelLatestAsync(
         string ownerRepo,
