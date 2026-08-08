@@ -36,7 +36,7 @@ build.cmd
 
 # Zaya.ScreenTranslator
 
-Real-time on-screen text translator for Windows. Captures a window or region, runs OCR, optionally translates, and shows the result in a text window or overlay.
+Real-time on-screen text translator for Windows 10/11. Captures a window or region, runs OCR, optionally translates, and shows the result in a text window or overlay.
 
 ## Version
 
