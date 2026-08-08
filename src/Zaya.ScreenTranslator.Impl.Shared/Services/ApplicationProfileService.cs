@@ -138,6 +138,9 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
         return new ApplicationProfile { Settings = settings };
     }
 
+    public IApplicationProfile CreateFromDefaultTemplate(string name) =>
+        CreateDefaultApplicationProfile(name);
+
     private static Dictionary<string, Dictionary<string, object>> LoadDefaultProfileTemplate()
     {
         var asm = typeof(ApplicationProfileService).Assembly;
@@ -186,6 +189,50 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
         var path = ProfilePath(name);
         if (File.Exists(path))
             File.Delete(path);
+    }
+
+    public string AllocateUniqueProfileName(string preferredName)
+    {
+        preferredName = preferredName.Trim();
+        if (string.IsNullOrWhiteSpace(preferredName))
+            preferredName = SettingsConstants.EngineDefaults.ProfileName;
+
+        var existing = new HashSet<string>(ListProfileNames(), StringComparer.OrdinalIgnoreCase);
+        if (!existing.Contains(preferredName))
+            return preferredName;
+
+        for (var i = 1; i <= 1000; i++)
+        {
+            var candidate = $"{preferredName} {i}";
+            if (!existing.Contains(candidate))
+                return candidate;
+        }
+
+        return $"{preferredName} {Guid.NewGuid():N}"[..Math.Min(40, preferredName.Length + 33)];
+    }
+
+    public bool TryLoadProfileFile(string path, out IApplicationProfile? profile, out string? errorMessage)
+    {
+        profile = null;
+        errorMessage = null;
+        try
+        {
+            var json = File.ReadAllText(path);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(json, JsonOptions);
+            if (dict is null)
+            {
+                errorMessage = "Invalid profile file.";
+                return false;
+            }
+
+            profile = new ApplicationProfile { Settings = dict };
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            return false;
+        }
     }
 
     public bool TryRename(string oldName, string newName, out string? errorCode)

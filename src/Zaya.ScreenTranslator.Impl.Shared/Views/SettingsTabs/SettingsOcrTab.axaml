@@ -23,7 +23,8 @@
                               DisplayMemberBinding="{Binding Id}" />
                 </Grid>
                 <Border Classes="settings-divider" />
-                <StackPanel Name="OcrSettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="OcrSettingsPanel"
+                                                   ModuleKind="Ocr" />
             </StackPanel>
         </Border>
     </ScrollViewer>

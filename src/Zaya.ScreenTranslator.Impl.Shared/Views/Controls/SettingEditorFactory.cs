@@ -97,11 +97,14 @@ internal static class SettingEditorFactory
                        ?? items.FirstOrDefault();
 
         combo.SelectedItem = selected;
-        combo.SelectionChanged += (_, _) =>
+        SettingEditorChangeWiring.AfterInit(combo, () =>
         {
-            if (combo.SelectedItem is EnumItem item)
-                onChanged(desc.Key, item.Value);
-        };
+            combo.SelectionChanged += (_, _) =>
+            {
+                if (combo.SelectedItem is EnumItem item)
+                    onChanged(desc.Key, item.Value);
+            };
+        });
 
         return combo;
     }
@@ -121,8 +124,11 @@ internal static class SettingEditorFactory
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = tableCell ? HorizontalAlignment.Center : HorizontalAlignment.Right,
         };
-        toggle.IsCheckedChanged += (_, _) =>
-            onChanged(desc.Key, toggle.IsChecked == true);
+        SettingEditorChangeWiring.AfterInit(toggle, () =>
+        {
+            toggle.IsCheckedChanged += (_, _) =>
+                onChanged(desc.Key, toggle.IsChecked == true);
+        });
         return toggle;
     }
 
@@ -184,19 +190,22 @@ internal static class SettingEditorFactory
             MaxWidth = SettingControlFactory.ControlWidth,
         };
 
-        tb.TextChanged += (_, _) =>
+        SettingEditorChangeWiring.AfterInit(tb, () =>
         {
-            if (!IntegerSettingValidation.TryParse(tb.Text, desc, out var val, out var message, culture))
+            tb.TextChanged += (_, _) =>
             {
-                error.Text = message;
-                error.IsVisible = true;
-                return;
-            }
+                if (!IntegerSettingValidation.TryParse(tb.Text, desc, out var val, out var message, culture))
+                {
+                    error.Text = message;
+                    error.IsVisible = true;
+                    return;
+                }
 
-            error.IsVisible = false;
-            error.Text = string.Empty;
-            onChanged(desc.Key, val);
-        };
+                error.IsVisible = false;
+                error.Text = string.Empty;
+                onChanged(desc.Key, val);
+            };
+        });
 
         return new StackPanel
         {
@@ -214,7 +223,10 @@ internal static class SettingEditorFactory
             Text = currentValue?.ToString() ?? string.Empty,
             Width = width,
         };
-        tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        SettingEditorChangeWiring.AfterInit(tb, () =>
+        {
+            tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        });
         return tb;
     }
 
@@ -225,7 +237,10 @@ internal static class SettingEditorFactory
             Text = currentValue?.ToString() ?? string.Empty,
             Width = SettingControlFactory.ControlWidthWide,
         };
-        tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        SettingEditorChangeWiring.AfterInit(tb, () =>
+        {
+            tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        });
         return tb;
     }
 
@@ -238,7 +253,10 @@ internal static class SettingEditorFactory
             Text = currentValue?.ToString() ?? string.Empty,
             Width = SettingControlFactory.ControlWidthWide,
         };
-        tb.TextChanged += (_, _) => onChanged(desc.Key, tb.Text ?? string.Empty);
+        SettingEditorChangeWiring.AfterInit(tb, () =>
+        {
+            tb.TextChanged += (_, _) => onChanged(desc.Key, tb.Text ?? string.Empty);
+        });
         return tb;
     }
 
@@ -250,7 +268,10 @@ internal static class SettingEditorFactory
             Width = SettingControlFactory.ControlWidthWide,
             PasswordChar = '•',
         };
-        tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        SettingEditorChangeWiring.AfterInit(tb, () =>
+        {
+            tb.TextChanged += (_, _) => onChanged(string.Empty, tb.Text ?? string.Empty);
+        });
         return tb;
     }
 

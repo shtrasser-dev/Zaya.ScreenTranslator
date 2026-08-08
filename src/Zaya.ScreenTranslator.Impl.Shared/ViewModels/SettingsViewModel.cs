@@ -102,6 +102,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public Action<TranslationModuleKind>? TranslationModulesChanged { get; set; }
     public Window? OwnerWindow { get; set; }
     public IAsyncRelayCommand? DeleteProfileCommand { get; set; }
+    public IAsyncRelayCommand? ExportProfileCommand { get; set; }
     public IRelayCommand? SetCurrentProcessCommand { get; set; }
 
     public IReadOnlyList<LanguageItem> UiLanguages { get; private set; }
@@ -128,7 +129,13 @@ public sealed partial class SettingsViewModel : ObservableObject
             st[ScreenTranslatorSettingDescriptors.OverlayLayout] = SelectedOverlayLayoutEngine.Id;
 
         _settingsService.CommitEdit(EditingProfile);
-        EditingScreenProfile.TargetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+        // Keep window geometry from disk: this clone may still have default 0,0 and would wipe
+        // coordinates that App persists on exit / PositionChanged.
+        var existingScreen = _profileService.LoadScreenTranslatorProfile();
+        EditingScreenProfile.MainWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.MainWindow);
+        EditingScreenProfile.SettingsWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.SettingsWindow);
+        EditingScreenProfile.TextWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.TextWindow);
+        EditingScreenProfile.TargetLanguage = existingScreen.TargetLanguage;
         EditingScreenProfile.LastActiveProfileName = SelectedProfileName;
         _profileService.SaveScreenTranslatorProfile(EditingScreenProfile);
 

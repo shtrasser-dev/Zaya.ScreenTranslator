@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:m="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Models"
+             x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.Controls.WindowPickerComboBox">
+    <UserControl.Styles>
+        <Style Selector="ComboBox.window-picker /template/ Popup#PART_Popup">
+            <Setter Property="Width" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="MinWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="MaxWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+        </Style>
+    </UserControl.Styles>
+
+    <ComboBox Name="Combo"
+              Classes="window-picker"
+              HorizontalAlignment="Stretch"
+              MinHeight="32"
+              Height="32"
+              DropDownOpened="OnComboDropDownOpened">
+        <ComboBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel />
+            </ItemsPanelTemplate>
+        </ComboBox.ItemsPanel>
+        <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="m:WindowInfo">
+                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                    <Panel Width="16" Height="16" Margin="0,0,8,0"
+                           VerticalAlignment="Center">
+                        <ProgressBar Width="14" Height="14"
+                                     IsIndeterminate="True"
+                                     IsVisible="{Binding IsLoadingPlaceholder}" />
+                        <Image Width="16" Height="16"
+                               Source="{Binding Icon}"
+                               IsVisible="{Binding HasIcon}" />
+                    </Panel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Title}"
+                               IsVisible="{Binding !IsLoadingPlaceholder}"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+        <ComboBox.SelectionBoxItemTemplate>
+            <DataTemplate x:DataType="m:WindowInfo">
+                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
+                    <Panel Width="16" Height="16" Margin="0,0,8,0"
+                           VerticalAlignment="Center">
+                        <Image Width="16" Height="16"
+                               Source="{Binding Icon}"
+                               IsVisible="{Binding HasIcon}" />
+                    </Panel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Title}"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </DataTemplate>
+        </ComboBox.SelectionBoxItemTemplate>
+    </ComboBox>
+</UserControl>

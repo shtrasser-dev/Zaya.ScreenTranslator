@@ -10,7 +10,7 @@ namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 /// </summary>
 public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
 {
-    public const string EngineIdValue = "screen-overlay";
+    public const string EngineIdValue = OverlayLayoutSettingKeys.EngineId;
 
     private static readonly IReadOnlyList<SettingDescriptor> SettingsList = BuildSettings();
     private bool _disposed;
@@ -19,8 +19,8 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         => new(key, culture => Properties.Resources.ResourceManager.GetString(key, culture) ?? key);
 
     public string EngineId => EngineIdValue;
-    public LocalizedString DisplayName => Loc("Overlay_EngineName");
-    public LocalizedString Description => Loc("Overlay_EngineDesc");
+    public LocalizedString DisplayName => Loc(LocalizationConstants.Overlay.EngineName);
+    public LocalizedString Description => Loc(LocalizationConstants.Overlay.EngineDesc);
     public bool IsAvailable => OperatingSystem.IsWindows();
     public IReadOnlyList<SettingDescriptor> Settings => SettingsList;
 
@@ -42,7 +42,7 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
 
         var hwnd = ResolveHandle(engineSettings);
         if (hwnd == IntPtr.Zero)
-            throw new ArgumentException("targetWindowHandle is required.", nameof(engineSettings));
+            throw new ArgumentException($"{OverlayLayoutSettingKeys.TargetWindowHandle} is required.", nameof(engineSettings));
 
         if (Dispatcher.UIThread.CheckAccess())
             return CreateSessionCore(list, hwnd);
@@ -77,125 +77,125 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
 
     private static IReadOnlyList<SettingDescriptor> BuildSettings() =>
     [
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.Placement, Loc("Overlay_Placement"))
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.Placement, Loc(LocalizationConstants.Overlay.Placement))
         {
-            Description = Loc("Overlay_Placement_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.PlacementDesc),
             DefaultValue = OverlayLayoutSettingKeys.PlacementAbove,
             Options =
             [
-                new(OverlayLayoutSettingKeys.PlacementAbove, Loc("Overlay_Placement_Above")),
-                new(OverlayLayoutSettingKeys.PlacementOver, Loc("Overlay_Placement_Over")),
-                new(OverlayLayoutSettingKeys.PlacementBelow, Loc("Overlay_Placement_Below")),
+                new(OverlayLayoutSettingKeys.PlacementAbove, Loc(LocalizationConstants.Overlay.PlacementAbove)),
+                new(OverlayLayoutSettingKeys.PlacementOver, Loc(LocalizationConstants.Overlay.PlacementOver)),
+                new(OverlayLayoutSettingKeys.PlacementBelow, Loc(LocalizationConstants.Overlay.PlacementBelow)),
             ],
         },
-        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.FixedFontSize, Loc("Overlay_FixedFontSize"))
+        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.FixedFontSize, Loc(LocalizationConstants.Overlay.FixedFontSize))
         {
-            Description = Loc("Overlay_FixedFontSize_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.FixedFontSizeDesc),
             DefaultValue = false,
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontScale, Loc("Overlay_FontScale"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontScale, Loc(LocalizationConstants.Overlay.FontScale))
         {
-            Description = Loc("Overlay_FontScale_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.FontScaleDesc),
             DefaultValue = 60,
             MinValue = 20,
             MaxValue = 150,
             IsVisible = s => !IsFixedFontSizeEnabled(s),
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontSize, Loc("Overlay_FontSize"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.FontSize, Loc(LocalizationConstants.Overlay.FontSize))
         {
-            Description = Loc("Overlay_FontSize_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.FontSizeDesc),
             DefaultValue = 16,
             MinValue = 8,
             MaxValue = 200,
             IsVisible = IsFixedFontSizeEnabled,
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetYPercent, Loc("Overlay_OffsetYPercent"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetYPercent, Loc(LocalizationConstants.Overlay.OffsetYPercent))
         {
-            Description = Loc("Overlay_OffsetYPercent_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.OffsetYPercentDesc),
             DefaultValue = 0,
             MinValue = -200,
             MaxValue = 200,
             IsVisible = s => !IsFixedFontSizeEnabled(s),
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetY, Loc("Overlay_OffsetY"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.OffsetY, Loc(LocalizationConstants.Overlay.OffsetY))
         {
-            Description = Loc("Overlay_OffsetY_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.OffsetYDesc),
             DefaultValue = 4,
             MinValue = -200,
             MaxValue = 200,
             IsVisible = IsFixedFontSizeEnabled,
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.Padding, Loc("Overlay_Padding"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.Padding, Loc(LocalizationConstants.Overlay.Padding))
         {
-            Description = Loc("Overlay_Padding_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.PaddingDesc),
             DefaultValue = 2,
             MinValue = 0,
             MaxValue = 40,
         },
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.Background, Loc("Overlay_Background"))
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.Background, Loc(LocalizationConstants.Overlay.Background))
         {
-            Description = Loc("Overlay_Background_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.BackgroundDesc),
             DefaultValue = OverlayLayoutSettingKeys.BackgroundSoft,
             Options =
             [
-                new(OverlayLayoutSettingKeys.BackgroundNone, Loc("Overlay_Background_None")),
-                new(OverlayLayoutSettingKeys.BackgroundSoft, Loc("Overlay_Background_Soft")),
-                new(OverlayLayoutSettingKeys.BackgroundOpaque, Loc("Overlay_Background_Opaque")),
+                new(OverlayLayoutSettingKeys.BackgroundNone, Loc(LocalizationConstants.Overlay.BackgroundNone)),
+                new(OverlayLayoutSettingKeys.BackgroundSoft, Loc(LocalizationConstants.Overlay.BackgroundSoft)),
+                new(OverlayLayoutSettingKeys.BackgroundOpaque, Loc(LocalizationConstants.Overlay.BackgroundOpaque)),
             ],
         },
-        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.BackgroundOpacity, Loc("Overlay_BackgroundOpacity"))
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.BackgroundOpacity, Loc(LocalizationConstants.Overlay.BackgroundOpacity))
         {
-            Description = Loc("Overlay_BackgroundOpacity_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.BackgroundOpacityDesc),
             DefaultValue = 70,
             MinValue = 0,
             MaxValue = 100,
             IsVisible = IsBackgroundEnabled,
         },
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.BackgroundColor, Loc("Overlay_BackgroundColor"))
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.BackgroundColor, Loc(LocalizationConstants.Overlay.BackgroundColor))
         {
-            Description = Loc("Overlay_BackgroundColor_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.BackgroundColorDesc),
             DefaultValue = OverlayLayoutSettingKeys.BackgroundColorDark,
             Options =
             [
-                new(OverlayLayoutSettingKeys.BackgroundColorLight, Loc("Overlay_BackgroundColor_Light")),
-                new(OverlayLayoutSettingKeys.BackgroundColorDark, Loc("Overlay_BackgroundColor_Dark")),
+                new(OverlayLayoutSettingKeys.BackgroundColorLight, Loc(LocalizationConstants.Overlay.BackgroundColorLight)),
+                new(OverlayLayoutSettingKeys.BackgroundColorDark, Loc(LocalizationConstants.Overlay.BackgroundColorDark)),
             ],
             IsVisible = IsBackgroundEnabled,
         },
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.TextColor, Loc("Overlay_TextColor"))
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.TextColor, Loc(LocalizationConstants.Overlay.TextColor))
         {
-            Description = Loc("Overlay_TextColor_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.TextColorDesc),
             DefaultValue = OverlayLayoutSettingKeys.TextColorLight,
             Options =
             [
-                new(OverlayLayoutSettingKeys.TextColorLight, Loc("Overlay_TextColor_Light")),
-                new(OverlayLayoutSettingKeys.TextColorDark, Loc("Overlay_TextColor_Dark")),
-                new(OverlayLayoutSettingKeys.TextColorCream, Loc("Overlay_TextColor_Cream")),
-                new(OverlayLayoutSettingKeys.TextColorYellow, Loc("Overlay_TextColor_Yellow")),
-                new(OverlayLayoutSettingKeys.TextColorCyan, Loc("Overlay_TextColor_Cyan")),
-                new(OverlayLayoutSettingKeys.TextColorLime, Loc("Overlay_TextColor_Lime")),
-                new(OverlayLayoutSettingKeys.TextColorOrange, Loc("Overlay_TextColor_Orange")),
+                new(OverlayLayoutSettingKeys.TextColorLight, Loc(LocalizationConstants.Overlay.TextColorLight)),
+                new(OverlayLayoutSettingKeys.TextColorDark, Loc(LocalizationConstants.Overlay.TextColorDark)),
+                new(OverlayLayoutSettingKeys.TextColorCream, Loc(LocalizationConstants.Overlay.TextColorCream)),
+                new(OverlayLayoutSettingKeys.TextColorYellow, Loc(LocalizationConstants.Overlay.TextColorYellow)),
+                new(OverlayLayoutSettingKeys.TextColorCyan, Loc(LocalizationConstants.Overlay.TextColorCyan)),
+                new(OverlayLayoutSettingKeys.TextColorLime, Loc(LocalizationConstants.Overlay.TextColorLime)),
+                new(OverlayLayoutSettingKeys.TextColorOrange, Loc(LocalizationConstants.Overlay.TextColorOrange)),
             ],
         },
-        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.Outline, Loc("Overlay_Outline"))
+        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.Outline, Loc(LocalizationConstants.Overlay.Outline))
         {
-            Description = Loc("Overlay_Outline_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.OutlineDesc),
             DefaultValue = true,
         },
-        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.DebugMode, Loc("Overlay_DebugMode"))
+        new BooleanSettingDescriptor(OverlayLayoutSettingKeys.DebugMode, Loc(LocalizationConstants.Overlay.DebugMode))
         {
-            Description = Loc("Overlay_DebugMode_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.DebugModeDesc),
             DefaultValue = false,
         },
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.FitMode, Loc("Overlay_FitMode"))
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.FitMode, Loc(LocalizationConstants.Overlay.FitMode))
         {
-            Description = Loc("Overlay_FitMode_Desc"),
+            Description = Loc(LocalizationConstants.Overlay.FitModeDesc),
             DefaultValue = OverlayLayoutSettingKeys.FitShrink,
             Options =
             [
-                new(OverlayLayoutSettingKeys.FitShrink, Loc("Overlay_FitMode_Shrink")),
-                new(OverlayLayoutSettingKeys.FitWrap, Loc("Overlay_FitMode_Wrap")),
-                new(OverlayLayoutSettingKeys.FitClip, Loc("Overlay_FitMode_Clip")),
+                new(OverlayLayoutSettingKeys.FitShrink, Loc(LocalizationConstants.Overlay.FitModeShrink)),
+                new(OverlayLayoutSettingKeys.FitWrap, Loc(LocalizationConstants.Overlay.FitModeWrap)),
+                new(OverlayLayoutSettingKeys.FitClip, Loc(LocalizationConstants.Overlay.FitModeClip)),
             ],
         },
     ];

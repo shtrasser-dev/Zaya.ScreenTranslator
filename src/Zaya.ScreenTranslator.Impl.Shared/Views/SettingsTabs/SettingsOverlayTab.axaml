@@ -23,7 +23,8 @@
                               DisplayMemberBinding="{Binding Label}" />
                 </Grid>
                 <Border Classes="settings-divider" />
-                <StackPanel Name="OverlaySettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="OverlaySettingsPanel"
+                                                   ModuleKind="Overlay" />
             </StackPanel>
         </Border>
     </ScrollViewer>

@@ -81,6 +81,12 @@ internal static class LocalizationConstants
     public static class Profile
     {
         public const string CreateNew = "Profile_CreateNew";
+        public const string CopyCurrent = "Profile_CopyCurrent";
+        public const string Import = "Profile_Import";
+        public const string Export = "Profile_Export";
+        public const string ExportSection = "Profile_Export_Section";
+        public const string ImportFailed = "Profile_Import_Failed";
+        public const string ExportFailed = "Profile_Export_Failed";
         public const string DeleteLast = "Profile_Delete_Last";
         public const string DeleteTitle = "Profile_Delete_Title";
         public const string DeleteConfirm = "Profile_Delete_Confirm";

@@ -23,7 +23,8 @@
                               DisplayMemberBinding="{Binding Label}" />
                 </Grid>
                 <Border Classes="settings-divider" />
-                <StackPanel Name="TranslatorSettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="TranslatorSettingsPanel"
+                                                   ModuleKind="Translator" />
 
                 <Border Classes="settings-divider" Margin="0,12,0,0" />
                 <TextBlock Classes="settings-intro"
@@ -42,7 +43,8 @@
                               DisplayMemberBinding="{Binding Label}" />
                 </Grid>
                 <Border Classes="settings-divider" />
-                <StackPanel Name="TranslatorCacheSettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="TranslatorCacheSettingsPanel"
+                                                   ModuleKind="Translator" />
             </StackPanel>
         </Border>
     </ScrollViewer>

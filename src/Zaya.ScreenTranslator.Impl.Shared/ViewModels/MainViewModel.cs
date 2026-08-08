@@ -8,6 +8,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
 using Zaya.ScreenTranslator.Impl.Shared.Views;
+using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -61,12 +62,11 @@ public sealed partial class MainViewModel :
         _captureResolver = new CaptureWindowResolver(this);
         _profilePicker = new ProfilePickerService(profileService, settingsService, this);
 
-        _profileNames = profileService.ListProfileNames();
+        _profileNames = SortedProfileNames(profileService.ListProfileNames());
         _selectedProfileName = profileService.ActiveProfile?.ScreenTranslatorSettings
             .GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName)
                                ?? _profileNames.FirstOrDefault();
         _committedProfileName = _selectedProfileName;
-        _profilePickerItems = _profilePicker.BuildProfilePickerItems(_profileNames);
         _windows = [];
 
         var screen = profileService.LoadScreenTranslatorProfile();
@@ -180,27 +180,56 @@ public sealed partial class MainViewModel :
     }
 
     [ObservableProperty] private IReadOnlyList<string> _profileNames;
-    [ObservableProperty] private IReadOnlyList<string> _profilePickerItems = [];
     [ObservableProperty] private string? _selectedProfileName;
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasProfileError))] private string _profileErrorMessage = string.Empty;
 
     public bool HasProfileError => !string.IsNullOrEmpty(ProfileErrorMessage);
     public string CreateNewProfileLabel => Loc[LocalizationConstants.Profile.CreateNew];
+    public string CopyCurrentProfileLabel => Loc[LocalizationConstants.Profile.CopyCurrent];
+    public string ImportProfileLabel => Loc[LocalizationConstants.Profile.Import];
 
-    public Task OnProfilePickedFromListAsync(string? name) => OnProfilePickedFromListCoreAsync(name);
+    public IReadOnlyList<ActionEditableComboBoxAction> ProfileActions =>
+    [
+        new(ProfilePickerActionIds.Create, CreateNewProfileLabel),
+        new(ProfilePickerActionIds.Copy, CopyCurrentProfileLabel),
+        new(ProfilePickerActionIds.Import, ImportProfileLabel),
+    ];
+
+    public async Task OnProfileActionAsync(string actionId)
+    {
+        var previous = _committedProfileName;
+        await (actionId switch
+        {
+            ProfilePickerActionIds.Create => _profilePicker.CreateNewProfileAsync(),
+            ProfilePickerActionIds.Copy => _profilePicker.CopyCurrentProfileAsync(),
+            ProfilePickerActionIds.Import => _profilePicker.ImportProfileAsync(),
+            _ => Task.CompletedTask,
+        }).ConfigureAwait(true);
+
+        if (!string.Equals(previous, _committedProfileName, StringComparison.Ordinal))
+            ScheduleRestartTranslationIfRunning();
+    }
+
+    public Task OnProfileItemSelectedAsync(string? name) => OnProfilePickedFromListCoreAsync(name);
 
     private async Task OnProfilePickedFromListCoreAsync(string? name)
     {
         var previous = _committedProfileName;
-        await _profilePicker.OnProfilePickedFromListAsync(name).ConfigureAwait(true);
+        await _profilePicker.SelectProfileAsync(name).ConfigureAwait(true);
         if (!string.Equals(previous, _committedProfileName, StringComparison.Ordinal))
             ScheduleRestartTranslationIfRunning();
     }
 
     public bool CommitProfileRename(string? editedText) => _profilePicker.CommitProfileRename(editedText);
 
+    private static IReadOnlyList<string> SortedProfileNames(IEnumerable<string> names) =>
+        names.OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase).ToList();
+
     [RelayCommand(CanExecute = nameof(CanDeleteProfile))]
     private Task DeleteProfile() => _profilePicker.DeleteProfileAsync(CanDeleteProfile, () => DeleteProfileCommand.NotifyCanExecuteChanged());
+
+    [RelayCommand]
+    private Task ExportProfile() => _profilePicker.ExportProfileAsync(Settings?.OwnerWindow);
 
     private bool CanDeleteProfile() => ProfileNames.Count > 1;
     partial void OnProfileNamesChanged(IReadOnlyList<string> value) => DeleteProfileCommand.NotifyCanExecuteChanged();
@@ -480,6 +509,6 @@ public sealed partial class MainViewModel :
     [RelayCommand]
     private void SwitchProfile(string? name)
     {
-        if (name is not null) _ = OnProfilePickedFromListAsync(name);
+        if (name is not null) _ = OnProfileItemSelectedAsync(name);
     }
 }

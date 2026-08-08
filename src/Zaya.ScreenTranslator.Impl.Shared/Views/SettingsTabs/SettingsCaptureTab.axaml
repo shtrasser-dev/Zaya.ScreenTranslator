@@ -74,8 +74,8 @@
                     </StackPanel>
                 </Grid>
                 <Border Classes="settings-divider" />
-
-                <StackPanel Name="CaptureSettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="CaptureSettingsPanel"
+                                                   ModuleKind="Capture" />
             </StackPanel>
         </Border>
     </ScrollViewer>

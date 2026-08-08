@@ -1,7 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
-        xmlns:m="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Models"
         xmlns:views="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views"
         xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
@@ -34,13 +33,20 @@
         </Style>
         <Style Selector="ComboBox.settings-control">
             <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Height" Value="32" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <Style Selector="ComboBox.window-picker /template/ Popup#PART_Popup">
-            <Setter Property="Width" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
-            <Setter Property="MinWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
-            <Setter Property="MaxWidth" Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+        <Style Selector="ctrl|ActionEditableComboBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ctrl|WindowPickerComboBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBlock.status">
             <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
@@ -149,15 +155,14 @@
                                                VerticalAlignment="Center"
                                                Margin="0,0,16,0"
                                                TextWrapping="Wrap" />
-                                    <ComboBox Grid.Column="1"
-                                              Name="ProfileCombo"
-                                              Classes="settings-control"
-                                              IsEditable="True"
-                                              ItemsSource="{Binding ProfilePickerItems}"
-                                              SelectedItem="{Binding SelectedProfileName, Mode=TwoWay}"
-                                              SelectionChanged="OnProfileComboSelectionChanged"
-                                              LostFocus="OnProfileComboLostFocus"
-                                              KeyDown="OnProfileComboKeyDown" />
+                                    <ctrl:ActionEditableComboBox Grid.Column="1"
+                                                                 Classes="settings-control"
+                                                                 Actions="{Binding ProfileActions}"
+                                                                 ItemsSource="{Binding ProfileNames}"
+                                                                 SelectedItem="{Binding SelectedProfileName, Mode=TwoWay}"
+                                                                 ActionInvoked="OnProfileActionInvoked"
+                                                                 ItemSelected="OnProfileItemSelected"
+                                                                 RenameRequested="OnProfileRenameRequested" />
                                 </Grid>
                                 <TextBlock Text="{Binding ProfileErrorMessage}"
                                            IsVisible="{Binding HasProfileError}"
@@ -171,53 +176,11 @@
                                                VerticalAlignment="Center"
                                                Margin="0,0,16,0"
                                                TextWrapping="Wrap" />
-                                    <ComboBox Grid.Column="1"
-                                              Classes="settings-control window-picker"
-                                              ItemsSource="{Binding Windows}"
-                                              SelectedItem="{Binding SelectedWindow}"
-                                              DropDownOpened="OnWindowComboDropDownOpened">
-                                        <ComboBox.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel />
-                                            </ItemsPanelTemplate>
-                                        </ComboBox.ItemsPanel>
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="m:WindowInfo">
-                                                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
-                                                    <Panel Width="16" Height="16" Margin="0,0,8,0"
-                                                           VerticalAlignment="Center">
-                                                        <ProgressBar Width="14" Height="14"
-                                                                     IsIndeterminate="True"
-                                                                     IsVisible="{Binding IsLoadingPlaceholder}" />
-                                                        <Image Width="16" Height="16"
-                                                               Source="{Binding Icon}"
-                                                               IsVisible="{Binding HasIcon}" />
-                                                    </Panel>
-                                                    <TextBlock Grid.Column="1"
-                                                               Text="{Binding Title}"
-                                                               IsVisible="{Binding !IsLoadingPlaceholder}"
-                                                               VerticalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                        <ComboBox.SelectionBoxItemTemplate>
-                                            <DataTemplate x:DataType="m:WindowInfo">
-                                                <Grid ColumnDefinitions="Auto,*" MinHeight="22">
-                                                    <Panel Width="16" Height="16" Margin="0,0,8,0"
-                                                           VerticalAlignment="Center">
-                                                        <Image Width="16" Height="16"
-                                                               Source="{Binding Icon}"
-                                                               IsVisible="{Binding HasIcon}" />
-                                                    </Panel>
-                                                    <TextBlock Grid.Column="1"
-                                                               Text="{Binding Title}"
-                                                               VerticalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.SelectionBoxItemTemplate>
-                                    </ComboBox>
+                                    <ctrl:WindowPickerComboBox Grid.Column="1"
+                                                               Classes="settings-control"
+                                                               ItemsSource="{Binding Windows}"
+                                                               SelectedItem="{Binding SelectedWindow, Mode=TwoWay}"
+                                                               DropDownOpened="OnWindowPickerDropDownOpened" />
                                 </Grid>
                                 <TextBlock Text="{Binding WindowErrorMessage}"
                                            IsVisible="{Binding HasWindowError}"

@@ -15,6 +15,7 @@ public sealed partial class MainViewModel
         vm.UiCultureChanged = RefreshUiForCulture;
         vm.TranslationModulesChanged = ScheduleModulesRefreshIfRunning;
         vm.DeleteProfileCommand = DeleteProfileCommand;
+        vm.ExportProfileCommand = ExportProfileCommand;
         vm.SetCurrentProcessCommand = SetCurrentProcessCommand;
         return vm;
     }
@@ -38,6 +39,10 @@ public sealed partial class MainViewModel
             OnPropertyChanged(nameof(ShowHideTextButtonText));
             OnPropertyChanged(nameof(SettingsToggleText));
             OnPropertyChanged(nameof(CaptureRegionsTooltip));
+            OnPropertyChanged(nameof(CreateNewProfileLabel));
+            OnPropertyChanged(nameof(CopyCurrentProfileLabel));
+            OnPropertyChanged(nameof(ImportProfileLabel));
+            OnPropertyChanged(nameof(ProfileActions));
 
             var targetCode = SelectedTargetLanguage?.Code ?? "en";
             TargetLanguages = BuildTargetLanguages();

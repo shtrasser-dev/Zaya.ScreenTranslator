@@ -1,12 +1,8 @@
 using System.ComponentModel;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
-using Avalonia.VisualTree;
 using Zaya.ScreenTranslator.Impl.Shared.ViewModels;
+using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views;
 
@@ -14,10 +10,14 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
     private bool _forceClose;
-    private bool _skipProfileRenameOnLostFocus;
+    private int _startupX;
+    private int _startupY;
 
-    private const double ExpandedHeight = 700;
-    private const double ExpandedMinHeight = 560;
+    private const double ExpandedHeight = 750;
+    private const double ExpandedMinHeight = 610;
+
+    /// <summary>Last non-default frame position; used because <see cref="Window.Position"/> can be zeroed while closing.</summary>
+    public PixelPoint LastKnownPosition { get; private set; }
 
     /// <summary>Required by Avalonia XAML tooling (AVLN3001). App uses <see cref="MainWindow(MainViewModel)"/>.</summary>
     public MainWindow()
@@ -34,23 +34,65 @@ public partial class MainWindow : Window
 
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
         ApplySettingsExpandedSize(viewModel.IsSettingsOpen);
+        PositionChanged += (_, _) => LastKnownPosition = Position;
     }
 
     /// <summary>
     /// Restores saved X/Y, or on first launch centers as if the settings panel were open
     /// so the collapsed window sits higher and expands into the true center.
+    /// Applied when the window has opened so platform layout does not overwrite it.
     /// </summary>
     public void ApplyStartupPosition(int savedX, int savedY)
     {
         WindowStartupLocation = WindowStartupLocation.Manual;
+        _startupX = savedX;
+        _startupY = savedY;
+        Opened += OnOpenedApplyStartupPosition;
+    }
 
-        if (savedX != 0 || savedY != 0)
+    private void OnOpenedApplyStartupPosition(object? sender, EventArgs e)
+    {
+        Opened -= OnOpenedApplyStartupPosition;
+
+        if (_startupX != 0 || _startupY != 0)
         {
-            Position = new PixelPoint(savedX, savedY);
-            return;
+            var restored = new PixelPoint(_startupX, _startupY);
+            Position = restored;
+            // Saved coords may point at a disconnected monitor — Avalonia will not move the window back.
+            if (!IsWindowVisibleOnAnyScreen(restored))
+                CenterAsIfSettingsExpanded();
+        }
+        else
+        {
+            CenterAsIfSettingsExpanded();
         }
 
-        CenterAsIfSettingsExpanded();
+        LastKnownPosition = Position;
+    }
+
+    /// <summary>
+    /// True if any part of the window at <paramref name="topLeft"/> intersects a connected screen's working area.
+    /// </summary>
+    private bool IsWindowVisibleOnAnyScreen(PixelPoint topLeft)
+    {
+        var screens = Screens?.All;
+        if (screens is null || screens.Count == 0)
+            return true;
+
+        var scale = Screens?.ScreenFromPoint(topLeft)?.Scaling
+            ?? Screens?.Primary?.Scaling
+            ?? 1.0;
+        var pixelWidth = Math.Max(1, (int)Math.Round(Width * scale));
+        var pixelHeight = Math.Max(1, (int)Math.Round(Height * scale));
+        var windowBounds = new PixelRect(topLeft.X, topLeft.Y, pixelWidth, pixelHeight);
+
+        foreach (var screen in screens)
+        {
+            if (screen.WorkingArea.Intersects(windowBounds))
+                return true;
+        }
+
+        return false;
     }
 
     private void CenterAsIfSettingsExpanded()
@@ -75,78 +117,25 @@ public partial class MainWindow : Window
             ApplySettingsExpandedSize(_viewModel.IsSettingsOpen);
     }
 
-    private async void OnWindowComboDropDownOpened(object? sender, EventArgs e)
+    private async void OnWindowPickerDropDownOpened(object? sender, EventArgs e)
     {
         await _viewModel.LoadWindowsAsync();
     }
 
-    private async void OnProfileComboSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void OnProfileActionInvoked(object? sender, ActionEditableComboBoxActionEventArgs e)
     {
-        // Only react to picks from the open dropdown — not to text matching while typing.
-        if (sender is not ComboBox { IsDropDownOpen: true, SelectedItem: string name } combo)
-            return;
-
-        // Closing the dropdown / clearing focus raises LostFocus (possibly more than once).
-        // Keep rename suppressed until the focus cycle finishes.
-        _skipProfileRenameOnLostFocus = true;
-
-        combo.IsDropDownOpen = false;
-        await _viewModel.OnProfilePickedFromListAsync(name);
-        combo.Text = _viewModel.SelectedProfileName;
-        ClearProfileComboFocus(combo);
-
-        Dispatcher.UIThread.Post(() => _skipProfileRenameOnLostFocus = false, DispatcherPriority.Background);
+        await _viewModel.OnProfileActionAsync(e.ActionId);
     }
 
-    private void OnProfileComboLostFocus(object? sender, RoutedEventArgs e)
+    private async void OnProfileItemSelected(object? sender, ActionEditableComboBoxItemEventArgs e)
     {
-        if (sender is not ComboBox combo)
-            return;
-
-        if (_skipProfileRenameOnLostFocus)
-            return;
-
-        if (!_viewModel.CommitProfileRename(combo.Text))
-            combo.Text = _viewModel.SelectedProfileName;
-
-        ClearEditableComboSelection(combo);
+        await _viewModel.OnProfileItemSelectedAsync(e.Item as string ?? e.Item.ToString());
     }
 
-    private void OnProfileComboKeyDown(object? sender, KeyEventArgs e)
+    private void OnProfileRenameRequested(object? sender, ActionEditableComboBoxRenameEventArgs e)
     {
-        if (e.Key != Key.Enter || sender is not ComboBox combo)
-            return;
-
-        e.Handled = true;
-        if (!_viewModel.CommitProfileRename(combo.Text))
-        {
-            combo.Text = _viewModel.SelectedProfileName;
-            return;
-        }
-
-        _skipProfileRenameOnLostFocus = true;
-        ClearProfileComboFocus(combo);
-        Dispatcher.UIThread.Post(() => _skipProfileRenameOnLostFocus = false, DispatcherPriority.Background);
-    }
-
-    private void ClearProfileComboFocus(ComboBox combo)
-    {
-        // Move focus off the editable ComboBox, then drop leftover SelectAll highlight.
-        Focus();
-        ClearEditableComboSelection(combo);
-        Dispatcher.UIThread.Post(() => ClearEditableComboSelection(combo), DispatcherPriority.Input);
-    }
-
-    private static void ClearEditableComboSelection(ComboBox combo)
-    {
-        var textBox = combo.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
-        if (textBox is null)
-            return;
-
-        var caret = textBox.Text?.Length ?? 0;
-        textBox.CaretIndex = caret;
-        textBox.SelectionStart = caret;
-        textBox.SelectionEnd = caret;
+        if (!_viewModel.CommitProfileRename(e.NewName))
+            e.Cancel = true;
     }
 
     private void ApplySettingsExpandedSize(bool open)
@@ -176,6 +165,10 @@ public partial class MainWindow : Window
 
     private async void OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        // Second close pass (after Cancel) often reports Position as 0,0 — do not overwrite a good value.
+        if (Position.X != 0 || Position.Y != 0)
+            LastKnownPosition = Position;
+
         if (_forceClose)
             return;
 

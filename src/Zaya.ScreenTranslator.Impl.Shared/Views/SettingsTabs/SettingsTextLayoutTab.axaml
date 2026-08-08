@@ -23,7 +23,8 @@
                               DisplayMemberBinding="{Binding Id}" />
                 </Grid>
                 <Border Classes="settings-divider" />
-                <StackPanel Name="TextLayoutSettingsPanel" />
+                <ctrl:SettingDescriptorListControl Name="TextLayoutSettingsPanel"
+                                                   ModuleKind="TextLayout" />
             </StackPanel>
         </Border>
     </ScrollViewer>

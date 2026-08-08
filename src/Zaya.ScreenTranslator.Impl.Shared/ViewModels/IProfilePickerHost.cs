@@ -5,12 +5,13 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 internal interface IProfilePickerHost
 {
     IReadOnlyList<string> ProfileNames { get; set; }
-    IReadOnlyList<string> ProfilePickerItems { get; set; }
     string? SelectedProfileName { get; set; }
     string ProfileErrorMessage { get; set; }
     string? CommittedProfileName { get; set; }
     bool SuppressProfileChange { get; set; }
     string CreateNewProfileLabel { get; }
+    string CopyCurrentProfileLabel { get; }
+    string ImportProfileLabel { get; }
     LocalizedStrings Loc { get; }
     void ReloadSettingsIfOpen();
     void NotifyDeleteProfileCanExecuteChanged();

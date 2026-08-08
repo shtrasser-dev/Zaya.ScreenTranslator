@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+             x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.Controls.ActionEditableComboBox">
+    <UserControl.Styles>
+        <Style Selector="TextBox.action-editable-rename">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <!-- Leave the Fluent chevron uncovered. -->
+            <Setter Property="Margin" Value="0,0,34,0" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel Height="32">
+        <ComboBox Name="Combo"
+                  HorizontalAlignment="Stretch"
+                  MinHeight="32"
+                  Height="32"
+                  IsEditable="False">
+            <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="ctrl:ActionEditableComboBoxEntry">
+                    <Panel MinHeight="22">
+                        <Border Height="1"
+                                Margin="8,6"
+                                VerticalAlignment="Center"
+                                Opacity="0.25"
+                                Background="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                IsVisible="{Binding IsSeparator}"
+                                IsHitTestVisible="False" />
+                        <TextBlock Text="{Binding Display}"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding !IsSeparator}" />
+                    </Panel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBox Name="RenameBox"
+                 Classes="action-editable-rename"
+                 IsVisible="False" />
+    </Panel>
+</UserControl>

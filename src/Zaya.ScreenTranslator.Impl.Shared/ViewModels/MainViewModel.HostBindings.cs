@@ -15,12 +15,13 @@ public sealed partial class MainViewModel
     CancellationTokenSource? ICaptureHostState.LoopCts { get => LoopCts; set => LoopCts = value; }
 
     IReadOnlyList<string> IProfilePickerHost.ProfileNames { get => ProfileNames; set => ProfileNames = value; }
-    IReadOnlyList<string> IProfilePickerHost.ProfilePickerItems { get => ProfilePickerItems; set => ProfilePickerItems = value; }
     string? IProfilePickerHost.SelectedProfileName { get => SelectedProfileName; set => SelectedProfileName = value; }
     string IProfilePickerHost.ProfileErrorMessage { get => ProfileErrorMessage; set => ProfileErrorMessage = value; }
     string? IProfilePickerHost.CommittedProfileName { get => _committedProfileName; set => _committedProfileName = value; }
     bool IProfilePickerHost.SuppressProfileChange { get => _suppressProfileChange; set => _suppressProfileChange = value; }
     string IProfilePickerHost.CreateNewProfileLabel => CreateNewProfileLabel;
+    string IProfilePickerHost.CopyCurrentProfileLabel => CopyCurrentProfileLabel;
+    string IProfilePickerHost.ImportProfileLabel => ImportProfileLabel;
     LocalizedStrings IProfilePickerHost.Loc => Loc;
     void IProfilePickerHost.ReloadSettingsIfOpen() => ReloadSettingsIfOpen();
     void IProfilePickerHost.NotifyDeleteProfileCanExecuteChanged() => DeleteProfileCommand.NotifyCanExecuteChanged();

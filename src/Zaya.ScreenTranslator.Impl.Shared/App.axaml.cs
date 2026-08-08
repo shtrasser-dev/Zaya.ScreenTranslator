@@ -195,8 +195,12 @@ public partial class App : Application
 
         _screenProfile = profileService.LoadScreenTranslatorProfile();
 
-        _screenProfile.MainWindow.X = _mainWindow.Position.X;
-        _screenProfile.MainWindow.Y = _mainWindow.Position.Y;
+        var pos = _mainWindow.LastKnownPosition;
+        if (pos.X == 0 && pos.Y == 0)
+            pos = _mainWindow.Position;
+
+        _screenProfile.MainWindow.X = pos.X;
+        _screenProfile.MainWindow.Y = pos.Y;
 
         if (_mainWindow.DataContext is MainViewModel mainVm)
         {

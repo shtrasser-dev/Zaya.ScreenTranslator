@@ -219,6 +219,9 @@
   <data name="Profile_CreateNew" xml:space="preserve">
     <value>Создать новый профиль</value>
   </data>
+  <data name="Profile_CopyCurrent" xml:space="preserve">
+    <value>Копировать текущий профиль</value>
+  </data>
   <data name="Profile_NewName" xml:space="preserve">
     <value>Новый профиль</value>
   </data>
@@ -239,6 +242,21 @@
   </data>
   <data name="Profile_Delete_Last" xml:space="preserve">
     <value>Нельзя удалить последний профиль.</value>
+  </data>
+    <data name="Profile_Import" xml:space="preserve">
+    <value>Импортировать профиль</value>
+  </data>
+  <data name="Profile_Export" xml:space="preserve">
+    <value>Экспортировать профиль</value>
+  </data>
+  <data name="Profile_Export_Section" xml:space="preserve">
+    <value>Экспортировать текущий профиль в JSON-файл</value>
+  </data>
+  <data name="Profile_Import_Failed" xml:space="preserve">
+    <value>Не удалось импортировать профиль: {0}</value>
+  </data>
+  <data name="Profile_Export_Failed" xml:space="preserve">
+    <value>Не удалось экспортировать профиль: {0}</value>
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Наложение</value>

@@ -15,6 +15,15 @@ public interface IApplicationProfileService : INotifyPropertyChanged
     void Save(IApplicationProfile profile);
     void Delete(string name);
 
+    /// <summary>Preferred name, or <c>preferred 1</c>, <c>preferred 2</c>, … when taken.</summary>
+    string AllocateUniqueProfileName(string preferredName);
+
+    /// <summary>Creates a new in-memory profile from the embedded Default template.</summary>
+    IApplicationProfile CreateFromDefaultTemplate(string name);
+
+    /// <summary>Loads a profile JSON file without activating it.</summary>
+    bool TryLoadProfileFile(string path, out IApplicationProfile? profile, out string? errorMessage);
+
     /// <summary>
     /// Renames a profile file and updates the embedded profile name.
     /// Returns false when the new name is empty or already used by another profile.

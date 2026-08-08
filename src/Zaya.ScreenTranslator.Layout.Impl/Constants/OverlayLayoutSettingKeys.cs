@@ -2,6 +2,8 @@ namespace Zaya.ScreenTranslator.Layout.Impl.Constants;
 
 internal static class OverlayLayoutSettingKeys
 {
+    public const string EngineId = "screen-overlay";
+
     public const string TargetWindowHandle = "targetWindowHandle";
 
     public const string Placement = "placement";
