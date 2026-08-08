@@ -43,9 +43,9 @@ Real-time on-screen text translator for Windows 10/11. Captures a window or regi
 
 ## Version
 
-**1.1.0** — Host channel `1.1`. See [versioning](docs/versioning.md).
+**1.1.1** — Host channel `1.1`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.1.0` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.1.0.7`.
+Host release tags: `app-v1.1.1` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.1.0.7`.
 
 ## Features
 
