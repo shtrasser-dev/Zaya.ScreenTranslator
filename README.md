@@ -4,7 +4,7 @@ Is it a bird? Is it a PLANE?!
 
 **NO.**
 
-# It's the REAL-TIME SCREEN TRANSLATOR you didn't know you needed!
+# It's the REAL-TIME SCREEN TRANSLATOR!
 
 ![Rotated and upside-down text overlay demo](img/wow.gif)
 
@@ -17,6 +17,10 @@ We were overwhelmed with emotion when we received this feedback:
 > **⭐⭐⭐⭐⭐ 10/10! This is the most life-changing application I have EVER seen!**
 >
 > — *shtrasser-dev*, a developer
+
+## For True Configuration Artists 
+
+**Ghost blocks, hysteresis, levenshtein distance, capture regions** and dozens of other settings you never knew you needed. Why actually *play* the game when you can spend hours tweaking the perfect OCR profile for it?
 
 ## Get Started
 
