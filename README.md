@@ -25,7 +25,6 @@ We were overwhelmed with emotion when we received this feedback:
 3.  **Run:** Double-click `Zaya.ScreenTranslator.exe`.
 
 ### Build from Source
-Want to contribute or see how the sausage is made? It's a standard .NET project.
 
 ```powershell
 # Clone and build
