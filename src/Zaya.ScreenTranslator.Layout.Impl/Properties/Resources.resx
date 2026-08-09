@@ -156,4 +156,16 @@
   <data name="Overlay_FitMode_Clip" xml:space="preserve">
     <value>Clip</value>
   </data>
+  <data name="Overlay_TranslateMode" xml:space="preserve">
+    <value>Translation</value>
+  </data>
+  <data name="Overlay_TranslateMode_Desc" xml:space="preserve">
+    <value>Immediate translates every block each frame. On demand: hover a recognized paragraph to show its translation (useful for comics).</value>
+  </data>
+  <data name="Overlay_TranslateMode_Always" xml:space="preserve">
+    <value>Immediate</value>
+  </data>
+  <data name="Overlay_TranslateMode_OnDemand" xml:space="preserve">
+    <value>On demand</value>
+  </data>
 </root>

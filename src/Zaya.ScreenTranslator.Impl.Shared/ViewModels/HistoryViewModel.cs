@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
@@ -34,4 +35,7 @@ public sealed partial class HistoryViewModel : ObservableObject
         Avalonia.Threading.Dispatcher.UIThread.Post(Refresh);
 
     public void Refresh() => HistoryText = _history.FormatDisplayText();
+
+    [RelayCommand]
+    private void ClearHistory() => _history.Clear();
 }

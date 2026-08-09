@@ -25,10 +25,16 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
     public IReadOnlyList<SettingDescriptor> Settings => SettingsList;
 
     public Task<IOverlayLayoutSession> CreateSessionAsync(CancellationToken cancellationToken = default)
-        => CreateSessionAsync(new Dictionary<string, object>(), cancellationToken);
+        => CreateSessionAsync(new Dictionary<string, object>(), translate: null, cancellationToken);
+
+    public Task<IOverlayLayoutSession> CreateSessionAsync(
+        IReadOnlyDictionary<string, object> engineSettings,
+        CancellationToken cancellationToken = default)
+        => CreateSessionAsync(engineSettings, translate: null, cancellationToken);
 
     public async Task<IOverlayLayoutSession> CreateSessionAsync(
         IReadOnlyDictionary<string, object> engineSettings,
+        OverlayTranslateCallback? translate,
         CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -45,13 +51,16 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
             throw new ArgumentException($"{OverlayLayoutSettingKeys.TargetWindowHandle} is required.", nameof(engineSettings));
 
         if (Dispatcher.UIThread.CheckAccess())
-            return CreateSessionCore(list, hwnd);
+            return CreateSessionCore(list, hwnd, translate);
 
-        return await Dispatcher.UIThread.InvokeAsync(() => CreateSessionCore(list, hwnd));
+        return await Dispatcher.UIThread.InvokeAsync(() => CreateSessionCore(list, hwnd, translate));
     }
 
-    private static IOverlayLayoutSession CreateSessionCore(SettingDescriptorList list, IntPtr hwnd)
-        => new ScreenOverlayLayoutSession(list, hwnd);
+    private static IOverlayLayoutSession CreateSessionCore(
+        SettingDescriptorList list,
+        IntPtr hwnd,
+        OverlayTranslateCallback? translate)
+        => new ScreenOverlayLayoutSession(list, hwnd, translate);
 
     private static IntPtr ResolveHandle(IReadOnlyDictionary<string, object> settings)
     {
@@ -86,6 +95,16 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
                 new(OverlayLayoutSettingKeys.PlacementAbove, Loc(LocalizationConstants.Overlay.PlacementAbove)),
                 new(OverlayLayoutSettingKeys.PlacementOver, Loc(LocalizationConstants.Overlay.PlacementOver)),
                 new(OverlayLayoutSettingKeys.PlacementBelow, Loc(LocalizationConstants.Overlay.PlacementBelow)),
+            ],
+        },
+        new EnumSettingDescriptor(OverlayLayoutSettingKeys.TranslateMode, Loc(LocalizationConstants.Overlay.TranslateMode))
+        {
+            Description = Loc(LocalizationConstants.Overlay.TranslateModeDesc),
+            DefaultValue = OverlayLayoutSettingKeys.TranslateModeAlways,
+            Options =
+            [
+                new(OverlayLayoutSettingKeys.TranslateModeAlways, Loc(LocalizationConstants.Overlay.TranslateModeAlways)),
+                new(OverlayLayoutSettingKeys.TranslateModeOnDemand, Loc(LocalizationConstants.Overlay.TranslateModeOnDemand)),
             ],
         },
         new BooleanSettingDescriptor(OverlayLayoutSettingKeys.FixedFontSize, Loc(LocalizationConstants.Overlay.FixedFontSize))
@@ -186,17 +205,6 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         {
             Description = Loc(LocalizationConstants.Overlay.DebugModeDesc),
             DefaultValue = false,
-        },
-        new EnumSettingDescriptor(OverlayLayoutSettingKeys.FitMode, Loc(LocalizationConstants.Overlay.FitMode))
-        {
-            Description = Loc(LocalizationConstants.Overlay.FitModeDesc),
-            DefaultValue = OverlayLayoutSettingKeys.FitShrink,
-            Options =
-            [
-                new(OverlayLayoutSettingKeys.FitShrink, Loc(LocalizationConstants.Overlay.FitModeShrink)),
-                new(OverlayLayoutSettingKeys.FitWrap, Loc(LocalizationConstants.Overlay.FitModeWrap)),
-                new(OverlayLayoutSettingKeys.FitClip, Loc(LocalizationConstants.Overlay.FitModeClip)),
-            ],
         },
     ];
 

@@ -30,6 +30,25 @@ public sealed class ApplicationProfileService : ObservableObject, IApplicationPr
         _settingsPath = Path.Combine(_baseDir, "settings.json");
 
         Directory.CreateDirectory(_profilesDir);
+        EnsureMangaProfileSeed();
+    }
+
+    /// <summary>
+    /// First install only: when neither app settings nor Manga profile exist,
+    /// extract the embedded Manga template into <c>profiles/Manga.json</c>.
+    /// </summary>
+    private void EnsureMangaProfileSeed()
+    {
+        var mangaPath = ProfilePath("Manga");
+        if (File.Exists(_settingsPath) || File.Exists(mangaPath))
+            return;
+
+        var asm = typeof(ApplicationProfileService).Assembly;
+        const string resourceName = "Zaya.ScreenTranslator.Impl.Shared.Services.manga-profile.json";
+        using var stream = asm.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
+        using var fs = File.Create(mangaPath);
+        stream.CopyTo(fs);
     }
 
     public IApplicationProfile? ActiveProfile => _activeProfile;

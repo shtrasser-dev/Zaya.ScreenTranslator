@@ -41,6 +41,7 @@ public static class CaptureRegionsSnapshotService
         {
             WindowHandle = windowHandle,
             PixelFormat = ZayaPixelFormat.Bgra32,
+            CaptureClientArea = true,
         };
 
         using var session = await capture.CreateSessionAsync(

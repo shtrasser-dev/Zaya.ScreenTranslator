@@ -59,6 +59,18 @@ public sealed class TranslationHistoryService
         }
     }
 
+    public void Clear()
+    {
+        lock (_lock)
+        {
+            if (_entries.Count == 0)
+                return;
+            _entries.Clear();
+        }
+
+        Changed?.Invoke();
+    }
+
     private bool TryAddLocked(string source, string translation)
     {
         source = source.Trim();

@@ -18,8 +18,8 @@ internal static class OverlayLayoutSettingKeys
     public const string BackgroundColor = "backgroundColor";
     public const string TextColor = "textColor";
     public const string Outline = "outline";
-    public const string FitMode = "fitMode";
     public const string DebugMode = "debugMode";
+    public const string TranslateMode = "translateMode";
 
     public const string PlacementAbove = "above";
     public const string PlacementOver = "over";
@@ -40,7 +40,6 @@ internal static class OverlayLayoutSettingKeys
     public const string TextColorLime = "lime";
     public const string TextColorOrange = "orange";
 
-    public const string FitShrink = "shrink";
-    public const string FitWrap = "wrap";
-    public const string FitClip = "clip";
+    public const string TranslateModeAlways = "always";
+    public const string TranslateModeOnDemand = "onDemand";
 }

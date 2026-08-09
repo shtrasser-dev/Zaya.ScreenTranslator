@@ -25,13 +25,17 @@ public static class OverlayLayoutMath
         string backgroundColor,
         string textColor,
         bool outline,
-        string fitMode)
+        string? displayText = null,
+        string? sourceKey = null)
     {
         var bounds = item.Bounds;
         var textHeight = Math.Max(1.0, bounds.TextHeight);
         var alongWidth = Math.Max(1.0, Vector2.Distance(bounds.P5, bounds.P6));
         var center = (bounds.P5 + bounds.P6) * 0.5f;
         var normal = bounds.Normal;
+
+        displayText ??= item.Text;
+        sourceKey ??= item.Text;
 
         var fontSize = fixedFontSize
             ? Math.Max(8.0, fontSizePx)
@@ -72,7 +76,7 @@ public static class OverlayLayoutMath
         var drawY = (int)Math.Round(drawCenter.Y - drawHeight * 0.5);
 
         return new OverlayDrawSpec(
-            item.Text,
+            displayText,
             new Rectangle(drawX, drawY, drawWidth, Math.Max(1, drawHeight)),
             fontSize,
             background,
@@ -80,8 +84,100 @@ public static class OverlayLayoutMath
             backgroundColor,
             textColor,
             outline,
-            fitMode,
             vAlign,
-            bounds.AngleDegrees);
+            bounds.AngleDegrees,
+            IsMarker: false,
+            SourceKey: sourceKey);
+    }
+
+    /// <summary>
+    /// Axis-aligned hit/outline area covering all OCR line boxes of a paragraph
+    /// (comics / on-demand mode). Drawn as a 1px outline; hover anywhere to expand.
+    /// </summary>
+    public static OverlayDrawSpec ComputeParagraphHitArea(
+        IReadOnlyList<OverlayItem> lines,
+        string textColor,
+        string? sourceKey = null)
+    {
+        var box = UnionAabb(lines);
+        return new OverlayDrawSpec(
+            string.Empty,
+            box,
+            1,
+            OverlayLayoutSettingKeys.BackgroundNone,
+            0,
+            OverlayLayoutSettingKeys.BackgroundColorDark,
+            textColor,
+            false,
+            OverlayVAlign.Center,
+            0,
+            IsMarker: true,
+            SourceKey: sourceKey ?? lines[0].Id.ToString("N"));
+    }
+
+    /// <summary>
+    /// Fills the paragraph AABB with word-wrapped translation (on-demand expand).
+    /// Renderer grows width to the longest word and wraps within that box.
+    /// </summary>
+    public static OverlayDrawSpec ComputeParagraphFill(
+        IReadOnlyList<OverlayItem> lines,
+        string text,
+        bool fixedFontSize,
+        int fontScalePercent,
+        int fontSizePx,
+        string background,
+        int backgroundOpacity,
+        string backgroundColor,
+        string textColor,
+        bool outline,
+        string? sourceKey = null)
+    {
+        var box = UnionAabb(lines);
+        var textHeight = 0.0;
+        foreach (var line in lines)
+            textHeight = Math.Max(textHeight, line.Bounds.TextHeight);
+        textHeight = Math.Max(1.0, textHeight);
+
+        var fontSize = fixedFontSize
+            ? Math.Max(8.0, fontSizePx)
+            : Math.Max(8.0, textHeight * (fontScalePercent / 100.0));
+
+        return new OverlayDrawSpec(
+            text,
+            box,
+            fontSize,
+            background,
+            backgroundOpacity,
+            backgroundColor,
+            textColor,
+            outline,
+            OverlayVAlign.Center,
+            0,
+            IsMarker: false,
+            SourceKey: sourceKey ?? lines[0].Id.ToString("N"),
+            WrapWords: true);
+    }
+
+    private static Rectangle UnionAabb(IReadOnlyList<OverlayItem> lines)
+    {
+        if (lines.Count == 0)
+            throw new ArgumentException("At least one line is required.", nameof(lines));
+
+        float minX = float.MaxValue, minY = float.MaxValue;
+        float maxX = float.MinValue, maxY = float.MinValue;
+        foreach (var line in lines)
+        {
+            var b = line.Bounds;
+            if (b.MinX < minX) minX = b.MinX;
+            if (b.MinY < minY) minY = b.MinY;
+            if (b.MaxX > maxX) maxX = b.MaxX;
+            if (b.MaxY > maxY) maxY = b.MaxY;
+        }
+
+        var x = (int)Math.Floor(minX);
+        var y = (int)Math.Floor(minY);
+        var w = Math.Max(1, (int)Math.Ceiling(maxX) - x);
+        var h = Math.Max(1, (int)Math.Ceiling(maxY) - y);
+        return new Rectangle(x, y, w, h);
     }
 }

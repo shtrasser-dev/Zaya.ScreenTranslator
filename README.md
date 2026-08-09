@@ -7,8 +7,11 @@ Is it a bird? Is it a PLANE?!
 # It's the REAL-TIME SCREEN TRANSLATOR!
 
 ![Rotated and upside-down text overlay demo](img/wow.gif)
-
 *IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!*
+
+
+![Experimental manga support](img/manga.gif)
+*Experimental manga support (on-demand overlay translate + Manga profile).*
 
 ## User Testimonials
 
@@ -21,6 +24,7 @@ We were overwhelmed with emotion when we received this feedback:
 ## For True Configuration Artists 
 
 **Ghost blocks, hysteresis, levenshtein distance, capture regions** and dozens of other settings you never knew you needed. Why actually *play* the game when you can spend hours tweaking the perfect OCR profile for it?
+
 
 ## Get Started
 
@@ -43,9 +47,9 @@ Real-time on-screen text translator for Windows 10/11. Captures a window or regi
 
 ## Version
 
-**1.1.1** — Host channel `1.1`. See [versioning](docs/versioning.md).
+**1.1.2** — Host channel `1.1`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.1.1` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.1.0.7`.
+Host release tags: `app-v1.1.2` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
 
 ## Features
 
@@ -72,8 +76,8 @@ Pinned in `Directory.Build.props`:
 | Package | Version |
 |---------|---------|
 | [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives) | 1.0.0 |
-| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.1.0 |
-| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.1.0 |
+| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.2.0 |
+| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.2.0 |
 | [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator) | 1.1.0 |
 | [Zaya.TranslatorCache](https://github.com/shtrasser-dev/Zaya.Translator) | 1.0.0 |
 

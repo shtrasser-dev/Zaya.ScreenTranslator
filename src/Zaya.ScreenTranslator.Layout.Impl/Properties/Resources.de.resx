@@ -156,4 +156,16 @@
   <data name="Overlay_FitMode_Clip" xml:space="preserve">
     <value>Abschneiden</value>
   </data>
+  <data name="Overlay_TranslateMode" xml:space="preserve">
+    <value>Übersetzung</value>
+  </data>
+  <data name="Overlay_TranslateMode_Desc" xml:space="preserve">
+    <value>Sofort übersetzt alle Blöcke pro Frame. Auf Abruf zeigt Markierungen; Klick auf eine Sprechblase übersetzt nur diese (nützlich für Comics).</value>
+  </data>
+  <data name="Overlay_TranslateMode_Always" xml:space="preserve">
+    <value>Sofort</value>
+  </data>
+  <data name="Overlay_TranslateMode_OnDemand" xml:space="preserve">
+    <value>Auf Abruf</value>
+  </data>
 </root>

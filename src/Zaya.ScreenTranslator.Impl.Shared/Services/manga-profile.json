@@ -1,6 +1,6 @@
 {
   "screenTranslator": {
-    "profileName": "Default",
+    "profileName": "Manga",
     "translatorCache": "memory-translator-cache",
     "framePauseMs": 100,
     "targetProcess": "",
@@ -15,53 +15,43 @@
   "screen-overlay": {
     "background": "opaque",
     "textColor": "dark",
+    "fitMode": "wrap",
     "placement": "over",
     "backgroundColor": "light",
     "outline": false,
-    "debugMode": false
+    "debugMode": false,
+    "translateMode": "onDemand"
   },
   "oneocr": {
     "minConfidence": 40
   },
   "graphics-capture": {},
   "proximity-text-layout": {
-    "wordGapThreshold": 150,
+    "wordGapThreshold": 70,
     "enableCenterAlignment": true,
-    "lineSpacingThreshold": 200,
+    "lineSpacingThreshold": 160,
     "enableStabilization": true,
     "firstLineIndentTolerance": 0,
-    "leftEdgeAlignmentTolerance": 300,
+    "leftEdgeAlignmentTolerance": 200,
     "baselineDriftTolerance": 20,
     "holdNewBlocks": false,
-    "paragraphFilters": [
-      {
-        "enabled": true,
-        "pattern": "^.{0,2}$",
-        "isRegex": true,
-        "action": "Skip",
-        "description": ""
-      },
-      {
-        "enabled": true,
-        "pattern": "^\\d+$",
-        "isRegex": true,
-        "action": "Skip",
-        "description": ""
-      }
-    ],
+    "paragraphFilters": [],
     "centerThresholdXPercent": 10,
     "centerThresholdYPercent": 10,
     "paragraphMergeHysteresisPercent": 120,
     "minLength": 1,
-    "angleToleranceDegrees": 5,
-    "sameLineWordGapHysteresisPercent": 600,
-    "levenshteinThreshold": 10
+    "angleToleranceDegrees": 90,
+    "sameLineWordGapHysteresisPercent": 200,
+    "levenshteinThreshold": 10,
+    "ghostMaxFrames": 0,
+    "fontSizeTolerance": 100,
+    "verticalColumns": true
   },
   "google": {
     "autoDetectLanguage": false
   },
   "memory-translator-cache": {},
   "yandex": {
-    "autoDetectLanguage": false
+    "autoDetectLanguage": true
   }
 }

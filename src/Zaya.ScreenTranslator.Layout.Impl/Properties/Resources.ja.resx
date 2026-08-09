@@ -156,4 +156,16 @@
   <data name="Overlay_FitMode_Clip" xml:space="preserve">
     <value>切り取り</value>
   </data>
+  <data name="Overlay_TranslateMode" xml:space="preserve">
+    <value>翻訳</value>
+  </data>
+  <data name="Overlay_TranslateMode_Desc" xml:space="preserve">
+    <value>「常時」は毎フレーム全ブロックを翻訳します。「オンデマンド」はマーカーを表示し、クリックした吹き出しだけ翻訳します（漫画向け）。</value>
+  </data>
+  <data name="Overlay_TranslateMode_Always" xml:space="preserve">
+    <value>常時</value>
+  </data>
+  <data name="Overlay_TranslateMode_OnDemand" xml:space="preserve">
+    <value>オンデマンド</value>
+  </data>
 </root>

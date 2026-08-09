@@ -9,7 +9,7 @@
     <NoWarn>CS1591</NoWarn>
 
     <ZayaVersionRole>interface</ZayaVersionRole>
-    <ZayaVersionInterface>1</ZayaVersionInterface>
+    <ZayaVersionInterface>2</ZayaVersionInterface>
 
     <PackageId>Zaya.ScreenTranslator.Layout</PackageId>
     <Title>Zaya Screen Translator — Overlay Layout Abstractions</Title>

@@ -12,16 +12,30 @@ namespace Zaya.ScreenTranslator.Layout.Impl.Views;
 
 /// <summary>
 /// Transparent topmost overlay surface owned by the overlay-layout session.
+/// Stays Win32 click-through so Avalonia transparent composition keeps working;
+/// on-demand hover is detected by polling cursor vs paragraph hit boxes.
 /// </summary>
 public sealed class OverlayWindow : Window
 {
+    private static readonly IBrush ParagraphOutlineBrush =
+        new SolidColorBrush(Color.FromRgb(0x9E, 0x9E, 0x9E));
+
     private readonly Canvas _canvas = new();
+    private readonly DispatcherTimer _inputPollTimer;
+    private readonly List<(int X, int Y, int W, int H, string Key)> _hitTargets = [];
     private bool _hasSyncedGeometry;
     private int _lastX;
     private int _lastY;
     private int _lastW;
     private int _lastH;
     private string? _lastRenderKey;
+    private bool _interactive;
+    private string? _hoveredKey;
+
+    /// <summary>
+    /// Raised when the hovered paragraph changes. <c>null</c> when the cursor leaves all hit areas.
+    /// </summary>
+    public event Action<string?>? HoverTargetChanged;
 
     public OverlayWindow()
     {
@@ -32,16 +46,46 @@ public sealed class OverlayWindow : Window
         Topmost = true;
         CanResize = false;
         Focusable = false;
+        // Always false: keep HWND click-through for stable transparent rendering.
         IsHitTestVisible = false;
         ShowActivated = false;
         Content = _canvas;
 
-        Opened += (_, _) =>
+        _inputPollTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(32) };
+        _inputPollTimer.Tick += (_, _) => PollHover();
+
+        Opened += (_, _) => EnsureClickThrough();
+    }
+
+    public void SetInteractive(bool interactive)
+    {
+        if (_interactive == interactive)
+            return;
+
+        _interactive = interactive;
+        // Force redraw so hit targets refresh.
+        _lastRenderKey = null;
+
+        if (interactive)
+            _inputPollTimer.Start();
+        else
         {
-            var handle = TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
-            if (OperatingSystem.IsWindows())
-                NativeWindowMethods.EnableClickThrough(handle);
-        };
+            _inputPollTimer.Stop();
+            _hitTargets.Clear();
+            SetHoveredKey(null);
+        }
+
+        // Always click-through at Win32 level (removing WS_EX_TRANSPARENT breaks Avalonia
+        // transparent composition and makes the overlay draw nothing).
+        EnsureClickThrough();
+    }
+
+    private void EnsureClickThrough()
+    {
+        var handle = TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
+        if (!OperatingSystem.IsWindows() || handle == IntPtr.Zero)
+            return;
+        NativeWindowMethods.EnableClickThrough(handle);
     }
 
     public void SyncToTarget(IntPtr targetHwnd)
@@ -90,21 +134,82 @@ public sealed class OverlayWindow : Window
         _lastRenderKey = key;
 
         _canvas.Children.Clear();
+        _hitTargets.Clear();
         var scaling = Math.Max(0.1, RenderScaling);
         const double borderPad = 2; // Border.Padding on each side
+        var originX = Position.X;
+        var originY = Position.Y;
+
+        // On-demand fill: grow width to the longest whole word so wrap never clips a word.
+        // Outline (same SourceKey) uses the same expanded width.
+        var expandedWidthByKey = new Dictionary<string, double>(StringComparer.Ordinal);
+        foreach (var spec in specs)
+        {
+            if (spec.IsMarker || !spec.WrapWords || string.IsNullOrEmpty(spec.SourceKey))
+                continue;
+
+            var boxW = Math.Max(1, Math.Round(spec.DrawBounds.Width / scaling));
+            var fontSizeDip = Math.Max(8, spec.FontSize / scaling);
+            var contentW = Math.Max(1, boxW - borderPad * 2);
+            var needContent = Math.Max(contentW, MeasureMaxWordWidth(spec.Text, fontSizeDip));
+            var needBox = Math.Ceiling(needContent + borderPad * 2);
+            if (needBox > boxW)
+                expandedWidthByKey[spec.SourceKey] = needBox;
+        }
 
         foreach (var spec in specs)
         {
+            // Snap to whole DIPs to reduce sub-pixel shimmer.
+            var left = Math.Round(spec.DrawBounds.X / scaling);
+            var top = Math.Round(spec.DrawBounds.Y / scaling);
+            var boxW = Math.Max(1, Math.Round(spec.DrawBounds.Width / scaling));
+            var boxH = Math.Max(1, Math.Round(spec.DrawBounds.Height / scaling));
+            if (!string.IsNullOrEmpty(spec.SourceKey)
+                && expandedWidthByKey.TryGetValue(spec.SourceKey, out var expandedW))
+                boxW = expandedW;
+
+            if (spec.IsMarker)
+            {
+                // 1 physical pixel outline around the paragraph AABB.
+                var strokeDip = 1.0 / scaling;
+                var outline = new Border
+                {
+                    Background = Brushes.Transparent,
+                    BorderBrush = ParagraphOutlineBrush,
+                    BorderThickness = new Thickness(strokeDip),
+                    Width = boxW,
+                    Height = boxH,
+                };
+                Canvas.SetLeft(outline, left);
+                Canvas.SetTop(outline, top);
+                _canvas.Children.Add(outline);
+
+                if (_interactive && !string.IsNullOrEmpty(spec.SourceKey))
+                {
+                    _hitTargets.Add((
+                        (int)Math.Round(originX + left * scaling),
+                        (int)Math.Round(originY + top * scaling),
+                        (int)Math.Max(1, Math.Round(boxW * scaling)),
+                        (int)Math.Max(1, Math.Round(boxH * scaling)),
+                        spec.SourceKey));
+                }
+
+                continue;
+            }
+
             var fontSizeDip = Math.Max(8, spec.FontSize / scaling);
+            var displayText = spec.WrapWords
+                ? WrapWholeWords(spec.Text, fontSizeDip, Math.Max(1, boxW - borderPad * 2))
+                : spec.Text;
+
             var textBlock = new TextBlock
             {
-                Text = spec.Text,
+                Text = displayText,
                 FontSize = fontSizeDip,
                 Foreground = ResolveForeground(spec),
-                TextWrapping = spec.FitMode == OverlayLayoutSettingKeys.FitWrap
-                    ? TextWrapping.Wrap
-                    : TextWrapping.NoWrap,
+                TextWrapping = TextWrapping.NoWrap,
                 VerticalAlignment = ToAvaloniaVAlign(spec.VAlign),
+                TextAlignment = TextAlignment.Left,
                 Effect = spec.Outline
                     ? new DropShadowEffect
                     {
@@ -117,49 +222,37 @@ public sealed class OverlayWindow : Window
                     : null,
             };
 
+            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            if (spec.WrapWords)
+            {
+                // Width already sized for longest word; grow height for wrapped lines.
+                var neededH = Math.Ceiling(textBlock.DesiredSize.Height) + borderPad * 2;
+                if (neededH > boxH)
+                    boxH = neededH;
+            }
+            else
+            {
+                // Always mode: one line, grow width (and height if needed) to fit full text.
+                var neededW = Math.Ceiling(textBlock.DesiredSize.Width) + borderPad * 2;
+                var neededH = Math.Ceiling(textBlock.DesiredSize.Height) + borderPad * 2;
+                if (neededW > boxW)
+                    boxW = neededW;
+                if (neededH > boxH)
+                    boxH = neededH;
+            }
+
             var panel = new Border
             {
                 Padding = new Thickness(borderPad),
                 ClipToBounds = false,
                 Background = CreateBackground(spec),
                 Child = textBlock,
+                Width = boxW,
+                Height = boxH,
             };
-
-            // Snap to whole DIPs to reduce sub-pixel shimmer.
-            var left = Math.Round(spec.DrawBounds.X / scaling);
-            var top = Math.Round(spec.DrawBounds.Y / scaling);
-            var boxW = Math.Max(1, Math.Round(spec.DrawBounds.Width / scaling));
-            var boxH = Math.Max(1, Math.Round(spec.DrawBounds.Height / scaling));
-
-            // Pre-measure natural text width; expand beyond OCR bounds when translation is longer
-            // (Clip keeps the original box and hides overflow).
-            if (spec.FitMode != OverlayLayoutSettingKeys.FitClip)
-            {
-                var measureBlock = new TextBlock
-                {
-                    Text = spec.Text,
-                    FontSize = fontSizeDip,
-                    TextWrapping = TextWrapping.NoWrap,
-                };
-                measureBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                var needed = Math.Ceiling(measureBlock.DesiredSize.Width) + borderPad * 2;
-                if (needed > boxW)
-                    boxW = needed;
-            }
 
             Canvas.SetLeft(panel, left);
             Canvas.SetTop(panel, top);
-            panel.Width = boxW;
-            if (spec.FitMode == OverlayLayoutSettingKeys.FitClip)
-            {
-                panel.Height = boxH;
-                panel.ClipToBounds = true;
-            }
-            else
-            {
-                // Fixed box so above/below can bottom/top-align toward the source line.
-                panel.Height = boxH;
-            }
 
             if (Math.Abs(spec.AngleDegrees) >= 0.5f)
             {
@@ -168,6 +261,16 @@ public sealed class OverlayWindow : Window
             }
 
             _canvas.Children.Add(panel);
+
+            if (_interactive && !string.IsNullOrEmpty(spec.SourceKey))
+            {
+                _hitTargets.Add((
+                    (int)Math.Round(originX + left * scaling),
+                    (int)Math.Round(originY + top * scaling),
+                    (int)Math.Max(1, Math.Round(boxW * scaling)),
+                    (int)Math.Max(1, Math.Round(boxH * scaling)),
+                    spec.SourceKey));
+            }
         }
 
         if (debugMatchedLines is { Count: > 0 })
@@ -175,6 +278,116 @@ public sealed class OverlayWindow : Window
 
         if (debugWords is { Count: > 0 })
             RenderDebugWords(debugWords, scaling);
+    }
+
+    /// <summary>
+    /// Widest whole-word width in DIP (never splits words).
+    /// </summary>
+    private static double MeasureMaxWordWidth(string text, double fontSizeDip)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return 0;
+
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        var words = text.Split([' ', '\t', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length == 0)
+            return 0;
+
+        var measure = new TextBlock
+        {
+            FontSize = fontSizeDip,
+            TextWrapping = TextWrapping.NoWrap,
+        };
+
+        var max = 0.0;
+        foreach (var word in words)
+        {
+            measure.Text = word;
+            measure.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            if (measure.DesiredSize.Width > max)
+                max = measure.DesiredSize.Width;
+        }
+
+        return max;
+    }
+
+    /// <summary>
+    /// Inserts newlines so each line fits <paramref name="maxWidthDip"/> when possible.
+    /// Never splits a word; caller must ensure <paramref name="maxWidthDip"/> ≥ longest word.
+    /// </summary>
+    private static string WrapWholeWords(string text, double fontSizeDip, double maxWidthDip)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return text;
+
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        var words = text.Split([' ', '\t', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length == 0)
+            return text;
+
+        var measure = new TextBlock
+        {
+            FontSize = fontSizeDip,
+            TextWrapping = TextWrapping.NoWrap,
+        };
+
+        double Measure(string s)
+        {
+            measure.Text = s;
+            measure.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            return measure.DesiredSize.Width;
+        }
+
+        var lines = new List<string>();
+        var current = string.Empty;
+        foreach (var word in words)
+        {
+            var trial = current.Length == 0 ? word : current + " " + word;
+            if (current.Length == 0 || Measure(trial) <= maxWidthDip)
+            {
+                current = trial;
+                continue;
+            }
+
+            lines.Add(current);
+            current = word;
+        }
+
+        if (current.Length > 0)
+            lines.Add(current);
+
+        return string.Join('\n', lines);
+    }
+
+    private void PollHover()
+    {
+        if (!_interactive || !OperatingSystem.IsWindows())
+            return;
+
+        string? hitKey = null;
+        if (_hitTargets.Count > 0 && NativeWindowMethods.GetCursorPos(out var pt))
+        {
+            // Last drawn wins (expanded fill over outline if both overlap).
+            for (var i = _hitTargets.Count - 1; i >= 0; i--)
+            {
+                var h = _hitTargets[i];
+                if (pt.X >= h.X && pt.X < h.X + h.W && pt.Y >= h.Y && pt.Y < h.Y + h.H)
+                {
+                    hitKey = h.Key;
+                    break;
+                }
+            }
+        }
+
+        SetHoveredKey(hitKey);
+    }
+
+    private void SetHoveredKey(string? key)
+    {
+        if (string.Equals(_hoveredKey, key, StringComparison.Ordinal))
+            return;
+        _hoveredKey = key;
+        HoverTargetChanged?.Invoke(key);
     }
 
     private void RenderDebugMatchedLines(IReadOnlyList<OverlayDebugLine> lines, double scaling)
@@ -284,6 +497,8 @@ public sealed class OverlayWindow : Window
     public void ClearItems()
     {
         _lastRenderKey = null;
+        _hitTargets.Clear();
+        SetHoveredKey(null);
         _canvas.Children.Clear();
     }
 
@@ -299,7 +514,7 @@ public sealed class OverlayWindow : Window
         {
             var s = specs[i];
             parts[i] =
-                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.AngleDegrees:F1}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.BackgroundColor}|{s.TextColor}|{s.Outline}|{s.FitMode}|{s.VAlign}";
+                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.AngleDegrees:F1}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.BackgroundColor}|{s.TextColor}|{s.Outline}|{s.VAlign}|{s.IsMarker}|{s.SourceKey}|{s.WrapWords}";
         }
 
         var idx = specs.Count;

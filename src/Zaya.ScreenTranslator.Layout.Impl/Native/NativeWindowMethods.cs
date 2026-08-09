@@ -35,6 +35,9 @@ internal static class NativeWindowMethods
     [DllImport("user32.dll")]
     public static extern bool IsWindow(IntPtr hWnd);
 
+    [DllImport("user32.dll")]
+    public static extern bool GetCursorPos(out Point lpPoint);
+
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
@@ -75,11 +78,21 @@ internal static class NativeWindowMethods
     }
 
     public static void EnableClickThrough(IntPtr hwnd)
+        => SetTransparent(hwnd, transparent: true);
+
+    public static void DisableClickThrough(IntPtr hwnd)
+        => SetTransparent(hwnd, transparent: false);
+
+    private static void SetTransparent(IntPtr hwnd, bool transparent)
     {
         if (hwnd == IntPtr.Zero)
             return;
         var ex = GetWindowLongPtr(hwnd, GwlExstyle).ToInt64();
-        ex |= WsExTransparent | WsExToolwindow | WsExNoactivate | WsExLayered;
+        ex |= WsExToolwindow | WsExNoactivate | WsExLayered;
+        if (transparent)
+            ex |= WsExTransparent;
+        else
+            ex &= ~WsExTransparent;
         SetWindowLongPtr(hwnd, GwlExstyle, new IntPtr(ex));
     }
 }

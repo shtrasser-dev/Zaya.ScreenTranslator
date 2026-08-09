@@ -144,58 +144,70 @@ public sealed class TranslationLoopService
                         }
 
                         var sourceTexts = batch.Select(b => b.Text).ToList();
-
-                        IReadOnlyList<string> translatedTexts;
-                        double avgTranslateMs;
-                        try
-                        {
-                            var trSw = Stopwatch.StartNew();
-                            translatedTexts = sourceTexts.Count == 0
-                                ? Array.Empty<string>()
-                                : await runtime.TranslatorSession.TranslateAsync(sourceTexts, ct);
-                            trSw.Stop();
-
-                            translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
-                            if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
-                            avgTranslateMs = translatorTimes.Average();
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (Exception ex)
-                        {
-                            // Transient translator failures: keep capturing/OCR and retry.
-                            onStatus((FormatStatusError(ex), true));
-                            await Task.Delay(1000, ct);
-                            continue;
-                        }
-
-                        var overlayItems = BuildOverlayItems(batch, translatedTexts, originX, originY);
                         var overlaySession = runtime.OverlaySession;
+                        var useOverlayTranslate = overlaySession is not null;
+
+                        IReadOnlyList<string> translatedTexts = Array.Empty<string>();
+                        double avgTranslateMs = translatorTimes.Count > 0 ? translatorTimes.Average() : 0;
+
+                        if (!useOverlayTranslate)
+                        {
+                            try
+                            {
+                                var trSw = Stopwatch.StartNew();
+                                translatedTexts = sourceTexts.Count == 0
+                                    ? Array.Empty<string>()
+                                    : await runtime.TranslatorSession.TranslateAsync(sourceTexts, ct);
+                                trSw.Stop();
+
+                                translatorTimes.Enqueue(trSw.Elapsed.TotalMilliseconds);
+                                if (translatorTimes.Count > windowSize) translatorTimes.Dequeue();
+                                avgTranslateMs = translatorTimes.Average();
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                throw;
+                            }
+                            catch (Exception ex)
+                            {
+                                // Transient translator failures: keep capturing/OCR and retry.
+                                onStatus((FormatStatusError(ex), true));
+                                await Task.Delay(1000, ct);
+                                continue;
+                            }
+                        }
+
                         if (overlaySession is not null)
                         {
+                            // Source paragraphs; layout engine translates via host callback (always / on-demand).
+                            var overlayItems = BuildOverlaySourceParagraphItems(batch, originX, originY);
                             var debugWords = BuildOverlayDebugWords(result.Words, originX, originY);
                             var debugMatchedLines = BuildOverlayDebugMatchedLines(layoutResult.Lines, originX, originY);
                             await overlaySession.PresentAsync(overlayItems, debugWords, debugMatchedLines, ct);
                         }
 
                         var pairs = new List<(string Source, string Translation)>(sourceTexts.Count);
-                        for (var i = 0; i < sourceTexts.Count; i++)
+                        if (!useOverlayTranslate)
                         {
-                            var translated = i < translatedTexts.Count ? translatedTexts[i] : sourceTexts[i];
-                            pairs.Add((sourceTexts[i], translated));
+                            for (var i = 0; i < sourceTexts.Count; i++)
+                            {
+                                var translated = i < translatedTexts.Count ? translatedTexts[i] : sourceTexts[i];
+                                pairs.Add((sourceTexts[i], translated));
+                            }
                         }
 
                         var confLine = string.Format(
                             LocalizationService.Instance.CurrentCulture,
                             LocalizationService.Instance[LocalizationConstants.Text.AvgConfidence],
                             result.Confidence);
-                        var textOut = string.Join("\n\n", translatedTexts) + "\n" + confLine;
+                        var textOut = useOverlayTranslate
+                            ? confLine
+                            : string.Join("\n\n", translatedTexts) + "\n" + confLine;
 
                         Dispatcher.UIThread.Post(() =>
                         {
-                            onTranslatedPairs?.Invoke(pairs);
+                            if (pairs.Count > 0)
+                                onTranslatedPairs?.Invoke(pairs);
                             onTextUpdated(textOut);
                             onTimings?.Invoke(avgCaptureMs, avgOcrMs, avgTranslateMs);
                         });
@@ -237,29 +249,32 @@ public sealed class TranslationLoopService
             LocalizationService.Instance[LocalizationConstants.Status.Error],
             LocalizationService.Instance.FormatExceptionMessage(ex));
 
-    private static List<OverlayItem> BuildOverlayItems(
+    /// <summary>
+    /// One <see cref="OverlayItem"/> per OCR line; shared <see cref="OverlayItem.Id"/> =
+    /// paragraph id so Layout can translate once and wrap across line boxes.
+    /// </summary>
+    private static List<OverlayItem> BuildOverlaySourceParagraphItems(
         IReadOnlyList<(ITextParagraph Paragraph, string Text)> batch,
-        IReadOnlyList<string> translatedTexts,
         int originX = 0,
         int originY = 0)
     {
         var items = new List<OverlayItem>();
-        for (var i = 0; i < batch.Count; i++)
+        foreach (var (paragraph, _) in batch)
         {
-            var paragraph = batch[i].Paragraph;
-            var translated = i < translatedTexts.Count ? translatedTexts[i] : batch[i].Text;
             var lines = paragraph.Lines;
             if (lines.Count == 0)
                 continue;
 
-            var parts = WrapTranslatedToLines(translated, lines);
-            for (var li = 0; li < lines.Count; li++)
+            foreach (var line in lines)
             {
-                var b = OffsetBounds(lines[li].Bounds, originX, originY);
+                if (string.IsNullOrWhiteSpace(line.Text))
+                    continue;
+
                 items.Add(new OverlayItem
                 {
-                    Text = parts[li],
-                    Bounds = b,
+                    Id = paragraph.Id,
+                    Text = line.Text,
+                    Bounds = OffsetBounds(line.Bounds, originX, originY),
                 });
             }
         }

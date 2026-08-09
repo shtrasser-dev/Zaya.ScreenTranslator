@@ -23,4 +23,14 @@ public interface IOverlayLayoutService : IDisposable
     Task<IOverlayLayoutSession> CreateSessionAsync(
         IReadOnlyDictionary<string, object> engineSettings,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a session with an optional host translation callback.
+    /// When provided, the session may translate source <see cref="OverlayItem.Text"/> according to
+    /// its <c>translateMode</c> setting (immediate batch or on-demand per click).
+    /// </summary>
+    Task<IOverlayLayoutSession> CreateSessionAsync(
+        IReadOnlyDictionary<string, object> engineSettings,
+        OverlayTranslateCallback? translate,
+        CancellationToken cancellationToken = default);
 }

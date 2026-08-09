@@ -41,6 +41,7 @@
     <AvaloniaResource Include="Assets\**" />
     <EmbeddedResource Include="Update\builtin-plugins.json" />
     <EmbeddedResource Include="Services\default-profile.json" />
+    <EmbeddedResource Include="Services\manga-profile.json" />
   </ItemGroup>
 
 </Project>

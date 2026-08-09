@@ -41,6 +41,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
     private IDisposable? _translatorCacheEngine;
     private IOverlayLayoutService? _overlayLayoutEngine;
     private IOverlayLayoutSession? _overlaySession;
+    private ITranslatorSession? _liveTranslatorSession;
     private TranslationModuleKind _pendingRefresh;
     private nint _sessionWindowHandle;
 
@@ -153,6 +154,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         IOCRSession? ocrSession = null;
         ITextLayoutSession? layoutSession = null;
         ITranslatorSession? translatorSession = null;
+        ICaptureRegion? captureRegion = null;
 
         try
         {
@@ -218,11 +220,15 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
                 overlaySession = created.Value.Session;
             }
 
-            var region = new FullScreenWindowRegion { WindowHandle = handle };
+            captureRegion = new FullScreenWindowRegion
+            {
+                WindowHandle = handle,
+                CaptureClientArea = true,
+            };
             var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
             var ctProbe = CancellationToken.None;
 
-            captureSession = await CreateCaptureSessionAsync(capture, region, profile, ctProbe).ConfigureAwait(true);
+            captureSession = await CreateCaptureSessionAsync(capture, captureRegion, profile, ctProbe).ConfigureAwait(true);
             ocrSession = await CreateOcrSessionAsync(ocr, profile, ctProbe).ConfigureAwait(true);
             layoutSession = await CreateTextLayoutSessionAsync(textLayout, profile, ctProbe).ConfigureAwait(true);
             translatorSession = await CreateTranslatorSessionAsync(
@@ -247,6 +253,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         _translatorCacheEngine = translatorCache;
         _overlayLayoutEngine = overlayLayout;
         _overlaySession = overlaySession;
+        _liveTranslatorSession = translatorSession;
 
         var runtime = new TranslationLoopRuntime
         {
@@ -255,7 +262,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             TextLayout = textLayout!,
             Translator = translator!,
             TranslatorCache = translatorCache!,
-            Region = new FullScreenWindowRegion { WindowHandle = handle },
+            Region = captureRegion!,
             CaptureSession = captureSession!,
             OcrSession = ocrSession!,
             LayoutSession = layoutSession!,
@@ -401,6 +408,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         runtime.Translator = translator;
         runtime.TranslatorCache = translatorCache;
         runtime.TranslatorSession = session;
+        _liveTranslatorSession = session;
     }
 
     private async Task RecreateOverlayAsync(
@@ -461,7 +469,9 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 
         try
         {
-            var overlaySession = await overlayLayout.CreateSessionAsync(overlaySettings).ConfigureAwait(false);
+            var overlaySession = await overlayLayout
+                .CreateSessionAsync(overlaySettings, CreateOverlayTranslateCallback())
+                .ConfigureAwait(false);
             return (overlayLayout, overlaySession);
         }
         catch (Exception ex)
@@ -473,6 +483,43 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             return null;
         }
     }
+
+    private OverlayTranslateCallback CreateOverlayTranslateCallback()
+        => async (texts, token) =>
+        {
+            try
+            {
+                var session = _liveTranslatorSession
+                    ?? throw new InvalidOperationException("Translator session is not ready.");
+                var translated = await session.TranslateAsync(texts, token).ConfigureAwait(false);
+                var pairs = new List<(string Source, string Translation)>(texts.Count);
+                for (var i = 0; i < texts.Count; i++)
+                {
+                    var t = i < translated.Count ? translated[i] : texts[i];
+                    pairs.Add((texts[i], t));
+                }
+
+                if (pairs.Count > 0)
+                    _history.AddRange(pairs);
+                return translated;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Transient translator failures must not stop the capture loop
+                // (translate now runs inside overlay PresentAsync).
+                var msg = string.Format(
+                    LocalizationService.Instance.CurrentCulture,
+                    LocalizationService.Instance[LocalizationConstants.Status.Error],
+                    LocalizationService.Instance.FormatExceptionMessage(ex));
+                Dispatcher.UIThread.Post(() => _host.SetStatus(msg, isError: true));
+                await Task.Delay(1000, token).ConfigureAwait(false);
+                return texts;
+            }
+        };
 
     private static string ResolveTranslatorCacheId(IApplicationProfile profile)
     {
@@ -562,6 +609,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
     {
         try { _overlaySession?.Dispose(); } catch { }
         _overlaySession = null;
+        _liveTranslatorSession = null;
 
         DisposeQuietly(_ocrEngine);
         DisposeQuietly(_captureEngine);

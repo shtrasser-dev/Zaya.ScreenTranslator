@@ -54,10 +54,9 @@ internal static class LocalizationConstants
         public const string DebugMode = "Overlay_DebugMode";
         public const string DebugModeDesc = "Overlay_DebugMode_Desc";
 
-        public const string FitMode = "Overlay_FitMode";
-        public const string FitModeDesc = "Overlay_FitMode_Desc";
-        public const string FitModeShrink = "Overlay_FitMode_Shrink";
-        public const string FitModeWrap = "Overlay_FitMode_Wrap";
-        public const string FitModeClip = "Overlay_FitMode_Clip";
+        public const string TranslateMode = "Overlay_TranslateMode";
+        public const string TranslateModeDesc = "Overlay_TranslateMode_Desc";
+        public const string TranslateModeAlways = "Overlay_TranslateMode_Always";
+        public const string TranslateModeOnDemand = "Overlay_TranslateMode_OnDemand";
     }
 }

@@ -23,6 +23,12 @@ internal static class LocalizationConstants
         public const string NotConfiguredTooltip = "CaptureRegions_NotConfiguredTooltip";
     }
 
+    public static class History
+    {
+        public const string WindowTitle = "HistoryWindow_Title";
+        public const string ClearAll = "History_ClearAll";
+    }
+
     public static class Status
     {
         public const string Label = "Status_Label";
