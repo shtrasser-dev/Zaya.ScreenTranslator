@@ -7,10 +7,12 @@ Is it a bird? Is it a PLANE?!
 # It's the REAL-TIME SCREEN TRANSLATOR!
 
 ![Rotated and upside-down text overlay demo](img/wow.gif)
+
 *IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!*
 
 
 ![Experimental manga support](img/manga.gif)
+
 *Experimental manga support (on-demand overlay translate + Manga profile).*
 
 ## User Testimonials
