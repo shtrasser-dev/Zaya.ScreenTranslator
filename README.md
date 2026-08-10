@@ -4,17 +4,20 @@ Is it a bird? Is it a PLANE?!
 
 # It's the REAL-TIME SCREEN TRANSLATOR!
 
-![Rotated and upside-down text overlay demo](img/wow.gif)
+<p>
+  <img src="img/wow.gif" alt="Rotated and upside-down text overlay demo" /><br />
+  <sub><i>IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!</i></sub>
+</p>
 
-*IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!*
+<p>
+  <img src="img/wuwa.gif" alt="Works with any game" /><br />
+  <sub><i>Works with any game — if it’s on your screen, we can translate it.</i></sub>
+</p>
 
-![Works with any game](img/wuwa.gif)
-
-*Works with any game — if it’s on your screen, we can translate it.*
-
-![Experimental manga support](img/manga.gif)
-
-*Experimental manga support (on-demand overlay translate + Manga profile).*
+<p>
+  <img src="img/manga.gif" alt="Experimental manga support" /><br />
+  <sub><i>Experimental manga support (on-demand overlay translate + Manga profile).</i></sub>
+</p>
 
 ## User Testimonials
 
