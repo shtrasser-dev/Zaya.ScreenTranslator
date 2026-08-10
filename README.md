@@ -1,5 +1,3 @@
-# OMG Whah is it ?!?!?
-
 Is it a bird? Is it a PLANE?!
 
 **NO.**
@@ -10,6 +8,9 @@ Is it a bird? Is it a PLANE?!
 
 *IT SUPPORTS ROTATED TEXT?! YES! And even text that's UPSIDE DOWN?!?! UNBELIEVABLE!!!!*
 
+![Works with any game](img/wuwa.gif)
+
+*Works with any game — if it’s on your screen, we can translate it.*
 
 ![Experimental manga support](img/manga.gif)
 
