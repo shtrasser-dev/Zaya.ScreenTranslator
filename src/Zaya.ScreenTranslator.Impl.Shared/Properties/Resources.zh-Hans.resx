@@ -126,6 +126,12 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>主题</value>
   </data>
+  <data name="Theme_SwitchToLight" xml:space="preserve">
+    <value>切换到浅色主题</value>
+  </data>
+  <data name="Theme_SwitchToDark" xml:space="preserve">
+    <value>切换到深色主题</value>
+  </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>目标翻译语言</value>
   </data>

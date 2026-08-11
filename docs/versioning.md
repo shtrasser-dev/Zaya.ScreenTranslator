@@ -4,7 +4,7 @@
 
 | Artifact | Rule |
 |----------|------|
-| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.1.2` |
+| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.1.3` |
 | Release tags | Immutable `app-v{ver}`; optional floating `app-v{channel}-latest` (`channel` = `MAJOR.MINOR`); asset `Zaya.ScreenTranslator-{ver}.zip` |
 
 Host does not self-replace the exe; it opens the GitHub release page when a newer immutable `app-v*` exists (newest version across all channels).

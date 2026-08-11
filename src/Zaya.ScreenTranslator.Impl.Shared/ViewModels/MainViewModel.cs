@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -83,6 +84,9 @@ public sealed partial class MainViewModel :
         _statusText = Loc[LocalizationConstants.Status.Idle];
         _statusKey = AppConstants.StatusState.Idle;
         RefreshCaptureRegionsIndicator();
+
+        if (Application.Current is { } app)
+            app.ActualThemeVariantChanged += OnApplicationThemeVariantChanged;
     }
 
     public sealed record TargetLanguageItem(string Code, string Name);

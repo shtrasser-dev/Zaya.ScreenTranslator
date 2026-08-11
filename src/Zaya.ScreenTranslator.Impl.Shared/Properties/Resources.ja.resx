@@ -126,6 +126,12 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>テーマ</value>
   </data>
+  <data name="Theme_SwitchToLight" xml:space="preserve">
+    <value>ライトテーマに切り替え</value>
+  </data>
+  <data name="Theme_SwitchToDark" xml:space="preserve">
+    <value>ダークテーマに切り替え</value>
+  </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>翻訳先言語</value>
   </data>

@@ -126,6 +126,12 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>Motyw</value>
   </data>
+  <data name="Theme_SwitchToLight" xml:space="preserve">
+    <value>Przełącz na jasny motyw</value>
+  </data>
+  <data name="Theme_SwitchToDark" xml:space="preserve">
+    <value>Przełącz na ciemny motyw</value>
+  </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Docelowy język tłumaczenia</value>
   </data>

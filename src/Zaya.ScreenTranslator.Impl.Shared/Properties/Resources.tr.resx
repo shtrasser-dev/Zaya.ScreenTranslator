@@ -126,6 +126,12 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>Tema</value>
   </data>
+  <data name="Theme_SwitchToLight" xml:space="preserve">
+    <value>Açık temaya geç</value>
+  </data>
+  <data name="Theme_SwitchToDark" xml:space="preserve">
+    <value>Koyu temaya geç</value>
+  </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Hedef çeviri dili</value>
   </data>

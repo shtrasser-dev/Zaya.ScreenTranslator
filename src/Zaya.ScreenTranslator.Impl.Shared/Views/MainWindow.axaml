@@ -95,6 +95,20 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="#E65100" />
         </Style>
+        <Style Selector="Button.title-theme-toggle">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.title-theme-toggle:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+        </Style>
     </Window.Styles>
 
     <Panel Name="Root">
@@ -113,6 +127,16 @@
                          Css="{DynamicResource MainWindowLogoCss}" />
             </Viewbox>
         </Canvas>
+
+        <Button Classes="title-theme-toggle"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,4,8,0"
+                ZIndex="2"
+                Opacity="{Binding ThemeToggleOpacity}"
+                Command="{Binding ToggleThemeCommand}"
+                Content="{Binding ThemeToggleGlyph}"
+                ToolTip.Tip="{Binding ThemeToggleTooltip}" />
 
         <Grid Name="MainLayout" Margin="12">
             <Grid.RowDefinitions>

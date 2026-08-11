@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Styling;
 using CommunityToolkit.Mvvm.Input;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
@@ -43,6 +44,7 @@ public sealed partial class MainViewModel
             OnPropertyChanged(nameof(CopyCurrentProfileLabel));
             OnPropertyChanged(nameof(ImportProfileLabel));
             OnPropertyChanged(nameof(ProfileActions));
+            NotifyThemeToggleChanged();
 
             var targetCode = SelectedTargetLanguage?.Code ?? "en";
             TargetLanguages = BuildTargetLanguages();
@@ -119,4 +121,52 @@ public sealed partial class MainViewModel
         ForceMainWindowRebind();
         await Task.CompletedTask;
     }
+
+    public bool IsDarkTheme =>
+        Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
+
+    /// <summary>Sun when dark (switch to light), moon when light (switch to dark).</summary>
+    public string ThemeToggleGlyph => IsDarkTheme ? "☀" : "☾";
+
+    /// <summary>Sun emoji is very bright yellow — soften it with opacity.</summary>
+    public double ThemeToggleOpacity => IsDarkTheme ? 0.75 : 1.0;
+
+    public string ThemeToggleTooltip => IsDarkTheme
+        ? Loc[LocalizationConstants.Buttons.ThemeSwitchToLight]
+        : Loc[LocalizationConstants.Buttons.ThemeSwitchToDark];
+
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        var next = IsDarkTheme ? AppConstants.Theme.Light : AppConstants.Theme.Dark;
+        if (Settings is not null)
+        {
+            Settings.SelectedTheme = next;
+        }
+        else
+        {
+            var screen = _profileService.LoadScreenTranslatorProfile();
+            screen.Theme = next;
+            _profileService.SaveScreenTranslatorProfile(screen);
+            if (Application.Current is not null)
+            {
+                Application.Current.RequestedThemeVariant = next == AppConstants.Theme.Dark
+                    ? ThemeVariant.Dark
+                    : ThemeVariant.Light;
+            }
+        }
+
+        NotifyThemeToggleChanged();
+    }
+
+    private void NotifyThemeToggleChanged()
+    {
+        OnPropertyChanged(nameof(IsDarkTheme));
+        OnPropertyChanged(nameof(ThemeToggleGlyph));
+        OnPropertyChanged(nameof(ThemeToggleOpacity));
+        OnPropertyChanged(nameof(ThemeToggleTooltip));
+    }
+
+    private void OnApplicationThemeVariantChanged(object? sender, EventArgs e) =>
+        NotifyThemeToggleChanged();
 }

@@ -34,7 +34,7 @@ We were overwhelmed with emotion when we received this feedback:
 
 ## Get Started
 
-1.  **Download:** Grab the latest `Zaya.ScreenTranslator-{version}.zip` from the [Releases](https://github.com/shtrasser-dev/Zaya.ScreenTranslator/releases/latest) page or use the `app-v1.1-latest` tag.
+1.  **Download:** Grab the latest `Zaya.ScreenTranslator-{version}.zip` from the [Releases](https://github.com/shtrasser-dev/Zaya.ScreenTranslator/releases/latest) page.
 2.  **Extract:** Unzip the file anywhere you like.
 3.  **Run:** Double-click `Zaya.ScreenTranslator.exe`.
 
@@ -53,9 +53,9 @@ Real-time on-screen text translator for Windows 10/11. Captures a window or regi
 
 ## Version
 
-**1.1.2** — Host channel `1.1`. See [versioning](docs/versioning.md).
+**1.1.3** — Host channel `1.1`. See [versioning](docs/versioning.md).
 
-Host release tags: `app-v1.1.2` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
+Host release tags: `app-v1.1.3` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
 
 ## Features
 

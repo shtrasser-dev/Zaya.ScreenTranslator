@@ -126,6 +126,12 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>Thème</value>
   </data>
+  <data name="Theme_SwitchToLight" xml:space="preserve">
+    <value>Passer au thème clair</value>
+  </data>
+  <data name="Theme_SwitchToDark" xml:space="preserve">
+    <value>Passer au thème sombre</value>
+  </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Langue de traduction cible</value>
   </data>

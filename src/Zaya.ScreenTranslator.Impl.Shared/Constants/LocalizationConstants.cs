@@ -10,6 +10,8 @@ internal static class LocalizationConstants
         public const string HideText = "Btn_HideText";
         public const string Settings = "Btn_Settings";
         public const string CaptureRegions = "Btn_CaptureRegions";
+        public const string ThemeSwitchToLight = "Theme_SwitchToLight";
+        public const string ThemeSwitchToDark = "Theme_SwitchToDark";
     }
 
     public static class CaptureRegions
