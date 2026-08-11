@@ -136,7 +136,6 @@ internal static class LocalizationConstants
         public const string FramePauseMsDesc = "Settings_FramePauseMs_Desc";
         public const string TranslatorNone = "Settings_TranslatorNone";
         public const string TranslatorCacheNone = "Settings_TranslatorCacheNone";
-        public const string TranslatorCacheEngine = "Settings_TranslatorCacheEngine";
     }
 
     public static class Validation

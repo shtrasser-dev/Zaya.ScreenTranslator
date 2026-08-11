@@ -22,7 +22,7 @@
     <value>Platzierung</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Wo der Text relativ zu jedem Bounds-Rechteck gezeichnet wird</value>
+    <value>Wo der Text relativ zu jedem erkannten Textfeld gezeichnet wird</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Darüber</value>
@@ -34,31 +34,31 @@
     <value>Darunter</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Schriftskala (%)</value>
+    <value>Schriftskala</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Schriftgröße als Prozent der Bounds-Höhe</value>
+    <value>Schriftgröße als Prozent der Zeilenhöhe</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Feste Schriftgröße</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>Feste Schrifthöhe und Y-Versatz in Pixeln statt Prozent der OCR-/Texthöhe</value>
+    <value>Feste Schrifthöhe und vertikalen Versatz in Pixeln statt Prozent der erkannten Texthöhe verwenden</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Schriftgröße (px)</value>
+    <value>Schriftgröße</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Feste Overlay-Texthöhe in Pixeln</value>
+    <value>Texthöhe in Pixeln</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y-Versatz (px)</value>
+    <value>Vertikaler Versatz</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Zusätzlicher vertikaler Abstand vom Bounds-Rand in Pixeln</value>
+    <value>Zusätzlicher vertikaler Abstand vom Textrand in Pixeln</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y-Versatz (%)</value>
+    <value>Vertikaler Versatz</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
     <value>Zusätzlicher vertikaler Abstand als Prozent der Texthöhe</value>
@@ -67,7 +67,13 @@
     <value>Innenabstand</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Innenabstand um den Overlay-Text</value>
+    <value>Innenabstand um den Overlay-Text in Pixeln</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Linien an den Horizont angleichen</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>Wenn die Neigung einer Linie höchstens so viele Grad vom Horizontalen abweicht, horizontal zeichnen</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Hintergrund</value>
@@ -85,16 +91,16 @@
     <value>Undurchsichtig</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Hintergrunddeckkraft (%)</value>
+    <value>Hintergrunddeckkraft</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Deckkraft des weichen/undurchsichtigen Hintergrunds</value>
+    <value>Hintergrunddeckkraft in Prozent</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Hintergrundfarbe</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Farbe des weichen/deckenden Hintergrunds</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Hell</value>
@@ -139,13 +145,13 @@
     <value>Debug-Modus</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>OCR-Wortboxen und Text über der Übersetzung zeichnen (rot)</value>
+    <value>Wortfelder und Quelltext über der Übersetzung zeichnen (rot)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Anpassungsmodus</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>Wie langer Text in die Bounds-Breite eingepasst wird</value>
+    <value>Wie langer Text in die Textfeldbreite eingepasst wird</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Verkleinern</value>

@@ -13,6 +13,7 @@ internal static class OverlayLayoutSettingKeys
     public const string OffsetY = "offsetY";
     public const string OffsetYPercent = "offsetYPercent";
     public const string Padding = "padding";
+    public const string HorizonSnapDegrees = "horizonSnapDegrees";
     public const string Background = "background";
     public const string BackgroundOpacity = "backgroundOpacity";
     public const string BackgroundColor = "backgroundColor";

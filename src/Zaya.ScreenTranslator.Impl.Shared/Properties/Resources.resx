@@ -58,7 +58,7 @@
     <value>General</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — on-screen text translation.</value>
+    <value>ScreenTranslator — on-screen text translation</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>GitHub repository</value>
@@ -67,25 +67,25 @@
     <value>Thank the author</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>Screen image capture module.</value>
+    <value>Screen image capture module</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>Text recognition module.</value>
+    <value>Text recognition module</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>Module that groups words into lines and lines into paragraphs.</value>
+    <value>Module that groups words into lines and lines into paragraphs</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>Translation module.</value>
+    <value>Translation module</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>Translation cache module (reduces API calls and stabilizes OCR flicker).</value>
+    <value>Translation cache module (reduces API calls and stabilizes OCR flicker)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>Text filter module.</value>
+    <value>Text filter module</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>On-screen overlay module.</value>
+    <value>On-screen overlay module</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>Recognition</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Target translation language</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR engine</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>Capture engine</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>Layout engine</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>Translation engine</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>No translation (OCR only)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>Cache engine</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>No cache</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Overlay</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>Overlay engine</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Start translation to show overlay</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

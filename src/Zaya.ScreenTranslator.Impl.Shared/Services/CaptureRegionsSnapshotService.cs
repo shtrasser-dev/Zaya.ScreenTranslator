@@ -24,6 +24,30 @@ public static class CaptureRegionsSnapshotService
     private const int AbsoluteMinWidth = 200;
     private const int AbsoluteMinHeight = 100;
 
+    /// <summary>Fallback canvas when editing saved regions without a selected target window.</summary>
+    public const int PlaceholderSize = 800;
+
+    /// <summary>
+    /// Fully transparent square used as the editor backdrop when no window is selected.
+    /// </summary>
+    public static Snapshot CreatePlaceholderSnapshot(int size = PlaceholderSize)
+    {
+        if (size < 1)
+            size = PlaceholderSize;
+
+        var bmp = new WriteableBitmap(
+            new PixelSize(size, size),
+            new Vector(96, 96),
+            PixelFormats.Bgra8888,
+            AlphaFormat.Unpremul);
+
+        using var fb = bmp.Lock();
+        var bytes = new byte[fb.RowBytes * size];
+        Marshal.Copy(bytes, 0, fb.Address, bytes.Length);
+
+        return new Snapshot(bmp, size, size);
+    }
+
     public static async Task<Snapshot?> CaptureUntilStableAsync(
         IApplicationProfile profile,
         nint windowHandle,

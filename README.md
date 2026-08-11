@@ -58,7 +58,7 @@ Real-time on-screen text translator for Windows 10/11. Captures a window or regi
 
 ## Version
 
-**1.1.3** — Host channel `1.1`. See [versioning](docs/versioning.md).
+**1.1.3** — Host channel `1.1`. See [versioning](docs/versioning.md) and [CHANGELOG](CHANGELOG.md).
 
 Host release tags: `app-v1.1.3` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
 
@@ -102,7 +102,7 @@ Publishes a single-file host and packs it into `out\Zaya.ScreenTranslator-{versi
 
 ## Publish
 
-GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, push, then run the workflow manually (optional **changelog** input becomes the GitHub Release notes). Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator-{version}.zip`.
+GitHub Actions workflow **Publish** (`workflow_dispatch` only). Bump host version in `Directory.Build.props`, update `CHANGELOG.md` `[Unreleased]`, push, then run the workflow manually. Release notes come from `[Unreleased]` (no changelog input on the action). Creates/replaces `app-v{version}` and `app-v{channel}-latest` with `Zaya.ScreenTranslator-{version}.zip`.
 
 ## Local plugins
 

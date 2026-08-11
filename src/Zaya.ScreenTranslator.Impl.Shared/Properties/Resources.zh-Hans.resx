@@ -58,7 +58,7 @@
     <value>常规</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — 屏幕文本翻译。</value>
+    <value>ScreenTranslator — 屏幕文本翻译</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>GitHub 仓库</value>
@@ -67,25 +67,25 @@
     <value>感谢作者</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>屏幕图像捕获模块。</value>
+    <value>屏幕图像捕获模块</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>文本识别模块。</value>
+    <value>文本识别模块</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>将词语分组为行、将行分组为段落的模块。</value>
+    <value>将词语分组为行、将行分组为段落的模块</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>翻译模块。</value>
+    <value>翻译模块</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>翻译缓存模块（减少 API 调用并稳定 OCR 闪烁）。</value>
+    <value>翻译缓存模块（减少 API 调用并稳定 OCR 闪烁）</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>文本过滤模块。</value>
+    <value>文本过滤模块</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>屏幕叠加层模块。</value>
+    <value>屏幕叠加层模块</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>识别</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>目标翻译语言</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR 引擎</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>捕获引擎</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>布局引擎</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>翻译引擎</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>不翻译（仅 OCR）</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>缓存引擎</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>无缓存</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>叠加层</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>叠加层引擎</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>启动翻译以显示叠加层</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

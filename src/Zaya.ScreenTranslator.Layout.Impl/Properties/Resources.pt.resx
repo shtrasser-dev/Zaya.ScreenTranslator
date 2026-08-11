@@ -22,7 +22,7 @@
     <value>Posicionamento</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Onde desenhar o texto relativamente a cada retângulo bounds</value>
+    <value>Onde desenhar o texto relativamente a cada caixa de texto reconhecida</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Acima</value>
@@ -34,40 +34,46 @@
     <value>Abaixo</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Escala da fonte (%)</value>
+    <value>Escala da fonte</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Tamanho da fonte em percentagem da altura dos bounds</value>
+    <value>Tamanho da fonte em percentagem da altura da linha</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Tamanho de fonte fixo</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>Usar altura da fonte e deslocamento Y em pixels em vez de percentagem da altura OCR/texto</value>
+    <value>Usar altura da fonte e deslocamento vertical em píxeis em vez de percentagem da altura do texto reconhecido</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Tamanho da fonte (px)</value>
+    <value>Tamanho da fonte</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Altura fixa do texto do overlay em pixels</value>
+    <value>Altura do texto em píxeis</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Deslocamento Y (px)</value>
+    <value>Deslocamento vertical</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Espaço vertical extra desde o limite dos bounds em pixels</value>
+    <value>Espaço vertical extra desde o limite da área de texto em píxeis</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Deslocamento Y (%)</value>
+    <value>Deslocamento vertical</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
-    <value>Espaço vertical extra como percentagem da altura do texto</value>
+    <value>Espaço vertical extra em percentagem da altura do texto</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>Preenchimento</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Preenchimento interno à volta do texto da sobreposição</value>
+    <value>Espaçamento interior à volta do texto da sobreposição em píxeis</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Ajustar linhas ao horizonte</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>Se a inclinação de uma linha em relação à horizontal não ultrapassar este valor em graus, desenhar a linha na horizontal</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Fundo</value>
@@ -85,16 +91,16 @@
     <value>Opaco</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Opacidade do fundo (%)</value>
+    <value>Opacidade do fundo</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Opacidade do fundo suave/opaco</value>
+    <value>Opacidade do fundo em percentagem</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Cor de fundo</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Cor do fundo suave/opaco</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Claro</value>
@@ -139,13 +145,13 @@
     <value>Modo de depuração</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>Desenhar caixas e texto OCR sobre a tradução (vermelho)</value>
+    <value>Desenhar caixas de palavras e texto de origem sobre a tradução (a vermelho)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Modo de ajuste</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>Como ajustar texto longo à largura dos bounds</value>
+    <value>Como ajustar texto longo à largura da área de texto</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Encolher</value>

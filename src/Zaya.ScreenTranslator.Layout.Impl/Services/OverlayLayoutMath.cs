@@ -20,6 +20,7 @@ public static class OverlayLayoutMath
         int offsetYPx,
         int offsetYPercent,
         int padding,
+        int horizonSnapDegrees,
         string background,
         int backgroundOpacity,
         string backgroundColor,
@@ -85,9 +86,39 @@ public static class OverlayLayoutMath
             textColor,
             outline,
             vAlign,
-            bounds.AngleDegrees,
+            SnapAngleToHorizon(bounds.AngleDegrees, horizonSnapDegrees),
             IsMarker: false,
             SourceKey: sourceKey);
+    }
+
+    /// <summary>
+    /// If the line tilt from the nearest horizontal orientation is within
+    /// <paramref name="maxTiltDegrees"/>, snap to 0° or ±180°; otherwise keep the angle.
+    /// </summary>
+    public static float SnapAngleToHorizon(float angleDegrees, int maxTiltDegrees)
+    {
+        if (maxTiltDegrees <= 0)
+            return angleDegrees;
+
+        var a = NormalizeAngleDegrees(angleDegrees);
+        var distTo0 = Math.Abs(a);
+        var distTo180 = 180f - distTo0;
+
+        if (distTo0 <= maxTiltDegrees)
+            return 0f;
+        if (distTo180 <= maxTiltDegrees)
+            return a >= 0f ? 180f : -180f;
+        return angleDegrees;
+    }
+
+    private static float NormalizeAngleDegrees(float angleDegrees)
+    {
+        var a = angleDegrees % 360f;
+        if (a > 180f)
+            a -= 360f;
+        else if (a <= -180f)
+            a += 360f;
+        return a;
     }
 
     /// <summary>

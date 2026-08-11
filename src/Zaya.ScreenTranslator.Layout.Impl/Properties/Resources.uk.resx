@@ -13,7 +13,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Overlay_EngineName" xml:space="preserve">
-    <value>Екранний overlay</value>
+    <value>Екранне накладання</value>
   </data>
   <data name="Overlay_EngineDesc" xml:space="preserve">
     <value>Малює текст поверх цільового вікна за координатами</value>
@@ -22,7 +22,7 @@
     <value>Розташування</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Де малювати текст відносно прямокутника bounds</value>
+    <value>Де малювати текст відносно прямокутника розпізнаного рядка</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Над</value>
@@ -34,31 +34,31 @@
     <value>Під</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Масштаб шрифту (%)</value>
+    <value>Масштаб шрифту</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Розмір шрифту у відсотках від висоти bounds</value>
+    <value>Розмір шрифту у відсотках від висоти рядка</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Фіксований розмір шрифту</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>Використовувати висоту шрифту та зсув Y у пікселях замість відсотків від висоти OCR/тексту</value>
+    <value>Використовувати висоту шрифту та вертикальний зсув у пікселях замість відсотків від висоти розпізнаного тексту</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Розмір шрифту (px)</value>
+    <value>Розмір шрифту</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Фіксована висота тексту overlay у пікселях</value>
+    <value>Висота тексту в пікселях</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Зсув Y (px)</value>
+    <value>Вертикальний зсув</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Додатковий вертикальний відступ від краю bounds у пікселях</value>
+    <value>Додатковий вертикальний відступ від краю області тексту в пікселях</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Зсув Y (%)</value>
+    <value>Вертикальний зсув</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
     <value>Додатковий вертикальний відступ у відсотках від висоти тексту</value>
@@ -67,13 +67,19 @@
     <value>Відступ</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Внутрішній відступ навколо тексту overlay</value>
+    <value>Внутрішній відступ навколо тексту в пікселях</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Притягувати лінії до горизонту</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>Якщо кут нахилу лінії не більший за вказане значення в градусах, відображати горизонтальну лінію</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Тло</value>
   </data>
   <data name="Overlay_Background_Desc" xml:space="preserve">
-    <value>Тло під текстом overlay</value>
+    <value>Тло під текстом накладання</value>
   </data>
   <data name="Overlay_Background_None" xml:space="preserve">
     <value>Немає</value>
@@ -85,16 +91,16 @@
     <value>Непрозоре</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Непрозорість тла (%)</value>
+    <value>Непрозорість тла</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Непрозорість soft/opaque тла</value>
+    <value>Непрозорість тла у відсотках</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Колір фону</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Колір напівпрозорого/непрозорого фону</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Світлий</value>
@@ -106,7 +112,7 @@
     <value>Колір тексту</value>
   </data>
   <data name="Overlay_TextColor_Desc" xml:space="preserve">
-    <value>Колір тексту overlay</value>
+    <value>Колір тексту накладання</value>
   </data>
   <data name="Overlay_TextColor_Light" xml:space="preserve">
     <value>Світлий</value>
@@ -139,13 +145,13 @@
     <value>Режим налагодження</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>Малювати рамки та текст IOCRWord поверх перекладу (червоним)</value>
+    <value>Малювати рамки та вихідний текст поверх перекладу (червоним)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Підгонка</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>Як вмістити довгий текст у ширину bounds</value>
+    <value>Як вмістити довгий текст у ширину області рядка</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Зменшувати</value>

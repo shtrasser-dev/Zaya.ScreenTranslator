@@ -22,7 +22,7 @@
     <value>Konum</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Metnin her bounds kutusuna göre nereye çizileceği</value>
+    <value>Metnin her tanınan metin kutusuna göre nereye çizileceği</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Üstte</value>
@@ -34,31 +34,31 @@
     <value>Altta</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Yazı tipi ölçeği (%)</value>
+    <value>Yazı tipi ölçeği</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Yazı tipi boyutu, bounds yüksekliğinin yüzdesi olarak</value>
+    <value>Yazı tipi boyutu, satır yüksekliğinin yüzdesi olarak</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Sabit yazı tipi boyutu</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>OCR/metin yüksekliği yüzdesi yerine piksel cinsinden yazı tipi yüksekliği ve Y kaydırması kullan</value>
+    <value>Tanınan metin yüksekliğinin yüzdesi yerine piksel cinsinden yazı tipi yüksekliği ve dikey kaydırma kullan</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Yazı tipi boyutu (px)</value>
+    <value>Yazı tipi boyutu</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Overlay metninin piksel cinsinden sabit yüksekliği</value>
+    <value>Metin yüksekliği piksel cinsinden</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y kaydırması (px)</value>
+    <value>Dikey kaydırma</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Bounds kenarından ek dikey boşluk (piksel)</value>
+    <value>Metin alanı kenarından ek dikey boşluk (piksel)</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y kaydırması (%)</value>
+    <value>Dikey kaydırma</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
     <value>Metin yüksekliğinin yüzdesi olarak ek dikey boşluk</value>
@@ -67,7 +67,13 @@
     <value>İç boşluk</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Kaplama metninin çevresindeki iç boşluk</value>
+    <value>Kaplama metninin çevresindeki iç boşluk (piksel)</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Çizgileri yataya yaklaştır</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>Bir çizginin yataya eğimi bu dereceden fazla değilse, çizgiyi yatay göster</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Arka plan</value>
@@ -85,16 +91,16 @@
     <value>Opak</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Arka plan opaklığı (%)</value>
+    <value>Arka plan opaklığı</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Yumuşak/opak arka planın opaklığı</value>
+    <value>Arka plan opaklığı yüzde olarak</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Arka plan rengi</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Yumuşak/opak arka plan rengi</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Açık</value>
@@ -139,13 +145,13 @@
     <value>Hata ayıklama modu</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>Çevirinin üzerine OCR sözcük kutularını ve metni kırmızı çiz</value>
+    <value>Çevirinin üzerine kelime kutularını ve kaynak metni çiz (kırmızı)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Sığdırma modu</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>Uzun metnin bounds genişliğine nasıl sığdırılacağı</value>
+    <value>Uzun metnin metin kutusu genişliğine nasıl sığdırılacağı</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Küçült</value>

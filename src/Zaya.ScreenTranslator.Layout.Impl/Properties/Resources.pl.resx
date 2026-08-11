@@ -22,7 +22,7 @@
     <value>Położenie</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Gdzie rysować tekst względem prostokąta bounds</value>
+    <value>Gdzie rysować tekst względem prostokąta rozpoznanego wiersza</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Nad</value>
@@ -34,31 +34,31 @@
     <value>Pod</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Skala czcionki (%)</value>
+    <value>Skala czcionki</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Rozmiar czcionki jako procent wysokości bounds</value>
+    <value>Rozmiar czcionki jako procent wysokości wiersza</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Stały rozmiar czcionki</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>Używaj wysokości czcionki i przesunięcia Y w pikselach zamiast procentów wysokości OCR/tekstu</value>
+    <value>Używać wysokości czcionki i pionowego przesunięcia w pikselach zamiast procentu wysokości rozpoznanego tekstu</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Rozmiar czcionki (px)</value>
+    <value>Rozmiar czcionki</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Stała wysokość tekstu overlay w pikselach</value>
+    <value>Wysokość tekstu w pikselach</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Przesunięcie Y (px)</value>
+    <value>Przesunięcie pionowe</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Dodatkowy odstęp pionowy od krawędzi bounds w pikselach</value>
+    <value>Dodatkowy odstęp pionowy od krawędzi obszaru tekstu w pikselach</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Przesunięcie Y (%)</value>
+    <value>Przesunięcie pionowe</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
     <value>Dodatkowy odstęp pionowy jako procent wysokości tekstu</value>
@@ -67,13 +67,19 @@
     <value>Wypełnienie</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Wewnętrzne wypełnienie wokół tekstu nakładki</value>
+    <value>Wewnętrzny odstęp wokół tekstu w pikselach</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Przyciągaj linie do poziomu</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>Jeśli kąt nachylenia linii nie przekracza podanej liczby stopni, rysuj linię poziomo</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Tło</value>
   </data>
   <data name="Overlay_Background_Desc" xml:space="preserve">
-    <value>Tło za tekstem nakładki</value>
+    <value>Tło pod tekstem nakładki</value>
   </data>
   <data name="Overlay_Background_None" xml:space="preserve">
     <value>Brak</value>
@@ -85,16 +91,16 @@
     <value>Nieprzezroczyste</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Nieprzezroczystość tła (%)</value>
+    <value>Nieprzezroczystość tła</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Nieprzezroczystość miękkiego/nieprzezroczystego tła</value>
+    <value>Nieprzezroczystość tła w procentach</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Kolor tła</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Kolor miękkiego/nieprzezroczystego tła</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Jasny</value>
@@ -106,7 +112,7 @@
     <value>Kolor tekstu</value>
   </data>
   <data name="Overlay_TextColor_Desc" xml:space="preserve">
-    <value>Kolor pierwszego planu tekstu nakładki</value>
+    <value>Kolor tekstu nakładki</value>
   </data>
   <data name="Overlay_TextColor_Light" xml:space="preserve">
     <value>Jasny</value>
@@ -139,13 +145,13 @@
     <value>Tryb debugowania</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>Rysuj ramki i tekst OCR nad tłumaczeniem (czerwony)</value>
+    <value>Rysować ramki i tekst źródłowy nad tłumaczeniem (na czerwono)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Tryb dopasowania</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>Jak dopasować długi tekst do szerokości bounds</value>
+    <value>Jak dopasować długi tekst do szerokości obszaru wiersza</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Pomniejsz</value>

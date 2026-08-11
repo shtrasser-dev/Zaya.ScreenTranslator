@@ -11,7 +11,7 @@ public static class SettingControlFactory
     /// <summary>Left nav / settings tab strip width (kept in sync across main + settings).</summary>
     public const double MainNavWidth = 180;
 
-    /// <summary>Centered settings column width (Cursor-like).</summary>
+    /// <summary>Max centered settings column width (shrinks with the window).</summary>
     public const double SettingsColumnWidth = 700;
 
     /// <summary>Right-side editor width for scalar settings.</summary>
@@ -28,7 +28,8 @@ public static class SettingControlFactory
         object? currentValue,
         IReadOnlyDictionary<string, object?> allSettings,
         Action<string, object?> onChanged,
-        CultureInfo culture)
+        CultureInfo culture,
+        bool includeTrailingDivider = true)
     {
         var displayName = descriptor.DisplayName.GetValue(culture);
         var description = descriptor.Description?.GetValue(culture);
@@ -62,11 +63,12 @@ public static class SettingControlFactory
             }
 
             vertical.Children.Add(SettingTableEditor.Create(tableDesc, currentValue, onChanged, culture));
-            return WithDivider(vertical);
+            return includeTrailingDivider ? WithDivider(vertical) : vertical;
         }
 
         var control = SettingEditorFactory.CreateEditor(descriptor, currentValue, allSettings, onChanged, culture);
-        return WithDivider(CreateSettingsRow(displayName, description, control));
+        var row = CreateSettingsRow(displayName, description, control);
+        return includeTrailingDivider ? WithDivider(row) : row;
     }
 
     /// <summary>Thin horizontal divider between setting rows.</summary>
@@ -80,6 +82,39 @@ public static class SettingControlFactory
         };
         divider.Classes.Add("settings-divider");
         return divider;
+    }
+
+    /// <summary>
+    /// Shows dividers under every visible setting except the last visible one.
+    /// Each child produced by <see cref="CreateControl"/> is expected to be a panel of [content, divider].
+    /// </summary>
+    public static void SyncTrailingDividers(Panel root)
+    {
+        Control? lastVisible = null;
+        foreach (var child in root.Children)
+        {
+            if (child is not Control control || !control.IsVisible)
+                continue;
+
+            if (TryGetTrailingDivider(control, out var divider))
+                divider.IsVisible = true;
+
+            lastVisible = control;
+        }
+
+        if (lastVisible is not null && TryGetTrailingDivider(lastVisible, out var lastDivider))
+            lastDivider.IsVisible = false;
+    }
+
+    private static bool TryGetTrailingDivider(Control control, out Border divider)
+    {
+        divider = null!;
+        if (control is not Panel { Children.Count: >= 2 } panel)
+            return false;
+        if (panel.Children[^1] is not Border border || !border.Classes.Contains("settings-divider"))
+            return false;
+        divider = border;
+        return true;
     }
 
     private static Control WithDivider(Control content)

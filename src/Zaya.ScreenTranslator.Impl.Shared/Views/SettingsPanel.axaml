@@ -13,8 +13,9 @@
             <Setter Property="FontSize" Value="{x:Static ctrl:SettingControlFactory.SettingsLabelFontSize}" />
         </Style>
         <Style Selector="Border.settings-column">
-            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="MaxWidth" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="24,12" />
         </Style>
         <Style Selector="Border.settings-divider">
@@ -29,6 +30,11 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBox.settings-control">
+            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Grid.settings-row > Button">
             <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -61,7 +67,9 @@
             <TabControl Grid.Row="0"
                     Name="SettingsTabControl"
                     TabStripPlacement="Left"
-                    Padding="0">
+                    Padding="0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch">
             <TabControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Vertical" />
@@ -93,8 +101,10 @@
                             </ScrollViewer>
                             <ContentPresenter Name="PART_SelectedContentHost"
                                               Margin="{TemplateBinding Padding}"
-                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="Stretch"
                                               Content="{TemplateBinding SelectedContent}"
                                               ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
                         </DockPanel>

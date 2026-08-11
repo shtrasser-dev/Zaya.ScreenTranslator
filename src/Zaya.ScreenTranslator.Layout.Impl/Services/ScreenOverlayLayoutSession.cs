@@ -221,6 +221,7 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         var offsetY = _settings.GetValueAsInt(OverlayLayoutSettingKeys.OffsetY);
         var offsetYPercent = _settings.GetValueAsInt(OverlayLayoutSettingKeys.OffsetYPercent);
         var padding = _settings.GetValueAsInt(OverlayLayoutSettingKeys.Padding);
+        var horizonSnapDegrees = _settings.GetValueAsInt(OverlayLayoutSettingKeys.HorizonSnapDegrees);
         var background = _settings.GetValueAsString(OverlayLayoutSettingKeys.Background);
         var bgOpacity = _settings.GetValueAsInt(OverlayLayoutSettingKeys.BackgroundOpacity);
         var backgroundColor = _settings.GetValueAsString(OverlayLayoutSettingKeys.BackgroundColor);
@@ -268,7 +269,7 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
                     continue;
                 specs.Add(OverlayLayoutMath.Compute(
                     lines[i], placement, fixedFontSize, fontScale, fontSize, offsetY, offsetYPercent, padding,
-                    background, bgOpacity, backgroundColor, textColor, outline,
+                    horizonSnapDegrees, background, bgOpacity, backgroundColor, textColor, outline,
                     displayText: part, sourceKey: idKey));
             }
         }

@@ -58,7 +58,7 @@
     <value>일반</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — 화면 텍스트 번역.</value>
+    <value>ScreenTranslator — 화면 텍스트 번역</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>GitHub 저장소</value>
@@ -67,25 +67,25 @@
     <value>작성자에게 감사하기</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>화면 캡처 모듈.</value>
+    <value>화면 캡처 모듈</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>텍스트 인식 모듈.</value>
+    <value>텍스트 인식 모듈</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>단어를 줄로, 줄을 단락으로 묶는 모듈.</value>
+    <value>단어를 줄로, 줄을 단락으로 묶는 모듈</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>번역 모듈.</value>
+    <value>번역 모듈</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>번역 캐시 모듈(API 호출 감소 및 OCR 깜빡임 안정화).</value>
+    <value>번역 캐시 모듈(API 호출 감소 및 OCR 깜빡임 안정화)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>텍스트 필터 모듈.</value>
+    <value>텍스트 필터 모듈</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>화면 오버레이 모듈.</value>
+    <value>화면 오버레이 모듈</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>인식</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>번역 대상 언어</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR 엔진</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>캡처 엔진</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>레이아웃 엔진</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>번역 엔진</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>번역 없음(OCR만)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>캐시 엔진</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>캐시 없음</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>오버레이</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>오버레이 엔진</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>오버레이를 보려면 번역을 시작하세요</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

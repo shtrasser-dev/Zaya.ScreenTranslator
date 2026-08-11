@@ -22,7 +22,7 @@
     <value>배치</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>각 bounds 상자에 대해 텍스트를 어디에 그릴지</value>
+    <value>인식된 각 텍스트 상자에 대해 텍스트를 어디에 그릴지</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>위</value>
@@ -34,40 +34,46 @@
     <value>아래</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>글꼴 배율 (%)</value>
+    <value>글꼴 배율</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>bounds 높이 대비 글꼴 크기 비율</value>
+    <value>줄 높이 대비 글꼴 크기 비율(퍼센트)</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>고정 글꼴 크기</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>OCR/텍스트 높이 비율 대신 픽셀 단위 글꼴 높이와 Y 오프셋 사용</value>
+    <value>인식된 텍스트 높이의 퍼센트 대신 픽셀 단위 글꼴 높이와 세로 오프셋 사용</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>글꼴 크기 (px)</value>
+    <value>글꼴 크기</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>오버레이 텍스트의 고정 높이(픽셀)</value>
+    <value>텍스트 높이(픽셀)</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y 오프셋 (px)</value>
+    <value>세로 오프셋</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Bounds 가장자리로부터의 추가 수직 간격(픽셀)</value>
+    <value>텍스트 영역 가장자리로부터의 추가 세로 간격(픽셀)</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y 오프셋 (%)</value>
+    <value>세로 오프셋</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
-    <value>텍스트 높이 대비 추가 수직 간격(퍼센트)</value>
+    <value>텍스트 높이 대비 추가 세로 간격(퍼센트)</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>안쪽 여백</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>오버레이 텍스트 주변 안쪽 여백</value>
+    <value>오버레이 텍스트 주변 안쪽 여백(픽셀)</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>줄을 수평에 맞추기</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>줄의 수평 기울기가 지정한 도 이하면 수평으로 표시합니다</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>배경</value>
@@ -85,16 +91,16 @@
     <value>불투명</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>배경 불투명도 (%)</value>
+    <value>배경 불투명도</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>반투명/불투명 배경의 불투명도</value>
+    <value>배경 불투명도(퍼센트)</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>배경색</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>반투명/불투명 배경 색</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>밝게</value>
@@ -139,13 +145,13 @@
     <value>디버그 모드</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>번역 위에 OCR 단어 박스와 텍스트를 빨간색으로 표시</value>
+    <value>번역 위에 단어 상자와 원문 텍스트를 그림(빨강)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>맞춤 모드</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>긴 텍스트를 bounds 너비에 맞추는 방법</value>
+    <value>긴 텍스트를 텍스트 상자 너비에 맞추는 방법</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>축소</value>

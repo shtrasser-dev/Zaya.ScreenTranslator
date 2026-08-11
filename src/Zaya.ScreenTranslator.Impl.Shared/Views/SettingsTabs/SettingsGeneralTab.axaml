@@ -4,123 +4,119 @@
              xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
              x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsGeneralTab"
              x:DataType="vm:SettingsViewModel">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Border Classes="settings-column">
-            <StackPanel>
-                <TextBlock Classes="settings-intro">
-                    <Run Text="{Binding Loc[Settings_Desc_General]}" />
-                    <Run Text=" " />
-                    <Run Text="{Binding Loc[Settings_Desc_General_Repo]}" />
-                    <Run Text=":" />
-                </TextBlock>
-                <HyperlinkButton Padding="0"
-                                 Margin="0,0,0,4"
-                                 HorizontalAlignment="Left"
-                                 NavigateUri="https://github.com/shtrasser-dev/Zaya.ScreenTranslator"
-                                 Content="shtrasser-dev/Zaya.ScreenTranslator" />
-                <HyperlinkButton Padding="0"
-                                 Margin="0,0,0,10"
-                                 HorizontalAlignment="Left"
-                                 NavigateUri="https://dalink.to/zayatranslator"
-                                 Content="{Binding Loc[Settings_Desc_General_Thanks]}" />
-                <Border Classes="settings-divider" />
+    <ScrollViewer Name="TabScroll"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Panel MinWidth="{Binding Viewport.Width, ElementName=TabScroll}">
+            <Border Classes="settings-column">
+                <StackPanel>
+                    <TextBlock Classes="settings-intro">
+                        <Run Text="{Binding Loc[Settings_Desc_General]}" />
+                        <Run Text=" " />
+                        <Run Text="{Binding Loc[Settings_Desc_General_Repo]}" />
+                        <Run Text=":" />
+                    </TextBlock>
+                    <HyperlinkButton Padding="0"
+                                     Margin="0,0,0,4"
+                                     HorizontalAlignment="Left"
+                                     NavigateUri="https://github.com/shtrasser-dev/Zaya.ScreenTranslator"
+                                     Content="shtrasser-dev/Zaya.ScreenTranslator" />
+                    <HyperlinkButton Padding="0"
+                                     Margin="0,0,0,10"
+                                     HorizontalAlignment="Left"
+                                     NavigateUri="https://dalink.to/zayatranslator"
+                                     Content="{Binding Loc[Settings_Desc_General_Thanks]}" />
+                    <Border Classes="settings-divider" />
 
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Settings_LangUI]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <ComboBox Grid.Column="1"
-                              Classes="settings-control"
-                              ItemsSource="{Binding UiLanguages}"
-                              SelectedItem="{Binding SelectedUiLanguage, Mode=TwoWay}"
-                              DisplayMemberBinding="{Binding Name}" />
-                </Grid>
-                <Border Classes="settings-divider" />
-
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Settings_Theme]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <ComboBox Grid.Column="1"
-                              Classes="settings-control"
-                              ItemsSource="{Binding ThemeOptions}"
-                              SelectedItem="{Binding SelectedTheme, Mode=TwoWay}" />
-                </Grid>
-                <Border Classes="settings-divider" />
-
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Settings_CheckUpdatesOnStartup]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <ToggleSwitch Grid.Column="1"
-                                  IsChecked="{Binding CheckUpdatesOnStartup, Mode=TwoWay}"
-                                  OnContent=""
-                                  OffContent=""
-                                  VerticalAlignment="Center"
-                                  HorizontalAlignment="Right" />
-                </Grid>
-                <Border Classes="settings-divider" />
-
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="4">
-                        <TextBlock Text="{Binding Loc[Settings_CheckUpdates]}"
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Settings_LangUI]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
                                    TextWrapping="Wrap" />
-                        <TextBlock Text="{Binding UpdateStatusMessage}"
-                                   Opacity="0.65"
-                                   FontSize="12"
+                        <ComboBox Grid.Column="1"
+                                  Classes="settings-control"
+                                  ItemsSource="{Binding UiLanguages}"
+                                  SelectedItem="{Binding SelectedUiLanguage, Mode=TwoWay}"
+                                  DisplayMemberBinding="{Binding Name}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
+
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Settings_Theme]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
                                    TextWrapping="Wrap" />
-                    </StackPanel>
-                    <Button Grid.Column="1"
-                            MinWidth="160"
-                            HorizontalAlignment="Right"
-                            Content="{Binding Loc[Settings_CheckUpdatesBtn]}"
-                            Command="{Binding CheckUpdatesCommand}" />
-                </Grid>
-                <Border Classes="settings-divider" />
+                        <ComboBox Grid.Column="1"
+                                  Classes="settings-control"
+                                  ItemsSource="{Binding ThemeOptions}"
+                                  SelectedItem="{Binding SelectedTheme, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
 
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Settings_Files]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <Button Grid.Column="1"
-                            MinWidth="160"
-                            HorizontalAlignment="Right"
-                            Content="{Binding Loc[Settings_Files_Open]}"
-                            Command="{Binding OpenAppDataFolderCommand}" />
-                </Grid>
-                <Border Classes="settings-divider" />
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Settings_CheckUpdatesOnStartup]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   TextWrapping="Wrap" />
+                        <ToggleSwitch Grid.Column="1"
+                                      IsChecked="{Binding CheckUpdatesOnStartup, Mode=TwoWay}"
+                                      OnContent=""
+                                      OffContent=""
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Right" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
 
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Profile_Export_Section]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <Button Grid.Column="1"
-                            MinWidth="160"
-                            HorizontalAlignment="Right"
-                            Content="{Binding Loc[Profile_Export]}"
-                            Command="{Binding ExportProfileCommand}" />
-                </Grid>
-                <Border Classes="settings-divider" />
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="4">
+                            <TextBlock Text="{Binding Loc[Settings_CheckUpdates]}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding UpdateStatusMessage}"
+                                       Opacity="0.65"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="{Binding Loc[Settings_CheckUpdatesBtn]}"
+                                Command="{Binding CheckUpdatesCommand}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
 
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Profile_Delete_Section]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <Button Grid.Column="1"
-                            Classes="danger"
-                            MinWidth="160"
-                            HorizontalAlignment="Right"
-                            Content="{Binding Loc[Profile_Delete]}"
-                            Command="{Binding DeleteProfileCommand}" />
-                </Grid>
-                <Border Classes="settings-divider" />
-            </StackPanel>
-        </Border>
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Settings_Files]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   TextWrapping="Wrap" />
+                        <Button Grid.Column="1"
+                                Content="{Binding Loc[Settings_Files_Open]}"
+                                Command="{Binding OpenAppDataFolderCommand}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
+
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Profile_Export_Section]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   TextWrapping="Wrap" />
+                        <Button Grid.Column="1"
+                                Content="{Binding Loc[Profile_Export]}"
+                                Command="{Binding ExportProfileCommand}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
+
+                    <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Loc[Profile_Delete_Section]}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   TextWrapping="Wrap" />
+                        <Button Grid.Column="1"
+                                Classes="danger"
+                                Content="{Binding Loc[Profile_Delete]}"
+                                Command="{Binding DeleteProfileCommand}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Panel>
     </ScrollViewer>
 </UserControl>

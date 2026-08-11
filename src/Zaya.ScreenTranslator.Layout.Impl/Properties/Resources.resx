@@ -22,7 +22,7 @@
     <value>Placement</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>Where to draw text relative to each bounds box</value>
+    <value>Where to draw text relative to each recognized text box</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>Above</value>
@@ -34,40 +34,46 @@
     <value>Below</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>Font scale (%)</value>
+    <value>Font scale</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>Font size as percent of bounds height</value>
+    <value>Font size as a percentage of line height</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>Fixed font size</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>Use absolute pixel font height and Y offset instead of percent of OCR/text height</value>
+    <value>Use absolute font height and vertical offset in pixels instead of percent of recognized text height</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>Font size (px)</value>
+    <value>Font size</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>Fixed overlay text height in pixels</value>
+    <value>Text height in pixels</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y offset (px)</value>
+    <value>Vertical offset</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Extra vertical gap from the bounds edge in pixels</value>
+    <value>Extra vertical gap from the text box edge in pixels</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y offset (%)</value>
+    <value>Vertical offset</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
-    <value>Extra vertical gap as percent of text height</value>
+    <value>Extra vertical gap as a percentage of text height</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>Padding</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>Inner padding around overlay text</value>
+    <value>Inner padding around overlay text in pixels</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>Snap lines to horizon</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>If a line tilt from horizontal is at most this many degrees, draw the line horizontally</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>Background</value>
@@ -85,16 +91,16 @@
     <value>Opaque</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>Background opacity (%)</value>
+    <value>Background opacity</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>Opacity of soft/opaque background</value>
+    <value>Background opacity in percent</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>Background color</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>Color of the soft/opaque background</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>Light</value>
@@ -139,13 +145,13 @@
     <value>Debug mode</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>Draw OCR word boxes and text over the translation (red)</value>
+    <value>Draw word boxes and source text over the translation (red)</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>Fit mode</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>How to fit long text into bounds width</value>
+    <value>How to fit long text into the text box width</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>Shrink</value>

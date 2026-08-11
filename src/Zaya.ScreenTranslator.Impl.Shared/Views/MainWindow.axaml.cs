@@ -143,9 +143,9 @@ public partial class MainWindow : Window
         // Keep top-left fixed: expand/collapse grows or shrinks downward.
         // Collapsed: hug content so the window ends under the Settings button.
         // Expanded: fixed height; settings row fills the remaining space.
-        if (MainLayout.RowDefinitions.Count > 3)
+        if (MainLayout.RowDefinitions.Count > 2)
         {
-            MainLayout.RowDefinitions[3].Height = open
+            MainLayout.RowDefinitions[2].Height = open
                 ? new GridLength(1, GridUnitType.Star)
                 : GridLength.Auto;
         }

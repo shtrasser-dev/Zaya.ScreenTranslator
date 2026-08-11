@@ -8,7 +8,7 @@
         x:DataType="vm:MainViewModel"
         Title="{Binding Loc[MainWindow_Title]}"
         Icon="/Assets/app.ico"
-        Width="940" MinWidth="940"
+        Width="940" MinWidth="780"
         Height="240" MinHeight="0"
         SizeToContent="Height"
         WindowStartupLocation="Manual"
@@ -21,7 +21,8 @@
             <Setter Property="FontSize" Value="{x:Static ctrl:SettingControlFactory.SettingsLabelFontSize}" />
         </Style>
         <Style Selector="Border.settings-column">
-            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
+            <Setter Property="MaxWidth" Value="{x:Static ctrl:SettingControlFactory.SettingsColumnWidth}" />
+            <Setter Property="MinWidth" Value="0" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="24,12" />
         </Style>
@@ -32,20 +33,17 @@
             <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
         </Style>
         <Style Selector="ComboBox.settings-control">
-            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
             <Setter Property="MinHeight" Value="32" />
             <Setter Property="Height" Value="32" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="ctrl|ActionEditableComboBox.settings-control">
-            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="ctrl|WindowPickerComboBox.settings-control">
-            <Setter Property="Width" Value="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBlock.status">
@@ -142,7 +140,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" MinHeight="0" />
             </Grid.RowDefinitions>
 
@@ -170,116 +167,108 @@
                             ToolTip.Tip="{Binding CaptureRegionsTooltip}" />
                 </StackPanel>
 
-                <Border Grid.Column="1" Classes="settings-column" Margin="24,12,24,0">
-                    <StackPanel>
-                        <Grid Classes="settings-row" ColumnDefinitions="*,*" VerticalAlignment="Top">
-                            <StackPanel Margin="0,0,12,0" Spacing="4" VerticalAlignment="Top">
-                                <Grid ColumnDefinitions="*,Auto">
+                <!-- Host fills remaining width; inner column stretches up to MaxWidth and stays centered. -->
+                <Panel Grid.Column="1" Name="MainFieldsHost" Margin="24,12,24,0">
+                    <Border Classes="settings-column"
+                            Margin="0"
+                            Width="{Binding Bounds.Width, ElementName=MainFieldsHost}">
+                        <StackPanel>
+                            <Grid Classes="settings-row" ColumnDefinitions="*,*" VerticalAlignment="Top">
+                                <StackPanel Margin="0,0,12,0" Spacing="4" VerticalAlignment="Top"
+                                            HorizontalAlignment="Stretch">
                                     <TextBlock Text="{Binding Loc[Picker_Profile]}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,16,0"
                                                TextWrapping="Wrap" />
-                                    <ctrl:ActionEditableComboBox Grid.Column="1"
-                                                                 Classes="settings-control"
+                                    <ctrl:ActionEditableComboBox Classes="settings-control"
                                                                  Actions="{Binding ProfileActions}"
                                                                  ItemsSource="{Binding ProfileNames}"
                                                                  SelectedItem="{Binding SelectedProfileName, Mode=TwoWay}"
                                                                  ActionInvoked="OnProfileActionInvoked"
                                                                  ItemSelected="OnProfileItemSelected"
                                                                  RenameRequested="OnProfileRenameRequested" />
-                                </Grid>
-                                <TextBlock Text="{Binding ProfileErrorMessage}"
-                                           IsVisible="{Binding HasProfileError}"
-                                           Foreground="#C62828"
-                                           FontSize="12"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4" VerticalAlignment="Top">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Text="{Binding Loc[Picker_Window]}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,16,0"
+                                    <TextBlock Text="{Binding ProfileErrorMessage}"
+                                               IsVisible="{Binding HasProfileError}"
+                                               Foreground="#C62828"
+                                               FontSize="12"
                                                TextWrapping="Wrap" />
-                                    <ctrl:WindowPickerComboBox Grid.Column="1"
-                                                               Classes="settings-control"
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4" VerticalAlignment="Top"
+                                            HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding Loc[Picker_Window]}"
+                                               TextWrapping="Wrap" />
+                                    <ctrl:WindowPickerComboBox Classes="settings-control"
                                                                ItemsSource="{Binding Windows}"
                                                                SelectedItem="{Binding SelectedWindow, Mode=TwoWay}"
                                                                DropDownOpened="OnWindowPickerDropDownOpened" />
-                                </Grid>
-                                <TextBlock Text="{Binding WindowErrorMessage}"
-                                           IsVisible="{Binding HasWindowError}"
-                                           Foreground="#C62828"
-                                           FontSize="12"
-                                           TextWrapping="Wrap"
-                                           HorizontalAlignment="Right"
-                                           MaxWidth="{x:Static ctrl:SettingControlFactory.ControlWidth}" />
-                            </StackPanel>
-                        </Grid>
-                        <Border Classes="settings-divider" />
-
-                        <Grid Classes="settings-row" ColumnDefinitions="*,*">
-                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,12,0">
-                                <TextBlock Text="{Binding Loc[Picker_DisplayMode]}"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,16,0"
-                                           TextWrapping="Wrap" />
-                                <ComboBox Grid.Column="1"
-                                          Classes="settings-control"
-                                          ItemsSource="{Binding DisplayModeOptions}"
-                                          SelectedItem="{Binding SelectedDisplayModeOption}"
-                                          DisplayMemberBinding="{Binding Name}" />
+                                    <TextBlock Text="{Binding WindowErrorMessage}"
+                                               IsVisible="{Binding HasWindowError}"
+                                               Foreground="#C62828"
+                                               FontSize="12"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
                             </Grid>
-                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="12,0,0,0">
-                                <TextBlock Text="{Binding Loc[Settings_TargetLang]}"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,16,0"
-                                           TextWrapping="Wrap" />
-                                <ComboBox Grid.Column="1"
-                                          Classes="settings-control"
-                                          ItemsSource="{Binding TargetLanguages}"
-                                          SelectedItem="{Binding SelectedTargetLanguage, Mode=TwoWay}"
-                                          DisplayMemberBinding="{Binding Name}" />
-                            </Grid>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                            <Border Classes="settings-divider" />
 
-            <!-- Status (aligned with the centered settings column) -->
-            <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="0,0,0,2">
-                <Border Grid.Column="0"
-                        Width="{x:Static ctrl:SettingControlFactory.MainNavWidth}" />
-                <Border Grid.Column="1"
-                        Classes="settings-column"
-                        Margin="24,0">
-                    <StackPanel Spacing="2">
-                        <StackPanel Orientation="Horizontal" Spacing="0">
-                            <TextBlock Classes="status"
-                                       Text="{Binding StatusLabelText}" />
-                            <TextBlock Classes="status"
-                                       Classes.error="{Binding IsStatusError}"
-                                       Text="{Binding StatusText}"
-                                       TextWrapping="Wrap" />
+                            <Grid Classes="settings-row" ColumnDefinitions="*,*">
+                                <StackPanel Margin="0,0,12,0" Spacing="4" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding Loc[Picker_DisplayMode]}"
+                                               TextWrapping="Wrap" />
+                                    <ComboBox Classes="settings-control"
+                                              ItemsSource="{Binding DisplayModeOptions}"
+                                              SelectedItem="{Binding SelectedDisplayModeOption}"
+                                              DisplayMemberBinding="{Binding Name}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4"
+                                            HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding Loc[Settings_TargetLang]}"
+                                               TextWrapping="Wrap" />
+                                    <ComboBox Classes="settings-control"
+                                              ItemsSource="{Binding TargetLanguages}"
+                                              SelectedItem="{Binding SelectedTargetLanguage, Mode=TwoWay}"
+                                              DisplayMemberBinding="{Binding Name}" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
-                        <TextBlock Text="{Binding TimingInfo}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
-                                   FontSize="11" />
-                    </StackPanel>
-                </Border>
+                    </Border>
+                </Panel>
             </Grid>
 
-            <!-- Settings toggle -->
-            <Button Grid.Row="2"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Margin="0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Content="{Binding SettingsToggleText}"
-                    Command="{Binding ToggleSettingsCommand}" />
+            <!-- Settings toggle (left nav width) + status on one row -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="0,0,0,2"
+                  VerticalAlignment="Center">
+                <Button Grid.Column="0"
+                        Classes="main-nav"
+                        Width="{x:Static ctrl:SettingControlFactory.MainNavWidth}"
+                        HorizontalAlignment="Left"
+                        HorizontalContentAlignment="Left"
+                        Margin="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Content="{Binding SettingsToggleText}"
+                        Command="{Binding ToggleSettingsCommand}" />
+                <Panel Grid.Column="1" Name="StatusHost" Margin="24,0"
+                       VerticalAlignment="Center">
+                    <Border Classes="settings-column"
+                            Margin="0"
+                            Width="{Binding Bounds.Width, ElementName=StatusHost}">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="0">
+                                <TextBlock Classes="status"
+                                           Text="{Binding StatusLabelText}" />
+                                <TextBlock Classes="status"
+                                           Classes.error="{Binding IsStatusError}"
+                                           Text="{Binding StatusText}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding TimingInfo}"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                       FontSize="11" />
+                        </StackPanel>
+                    </Border>
+                </Panel>
+            </Grid>
 
             <!-- Inline settings -->
-            <Border Grid.Row="3"
+            <Border Grid.Row="2"
                     IsVisible="{Binding IsSettingsOpen}"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     BorderThickness="0,1,0,0"

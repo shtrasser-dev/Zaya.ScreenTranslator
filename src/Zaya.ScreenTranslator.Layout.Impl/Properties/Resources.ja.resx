@@ -22,7 +22,7 @@
     <value>配置</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>各 bounds 矩形に対してテキストをどこに描画するか</value>
+    <value>認識された各テキスト枠に対してテキストをどこに描画するか</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>上</value>
@@ -34,31 +34,31 @@
     <value>下</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>フォント倍率 (%)</value>
+    <value>フォント倍率</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>bounds の高さに対するフォントサイズの割合</value>
+    <value>行の高さに対するフォントサイズの割合（パーセント）</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>固定フォントサイズ</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>OCR/テキスト高さの割合ではなく、ピクセル単位のフォント高さと Y オフセットを使う</value>
+    <value>認識テキストの高さの割合ではなく、ピクセル単位のフォント高さと垂直オフセットを使う</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>フォントサイズ (px)</value>
+    <value>フォントサイズ</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>オーバーレイテキストの固定高さ（ピクセル）</value>
+    <value>テキストの高さ（ピクセル）</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y オフセット (px)</value>
+    <value>垂直オフセット</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>Bounds 端からの追加の垂直余白（ピクセル）</value>
+    <value>テキスト枠の端からの追加の垂直余白（ピクセル）</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y オフセット (%)</value>
+    <value>垂直オフセット</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
     <value>テキスト高さに対する追加の垂直余白（パーセント）</value>
@@ -67,7 +67,13 @@
     <value>余白</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>オーバーレイテキスト周りの内側余白</value>
+    <value>オーバーレイテキスト周りの内側余白（ピクセル）</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>行を水平にスナップ</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>行の水平からの傾きが指定した度数以下なら、水平に表示する</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>背景</value>
@@ -85,16 +91,16 @@
     <value>不透明</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>背景の不透明度 (%)</value>
+    <value>背景の不透明度</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>ソフト/不透明背景の不透明度</value>
+    <value>背景の不透明度（パーセント）</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>背景色</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>半透明/不透明背景の色</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>明るい</value>
@@ -139,13 +145,13 @@
     <value>デバッグモード</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>翻訳の上にOCR単語の枠とテキストを赤で描画</value>
+    <value>翻訳の上に単語枠と元テキストを描画する（赤）</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>フィットモード</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>長いテキストを bounds 幅にどう収めるか</value>
+    <value>長いテキストをテキスト枠の幅にどう収めるか</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>縮小</value>

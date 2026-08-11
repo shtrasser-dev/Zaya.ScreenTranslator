@@ -58,7 +58,7 @@
     <value>Geral</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — tradução de texto no ecrã.</value>
+    <value>ScreenTranslator — tradução de texto no ecrã</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>Repositório GitHub</value>
@@ -67,25 +67,25 @@
     <value>Agradecer ao autor</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>Módulo de captura de ecrã.</value>
+    <value>Módulo de captura de ecrã</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>Módulo de reconhecimento de texto.</value>
+    <value>Módulo de reconhecimento de texto</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>Módulo que agrupa palavras em linhas e linhas em parágrafos.</value>
+    <value>Módulo que agrupa palavras em linhas e linhas em parágrafos</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>Módulo de tradução.</value>
+    <value>Módulo de tradução</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>Módulo de cache de tradução (menos chamadas à API e estabilização do tremor OCR).</value>
+    <value>Módulo de cache de tradução (menos chamadas à API e estabilização do tremor OCR)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>Módulo de filtro de texto.</value>
+    <value>Módulo de filtro de texto</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>Módulo de sobreposição no ecrã.</value>
+    <value>Módulo de sobreposição no ecrã</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>Reconhecimento</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Idioma de destino da tradução</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>Motor OCR</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>Motor de captura</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>Motor de layout</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>Motor de tradução</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Sem tradução (apenas OCR)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>Motor de cache</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>Sem cache</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Sobreposição</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>Motor de sobreposição</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Inicie a tradução para mostrar a sobreposição</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

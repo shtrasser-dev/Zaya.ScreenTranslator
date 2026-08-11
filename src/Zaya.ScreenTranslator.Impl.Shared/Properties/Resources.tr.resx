@@ -58,7 +58,7 @@
     <value>Genel</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — ekrandaki metni çevirir.</value>
+    <value>ScreenTranslator — ekrandaki metni çevirir</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>GitHub deposu</value>
@@ -67,25 +67,25 @@
     <value>Yazara teşekkür et</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>Ekran görüntüsü yakalama modülü.</value>
+    <value>Ekran görüntüsü yakalama modülü</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>Metin tanıma modülü.</value>
+    <value>Metin tanıma modülü</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>Kelimeleri satırlara, satırları paragraflara gruplayan modül.</value>
+    <value>Kelimeleri satırlara, satırları paragraflara gruplayan modül</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>Çeviri modülü.</value>
+    <value>Çeviri modülü</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>Çeviri önbelleği modülü (API çağrılarını azaltır ve OCR titremesini dengeler).</value>
+    <value>Çeviri önbelleği modülü (API çağrılarını azaltır ve OCR titremesini dengeler)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>Metin filtresi modülü.</value>
+    <value>Metin filtresi modülü</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>Ekran kaplaması modülü.</value>
+    <value>Ekran kaplaması modülü</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>Tanıma</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Hedef çeviri dili</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR motoru</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>Yakalama motoru</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>Düzen motoru</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>Çeviri motoru</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Çeviri yok (yalnızca OCR)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>Önbellek motoru</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>Önbellek yok</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Kaplama</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>Kaplama motoru</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Kaplamayı göstermek için çeviriyi başlatın</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

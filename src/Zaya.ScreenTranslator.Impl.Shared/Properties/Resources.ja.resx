@@ -58,7 +58,7 @@
     <value>一般</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — 画面上のテキストを翻訳します。</value>
+    <value>ScreenTranslator — 画面上のテキストを翻訳します</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>GitHub リポジトリ</value>
@@ -67,25 +67,25 @@
     <value>作者に感謝する</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>画面キャプチャモジュール。</value>
+    <value>画面キャプチャモジュール</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>テキスト認識モジュール。</value>
+    <value>テキスト認識モジュール</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>単語を行に、行を段落にまとめるモジュール。</value>
+    <value>単語を行に、行を段落にまとめるモジュール</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>翻訳モジュール。</value>
+    <value>翻訳モジュール</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>翻訳キャッシュモジュール（API 呼び出しを減らし、OCR のちらつきを安定化）。</value>
+    <value>翻訳キャッシュモジュール（API 呼び出しを減らし、OCR のちらつきを安定化）</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>テキストフィルターモジュール。</value>
+    <value>テキストフィルターモジュール</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>画面オーバーレイモジュール。</value>
+    <value>画面オーバーレイモジュール</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>認識</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>翻訳先言語</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR エンジン</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>キャプチャエンジン</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>レイアウトエンジン</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>翻訳エンジン</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>翻訳なし（OCR のみ）</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>キャッシュエンジン</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>キャッシュなし</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>オーバーレイ</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>オーバーレイエンジン</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>オーバーレイを表示するには翻訳を開始してください</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

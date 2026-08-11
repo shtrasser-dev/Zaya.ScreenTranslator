@@ -151,6 +151,13 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
             MinValue = 0,
             MaxValue = 40,
         },
+        new IntegerSettingDescriptor(OverlayLayoutSettingKeys.HorizonSnapDegrees, Loc(LocalizationConstants.Overlay.HorizonSnapDegrees))
+        {
+            Description = Loc(LocalizationConstants.Overlay.HorizonSnapDegreesDesc),
+            DefaultValue = 10,
+            MinValue = 0,
+            MaxValue = 45,
+        },
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.Background, Loc(LocalizationConstants.Overlay.Background))
         {
             Description = Loc(LocalizationConstants.Overlay.BackgroundDesc),
@@ -172,7 +179,6 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
         },
         new EnumSettingDescriptor(OverlayLayoutSettingKeys.BackgroundColor, Loc(LocalizationConstants.Overlay.BackgroundColor))
         {
-            Description = Loc(LocalizationConstants.Overlay.BackgroundColorDesc),
             DefaultValue = OverlayLayoutSettingKeys.BackgroundColorDark,
             Options =
             [

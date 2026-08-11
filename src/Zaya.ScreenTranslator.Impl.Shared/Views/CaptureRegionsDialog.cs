@@ -22,7 +22,7 @@ internal static class CaptureRegionsDialog
     public static async Task<CaptureRegionsConfig?> ShowAsync(
         Window owner,
         IApplicationProfile profile,
-        nint targetHwnd,
+        nint? targetHwnd,
         CaptureRegionsConfig initial)
     {
         var loc = LocalizationService.Instance;
@@ -214,12 +214,19 @@ internal static class CaptureRegionsDialog
 
         dialog.Opened += (_, _) =>
         {
+            if (targetHwnd is null or 0)
+            {
+                ApplySnapshot(CaptureRegionsSnapshotService.CreatePlaceholderSnapshot());
+                return;
+            }
+
+            var hwnd = targetHwnd.Value;
             _ = Task.Run(async () =>
             {
                 try
                 {
                     var result = await CaptureRegionsSnapshotService.CaptureUntilStableAsync(
-                        profile, targetHwnd, cts.Token).ConfigureAwait(false);
+                        profile, hwnd, cts.Token).ConfigureAwait(false);
                     if (result is null || cts.IsCancellationRequested)
                         return;
 

@@ -437,7 +437,19 @@ public sealed partial class MainViewModel :
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task OpenCaptureRegions()
     {
-        if (SelectedWindow is not { IsLoadingPlaceholder: false, Handle: not 0 } window)
+        var profile = _profileService.ActiveProfile;
+        if (profile is null)
+        {
+            SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
+            return;
+        }
+
+        var initial = CaptureRegionsStore.Load(profile);
+        nint? targetHwnd = SelectedWindow is { IsLoadingPlaceholder: false, Handle: not 0 } window
+            ? window.Handle
+            : null;
+
+        if (targetHwnd is null && initial.IsEmpty)
         {
             SetWindowError(Loc[LocalizationConstants.Status.SelectTargetWindow]);
             return;
@@ -454,19 +466,11 @@ public sealed partial class MainViewModel :
             SetStatus(Loc[LocalizationConstants.Status.Stopped]);
         }
 
-        var profile = _profileService.ActiveProfile;
-        if (profile is null)
-        {
-            SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
-            return;
-        }
-
         var owner = GetMainWindow();
         if (owner is null)
             return;
 
-        var initial = CaptureRegionsStore.Load(profile);
-        var result = await CaptureRegionsDialog.ShowAsync(owner, profile, window.Handle, initial);
+        var result = await CaptureRegionsDialog.ShowAsync(owner, profile, targetHwnd, initial);
         if (result is null)
             return;
 

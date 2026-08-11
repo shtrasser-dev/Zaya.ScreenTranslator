@@ -22,7 +22,7 @@
     <value>位置</value>
   </data>
   <data name="Overlay_Placement_Desc" xml:space="preserve">
-    <value>相对于每个 bounds 矩形绘制文本的位置</value>
+    <value>相对于每个已识别文本框绘制文本的位置</value>
   </data>
   <data name="Overlay_Placement_Above" xml:space="preserve">
     <value>上方</value>
@@ -34,40 +34,46 @@
     <value>下方</value>
   </data>
   <data name="Overlay_FontScale" xml:space="preserve">
-    <value>字体缩放 (%)</value>
+    <value>字体缩放</value>
   </data>
   <data name="Overlay_FontScale_Desc" xml:space="preserve">
-    <value>字体大小为 bounds 高度的百分比</value>
+    <value>字体大小为行高的百分比</value>
   </data>
   <data name="Overlay_FixedFontSize" xml:space="preserve">
     <value>固定字体大小</value>
   </data>
   <data name="Overlay_FixedFontSize_Desc" xml:space="preserve">
-    <value>使用像素单位的字体高度和 Y 偏移，而不是按 OCR/文字高度的百分比</value>
+    <value>使用像素为单位的字体高度和垂直偏移，而不是已识别文本高度的百分比</value>
   </data>
   <data name="Overlay_FontSize" xml:space="preserve">
-    <value>字体大小 (px)</value>
+    <value>字体大小</value>
   </data>
   <data name="Overlay_FontSize_Desc" xml:space="preserve">
-    <value>叠加文字的固定高度（像素）</value>
+    <value>文本高度（像素）</value>
   </data>
   <data name="Overlay_OffsetY" xml:space="preserve">
-    <value>Y 偏移 (px)</value>
+    <value>垂直偏移</value>
   </data>
   <data name="Overlay_OffsetY_Desc" xml:space="preserve">
-    <value>距 bounds 边缘的额外垂直间距（像素）</value>
+    <value>距文本区域边缘的额外垂直间距（像素）</value>
   </data>
   <data name="Overlay_OffsetYPercent" xml:space="preserve">
-    <value>Y 偏移 (%)</value>
+    <value>垂直偏移</value>
   </data>
   <data name="Overlay_OffsetYPercent_Desc" xml:space="preserve">
-    <value>额外垂直间距，按文字高度的百分比</value>
+    <value>额外垂直间距为文本高度的百分比</value>
   </data>
   <data name="Overlay_Padding" xml:space="preserve">
     <value>内边距</value>
   </data>
   <data name="Overlay_Padding_Desc" xml:space="preserve">
-    <value>叠加文本周围的内边距</value>
+    <value>叠加文本周围的内边距（像素）</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees" xml:space="preserve">
+    <value>将行对齐到水平</value>
+  </data>
+  <data name="Overlay_HorizonSnapDegrees_Desc" xml:space="preserve">
+    <value>如果行相对水平的倾斜不超过指定度数，则以水平方式显示</value>
   </data>
   <data name="Overlay_Background" xml:space="preserve">
     <value>背景</value>
@@ -85,16 +91,16 @@
     <value>不透明</value>
   </data>
   <data name="Overlay_BackgroundOpacity" xml:space="preserve">
-    <value>背景不透明度 (%)</value>
+    <value>背景不透明度</value>
   </data>
   <data name="Overlay_BackgroundOpacity_Desc" xml:space="preserve">
-    <value>柔和/不透明背景的不透明度</value>
+    <value>背景不透明度（百分比）</value>
   </data>
   <data name="Overlay_BackgroundColor" xml:space="preserve">
     <value>背景颜色</value>
   </data>
   <data name="Overlay_BackgroundColor_Desc" xml:space="preserve">
-    <value>半透明/不透明背景的颜色</value>
+    <value></value>
   </data>
   <data name="Overlay_BackgroundColor_Light" xml:space="preserve">
     <value>浅色</value>
@@ -139,13 +145,13 @@
     <value>调试模式</value>
   </data>
   <data name="Overlay_DebugMode_Desc" xml:space="preserve">
-    <value>在译文上方用红色绘制 OCR 词框和文本</value>
+    <value>在译文上方绘制词框和原文（红色）</value>
   </data>
   <data name="Overlay_FitMode" xml:space="preserve">
     <value>适配模式</value>
   </data>
   <data name="Overlay_FitMode_Desc" xml:space="preserve">
-    <value>如何将长文本适配到 bounds 宽度</value>
+    <value>如何将长文本适配到文本框宽度</value>
   </data>
   <data name="Overlay_FitMode_Shrink" xml:space="preserve">
     <value>缩小</value>

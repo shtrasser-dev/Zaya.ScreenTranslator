@@ -58,7 +58,7 @@
     <value>Загальні</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — переклад тексту з екрана.</value>
+    <value>ScreenTranslator — переклад тексту з екрана</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>Репозиторій на GitHub</value>
@@ -67,25 +67,25 @@
     <value>Подякувати автору</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>Модуль захоплення зображення з екрана.</value>
+    <value>Модуль захоплення зображення з екрана</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>Модуль розпізнавання тексту.</value>
+    <value>Модуль розпізнавання тексту</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>Модуль об’єднання слів у рядки та рядків у абзаци.</value>
+    <value>Модуль об’єднання слів у рядки та рядків у абзаци</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>Модуль перекладу.</value>
+    <value>Модуль перекладу</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>Модуль кешу перекладу (менше запитів до API та стабілізація мерехтіння OCR).</value>
+    <value>Модуль кешу перекладу (менше запитів до API та стабілізація мерехтіння OCR)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>Модуль фільтрації тексту.</value>
+    <value>Модуль фільтрації тексту</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>Модуль накладання перекладу на екран.</value>
+    <value>Модуль накладання перекладу на екран</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>Розпізнавання</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Мова перекладу</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR рушій</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>Рушій захоплення</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>Рушій компонування</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>Рушій перекладу</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Без перекладу (лише OCR)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>Рушій кешу</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>Без кешу</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Накладання</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>Рушій overlay</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Запустіть переклад, щоб показати overlay</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

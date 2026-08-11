@@ -26,6 +26,8 @@ internal static class LocalizationConstants
         public const string OffsetYDesc = "Overlay_OffsetY_Desc";
         public const string Padding = "Overlay_Padding";
         public const string PaddingDesc = "Overlay_Padding_Desc";
+        public const string HorizonSnapDegrees = "Overlay_HorizonSnapDegrees";
+        public const string HorizonSnapDegreesDesc = "Overlay_HorizonSnapDegrees_Desc";
 
         public const string Background = "Overlay_Background";
         public const string BackgroundDesc = "Overlay_Background_Desc";

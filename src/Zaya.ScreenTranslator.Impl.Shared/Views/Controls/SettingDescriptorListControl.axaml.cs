@@ -139,6 +139,8 @@ public partial class SettingDescriptorListControl : UserControl
             control.IsVisible = desc.IsVisible?.Invoke(allSettings) ?? true;
             Root.Children.Add(control);
         }
+
+        SettingControlFactory.SyncTrailingDividers(Root);
     }
 
     private void OnEditorChanged(SettingDescriptor desc, object? newVal)
@@ -171,6 +173,8 @@ public partial class SettingDescriptorListControl : UserControl
             if (child.Tag is SettingDescriptor desc)
                 child.IsVisible = desc.IsVisible?.Invoke(allSettings) ?? true;
         }
+
+        SettingControlFactory.SyncTrailingDividers(Root);
     }
 
     private static IReadOnlyDictionary<string, object?> MergeSettings(

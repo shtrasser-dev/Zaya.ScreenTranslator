@@ -58,7 +58,7 @@
     <value>Общие</value>
   </data>
   <data name="Settings_Desc_General" xml:space="preserve">
-    <value>ScreenTranslator — перевод текста с экрана.</value>
+    <value>ScreenTranslator — перевод текста с экрана</value>
   </data>
   <data name="Settings_Desc_General_Repo" xml:space="preserve">
     <value>Репозиторий на GitHub</value>
@@ -67,25 +67,25 @@
     <value>Поблагодарить автора</value>
   </data>
   <data name="Settings_Desc_Capture" xml:space="preserve">
-    <value>Модуль захвата изображения с экрана.</value>
+    <value>Модуль захвата изображения с экрана</value>
   </data>
   <data name="Settings_Desc_OCR" xml:space="preserve">
-    <value>Модуль распознавания текста.</value>
+    <value>Модуль распознавания текста</value>
   </data>
   <data name="Settings_Desc_TextLayout" xml:space="preserve">
-    <value>Модуль объединения слов в строки и строк в абзацы.</value>
+    <value>Модуль объединения слов в строки и строк в абзацы</value>
   </data>
   <data name="Settings_Desc_Translator" xml:space="preserve">
-    <value>Модуль перевода.</value>
+    <value>Модуль перевода</value>
   </data>
   <data name="Settings_Desc_TranslatorCache" xml:space="preserve">
-    <value>Модуль кэша перевода (меньше запросов к API и стабилизация мигания OCR).</value>
+    <value>Модуль кэша перевода (меньше запросов к API и стабилизация мигания OCR)</value>
   </data>
   <data name="Settings_Desc_Filter" xml:space="preserve">
-    <value>Модуль фильтрации текста.</value>
+    <value>Модуль фильтрации текста</value>
   </data>
   <data name="Settings_Desc_Overlay" xml:space="preserve">
-    <value>Модуль наложения перевода на экран.</value>
+    <value>Модуль наложения перевода на экран</value>
   </data>
   <data name="Settings_Tab_OCR" xml:space="preserve">
     <value>Распознавание</value>
@@ -134,26 +134,9 @@
   </data>
   <data name="Settings_TargetLang" xml:space="preserve">
     <value>Язык перевода</value>
-  </data>
-  <data name="Settings_OcrEngine" xml:space="preserve">
-    <value>OCR движок</value>
-  </data>
-  <data name="Settings_CaptureEngine" xml:space="preserve">
-    <value>Движок захвата</value>
-  </data>
-  <data name="Settings_TextLayoutEngine" xml:space="preserve">
-    <value>Движок компоновки</value>
-  </data>
-  <data name="Settings_TranslatorEngine" xml:space="preserve">
-    <value>Движок перевода</value>
-  </data>
-  <data name="Settings_TranslatorNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorNone" xml:space="preserve">
     <value>Без перевода (только OCR)</value>
-  </data>
-  <data name="Settings_TranslatorCacheEngine" xml:space="preserve">
-    <value>Движок кэша</value>
-  </data>
-  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
+  </data>  <data name="Settings_TranslatorCacheNone" xml:space="preserve">
     <value>Без кэша</value>
   </data>
   <data name="Settings_FramePauseMs" xml:space="preserve">
@@ -269,11 +252,7 @@
   </data>
   <data name="Settings_Tab_Overlay" xml:space="preserve">
     <value>Наложение</value>
-  </data>
-  <data name="Settings_OverlayEngine" xml:space="preserve">
-    <value>Движок overlay</value>
-  </data>
-  <data name="Overlay_NeedStart" xml:space="preserve">
+  </data>  <data name="Overlay_NeedStart" xml:space="preserve">
     <value>Запустите перевод, чтобы показать overlay</value>
   </data>
   <data name="Settings_CheckUpdates" xml:space="preserve">

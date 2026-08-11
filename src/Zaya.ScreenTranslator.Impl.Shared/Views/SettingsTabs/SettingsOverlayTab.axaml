@@ -4,28 +4,30 @@
              xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
              x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsOverlayTab"
              x:DataType="vm:SettingsViewModel">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Border Classes="settings-column">
-            <StackPanel>
-                <TextBlock Classes="settings-intro"
-                           Text="{Binding Loc[Settings_Desc_Overlay]}" />
-                <Border Classes="settings-divider" />
-
-                <Grid Classes="settings-row" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="{Binding Loc[Settings_OverlayEngine]}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,16,0"
-                               TextWrapping="Wrap" />
-                    <ComboBox Grid.Column="1"
-                              Classes="settings-control"
-                              ItemsSource="{Binding AvailableOverlayLayoutEngines}"
-                              SelectedItem="{Binding SelectedOverlayLayoutEngine, Mode=TwoWay}"
-                              DisplayMemberBinding="{Binding Label}" />
-                </Grid>
-                <Border Classes="settings-divider" />
-                <ctrl:SettingDescriptorListControl Name="OverlaySettingsPanel"
-                                                   ModuleKind="Overlay" />
-            </StackPanel>
-        </Border>
+    <ScrollViewer Name="TabScroll"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Panel MinWidth="{Binding Viewport.Width, ElementName=TabScroll}">
+            <Border Classes="settings-column">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,10">
+                        <TextBlock Classes="settings-intro"
+                                   Margin="0,0,16,0"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Loc[Settings_Desc_Overlay]}" />
+                        <ComboBox Grid.Column="1"
+                                  Classes="settings-control"
+                                  VerticalAlignment="Center"
+                                  ItemsSource="{Binding AvailableOverlayLayoutEngines}"
+                                  SelectedItem="{Binding SelectedOverlayLayoutEngine, Mode=TwoWay}"
+                                  DisplayMemberBinding="{Binding Label}" />
+                    </Grid>
+                    <Border Classes="settings-divider" />
+                    <ctrl:SettingDescriptorListControl Name="OverlaySettingsPanel"
+                                                       ModuleKind="Overlay" />
+                </StackPanel>
+            </Border>
+        </Panel>
     </ScrollViewer>
 </UserControl>

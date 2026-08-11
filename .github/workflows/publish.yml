@@ -2,12 +2,6 @@ name: Publish
 
 on:
   workflow_dispatch:
-    inputs:
-      changelog:
-        description: 'Release notes (shown on GitHub Releases; optional)'
-        required: false
-        type: string
-        default: ''
 
 jobs:
   build:
@@ -41,18 +35,37 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: host
           path: host
 
       - uses: actions/github-script@v7
-        env:
-          RELEASE_CHANGELOG: ${{ inputs.changelog }}
         with:
           script: |
             const fs = require('fs');
             const path = require('path');
+
+            function extractUnreleased(markdown) {
+              const header = /^## \[Unreleased\]\s*$/m.exec(markdown);
+              if (!header) return '';
+              const start = header.index + header[0].length;
+              const rest = markdown.slice(start).replace(/^\r?\n/, '');
+              const next = rest.search(/^## \[/m);
+              return (next < 0 ? rest : rest.slice(0, next)).trim();
+            }
+
+            let changelog = '';
+            if (fs.existsSync('CHANGELOG.md')) {
+              changelog = extractUnreleased(fs.readFileSync('CHANGELOG.md', 'utf8'));
+            } else {
+              core.warning('CHANGELOG.md not found; release body will contain metadata only.');
+            }
+            if (!changelog) {
+              core.warning('CHANGELOG.md [Unreleased] is empty; release body will contain metadata only.');
+            }
 
             const version = fs.readFileSync('host/version.txt', 'utf8').trim();
             const channel = fs.readFileSync('host/channel.txt', 'utf8').trim();
@@ -66,7 +79,6 @@ jobs:
             const tag = `app-v${version}`;
             const latestTag = `app-v${channel}-latest`;
             const releaseName = `Zaya.ScreenTranslator v${version}`;
-            const changelog = (process.env.RELEASE_CHANGELOG || '').trim();
             const meta = [
               `version: ${version}`,
               `primitivesChannel: ${channel}`,
