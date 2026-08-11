@@ -15,6 +15,11 @@ Is it a bird? Is it a PLANE?!
 </p>
 
 <p>
+  <img src="img/anime.gif" alt="Subtitles" /><br />
+  <sub><i>Subtitles translation.</i></sub>
+</p>
+
+<p>
   <img src="img/manga.gif" alt="Experimental manga support" /><br />
   <sub><i>Experimental manga support (on-demand overlay translate + Manga profile).</i></sub>
 </p>
