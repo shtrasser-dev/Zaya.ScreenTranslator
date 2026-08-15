@@ -10,7 +10,7 @@ public sealed partial class MainViewModel
     WindowInfo? ICaptureHostState.LastSelectedWindow { get => _lastSelectedWindow; set => _lastSelectedWindow = value; }
     void ICaptureHostState.SetSelectedWindow(WindowInfo? window) => SelectedWindow = window;
     void ICaptureHostState.NotifySetCurrentProcessCanExecuteChanged() => SetCurrentProcessCommand.NotifyCanExecuteChanged();
-    IScreenTranslatorContext ICaptureHostState.Context => _context;
+    IScreenTranslatorContext ICaptureHostState.Context => _screenTranslatorContext;
     LocalizedStrings IStatusHost.Loc => Loc;
     CancellationTokenSource? ICaptureHostState.LoopCts { get => LoopCts; set => LoopCts = value; }
 

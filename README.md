@@ -58,9 +58,9 @@ Real-time on-screen text translator for Windows 10/11. Captures a window or regi
 
 ## Version
 
-**1.1.3** — Host channel `1.1`. See [versioning](docs/versioning.md) and [CHANGELOG](CHANGELOG.md).
+**1.2.0** — Host channel `1.2`. See [versioning](docs/versioning.md) and [CHANGELOG](CHANGELOG.md).
 
-Host release tags: `app-v1.1.3` / `app-v1.1-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
+Host release tags: `app-v1.2.0` / `app-v1.2-latest`. Plugin channels: `plugin-{Interface}-v{channel}-latest` (e.g. `plugin-Zaya.OCR-v1.1-latest`). Layout plugin (ships with host): `1.2.0.0`.
 
 ## Features
 
@@ -82,15 +82,18 @@ Host release tags: `app-v1.1.3` / `app-v1.1-latest`. Plugin channels: `plugin-{I
 
 ## Dependencies
 
-Pinned in `Directory.Build.props`:
+Pinned in `Directory.Build.props` (NuGet):
 
 | Package | Version |
 |---------|---------|
+| [Zaya.Logging](https://github.com/shtrasser-dev/Zaya.Logging) | 1.0.0 (`Zaya.Logging`, `Zaya.Logging.Impl`, `Zaya.Logging.Impl.Microsoft`) |
 | [Zaya.Primitives](https://github.com/shtrasser-dev/Zaya.Primitives) | 1.0.0 |
-| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.2.0 |
-| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.2.0 |
-| [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator) | 1.1.0 |
-| [Zaya.TranslatorCache](https://github.com/shtrasser-dev/Zaya.Translator) | 1.0.0 |
+| [Zaya.Screenshot](https://github.com/shtrasser-dev/Zaya.Screenshot) | 1.3.0 |
+| [Zaya.OCR](https://github.com/shtrasser-dev/Zaya.OCR) | 1.3.0 |
+| [Zaya.Translator](https://github.com/shtrasser-dev/Zaya.Translator) | 1.2.0 |
+| [Zaya.TranslatorCache](https://github.com/shtrasser-dev/Zaya.Translator) | 1.1.0 |
+
+Host data root (profiles, plugins, `log.json`, extract/cache): `%AppData%\Zaya\ScreenTranslator\` via `IConfigurationPathService`.
 
 ## Build
 

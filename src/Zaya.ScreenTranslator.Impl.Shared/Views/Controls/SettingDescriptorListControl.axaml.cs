@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using Zaya.Primitives;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
@@ -25,6 +26,9 @@ public partial class SettingDescriptorListControl : UserControl
 
     public static readonly StyledProperty<CultureInfo?> CultureProperty =
         AvaloniaProperty.Register<SettingDescriptorListControl, CultureInfo?>(nameof(Culture));
+
+    public static readonly StyledProperty<ILocalizationService?> LocalizationProperty =
+        AvaloniaProperty.Register<SettingDescriptorListControl, ILocalizationService?>(nameof(Localization));
 
     public static readonly StyledProperty<TranslationModuleKind> ModuleKindProperty =
         AvaloniaProperty.Register<SettingDescriptorListControl, TranslationModuleKind>(
@@ -65,6 +69,12 @@ public partial class SettingDescriptorListControl : UserControl
         set => SetValue(CultureProperty, value);
     }
 
+    public ILocalizationService? Localization
+    {
+        get => GetValue(LocalizationProperty);
+        set => SetValue(LocalizationProperty, value);
+    }
+
     public TranslationModuleKind ModuleKind
     {
         get => GetValue(ModuleKindProperty);
@@ -80,7 +90,8 @@ public partial class SettingDescriptorListControl : UserControl
         if (change.Property == DescriptorsProperty
             || change.Property == ValuesProperty
             || change.Property == HostSettingsProperty
-            || change.Property == CultureProperty)
+            || change.Property == CultureProperty
+            || change.Property == LocalizationProperty)
         {
             QueueRebuild();
         }
@@ -115,6 +126,8 @@ public partial class SettingDescriptorListControl : UserControl
             return;
 
         var culture = Culture ?? CultureInfo.CurrentUICulture;
+        var loc = Localization
+            ?? throw new InvalidOperationException($"{nameof(SettingDescriptorListControl)}.{nameof(Localization)} must be set.");
         var allSettings = MergeSettings(HostSettings, values);
 
         foreach (var desc in descriptors)
@@ -133,7 +146,8 @@ public partial class SettingDescriptorListControl : UserControl
                         return;
                     OnEditorChanged(desc, newVal);
                 },
-                culture);
+                culture,
+                loc);
 
             control.Tag = desc;
             control.IsVisible = desc.IsVisible?.Invoke(allSettings) ?? true;

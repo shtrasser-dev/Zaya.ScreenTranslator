@@ -14,26 +14,28 @@ internal static class UpdateDialogs
 {
     private const double ProgressWindowSize = 360;
 
-    private static LocalizationService Loc => LocalizationService.Instance;
-
-    public static async Task ShowMessageAsync(Window? owner, string title, string message)
+    public static async Task ShowMessageAsync(ILocalizationService localizationService, Window? owner, string title, string message)
     {
-        var window = CreateDialog(title, message, (Loc[LocalizationConstants.Dialog.Ok], true));
+        var window = CreateDialog(title, message, (localizationService[LocalizationConstants.Dialog.Ok], true));
         _ = await ShowAsync(owner, window);
     }
 
     /// <returns>true = open release page; false = later</returns>
-    public static Task<bool> ShowHostUpdateAsync(Window? owner, string remoteVersion, string? releaseName)
+    public static Task<bool> ShowHostUpdateAsync(
+        Window? owner,
+        ILocalizationService localizationService,
+        string remoteVersion,
+        string? releaseName)
     {
         var text = string.IsNullOrWhiteSpace(releaseName)
-            ? string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Update.AvailableBody], remoteVersion)
-            : string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Update.AvailableBodyNamed], releaseName);
+            ? string.Format(localizationService.CurrentCulture, localizationService[LocalizationConstants.Update.AvailableBody], remoteVersion)
+            : string.Format(localizationService.CurrentCulture, localizationService[LocalizationConstants.Update.AvailableBodyNamed], releaseName);
 
         var window = CreateDialog(
-            Loc[LocalizationConstants.Update.AvailableTitle],
+            localizationService[LocalizationConstants.Update.AvailableTitle],
             text,
-            (Loc[LocalizationConstants.Update.OpenPage], true),
-            (Loc[LocalizationConstants.Update.Later], false));
+            (localizationService[LocalizationConstants.Update.OpenPage], true),
+            (localizationService[LocalizationConstants.Update.Later], false));
         return ShowAsync(owner, window);
     }
 
@@ -48,9 +50,9 @@ internal static class UpdateDialogs
         return ShowAsync(owner, window);
     }
 
-    public static async Task ShowFatalAsync(string title, string message)
+    public static async Task ShowFatalAsync(ILocalizationService localizationService, string title, string message)
     {
-        var window = CreateDialog(title, message, (Loc[LocalizationConstants.Dialog.Exit], true));
+        var window = CreateDialog(title, message, (localizationService[LocalizationConstants.Dialog.Exit], true));
         await ShowAsync(null, window);
     }
 
@@ -129,11 +131,11 @@ internal static class UpdateDialogs
         return window;
     }
 
-    public static Window CreateProgressWindow(string title)
+    public static Window CreateProgressWindow(ILocalizationService localizationService, string title)
     {
         var status = new TextBlock
         {
-            Text = Loc[LocalizationConstants.Status.PleaseWait],
+            Text = localizationService[LocalizationConstants.Status.PleaseWait],
             TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Stretch,

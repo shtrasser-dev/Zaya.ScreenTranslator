@@ -11,18 +11,18 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 /// <summary>Runs host + plugin update checks for the settings UI.</summary>
 internal sealed class SettingsUpdateChecker
 {
-    private readonly PluginUpdateService _pluginUpdateService;
-    private readonly HostVersionChecker _hostVersionChecker;
-    private readonly LocalizationService _loc;
+    private readonly IPluginUpdateService _pluginUpdateService;
+    private readonly IHostVersionChecker _hostVersionChecker;
+    private readonly ILocalizationService _localizationService;
 
     public SettingsUpdateChecker(
-        PluginUpdateService pluginUpdateService,
-        HostVersionChecker hostVersionChecker,
-        LocalizationService loc)
+        IPluginUpdateService pluginUpdateService,
+        IHostVersionChecker hostVersionChecker,
+        ILocalizationService localizationService)
     {
         _pluginUpdateService = pluginUpdateService;
         _hostVersionChecker = hostVersionChecker;
-        _loc = loc;
+        _localizationService = localizationService;
     }
 
     public async Task<string> CheckAsync(
@@ -37,14 +37,14 @@ internal sealed class SettingsUpdateChecker
         {
             var open = await UpdateDialogs.ShowHostUpdateAsync(
                 ownerWindow,
+                _localizationService,
                 hostUpdate.RemoteVersion?.ToString() ?? "?",
                 hostUpdate.ReleaseName).ConfigureAwait(true);
             if (open)
-                HostVersionChecker.OpenReleasePage(hostUpdate.ReleaseHtmlUrl);
+                _hostVersionChecker.OpenReleasePage(hostUpdate.ReleaseHtmlUrl);
         }
 
         var result = await _pluginUpdateService.EnsurePluginsAsync(
-            App.PluginsDirectory,
             channel,
             updateOptional: true,
             checkForUpdates: true,
@@ -54,14 +54,14 @@ internal sealed class SettingsUpdateChecker
         applyChanges();
 
         if (!result.Success)
-            return result.ErrorMessage ?? _loc[LocalizationConstants.Update.Failed];
+            return result.ErrorMessage ?? _localizationService[LocalizationConstants.Update.Failed];
 
         if (result.DownloadedAssets.Count > 0)
-            return _loc[LocalizationConstants.Update.RestartRequired];
+            return _localizationService[LocalizationConstants.Update.RestartRequired];
 
         if (!hostUpdate.UpdateAvailable)
-            return _loc[LocalizationConstants.Update.UpToDate];
+            return _localizationService[LocalizationConstants.Update.UpToDate];
 
-        return _loc[LocalizationConstants.Update.PluginsOk];
+        return _localizationService[LocalizationConstants.Update.PluginsOk];
     }
 }

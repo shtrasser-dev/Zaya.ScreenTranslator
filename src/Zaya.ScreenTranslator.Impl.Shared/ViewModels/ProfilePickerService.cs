@@ -18,75 +18,75 @@ internal sealed class ProfilePickerService
         Patterns = ["*.json"],
     };
 
-    private readonly IApplicationProfileService _profileService;
+    private readonly IApplicationProfileService _applicationProfileService;
     private readonly ISettingsService _settingsService;
-    private readonly IProfilePickerHost _host;
+    private readonly IProfilePickerHost _profilePickerHost;
 
     public ProfilePickerService(
-        IApplicationProfileService profileService,
+        IApplicationProfileService applicationProfileService,
         ISettingsService settingsService,
-        IProfilePickerHost host)
+        IProfilePickerHost profilePickerHost)
     {
-        _profileService = profileService;
+        _applicationProfileService = applicationProfileService;
         _settingsService = settingsService;
-        _host = host;
+        _profilePickerHost = profilePickerHost;
     }
 
     public void RefreshProfilePicker()
     {
-        var selected = _host.CommittedProfileName ?? _host.SelectedProfileName;
-        _host.ProfileNames = _profileService.ListProfileNames()
+        var selected = _profilePickerHost.CommittedProfileName ?? _profilePickerHost.SelectedProfileName;
+        _profilePickerHost.ProfileNames = _applicationProfileService.ListProfileNames()
             .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
         SetSelectedProfileSilent(selected);
     }
 
     public bool IsCreateNewProfileItem(string name) =>
-        string.Equals(name, _host.CreateNewProfileLabel, StringComparison.Ordinal);
+        string.Equals(name, _profilePickerHost.CreateNewProfileLabel, StringComparison.Ordinal);
 
     public bool IsCopyCurrentProfileItem(string name) =>
-        string.Equals(name, _host.CopyCurrentProfileLabel, StringComparison.Ordinal);
+        string.Equals(name, _profilePickerHost.CopyCurrentProfileLabel, StringComparison.Ordinal);
 
     public bool IsImportProfileItem(string name) =>
-        string.Equals(name, _host.ImportProfileLabel, StringComparison.Ordinal);
+        string.Equals(name, _profilePickerHost.ImportProfileLabel, StringComparison.Ordinal);
 
     public bool IsSpecialProfilePickerItem(string? name) =>
         !string.IsNullOrEmpty(name)
         && (IsCreateNewProfileItem(name) || IsCopyCurrentProfileItem(name) || IsImportProfileItem(name));
 
-    public void ClearProfileError() => _host.ProfileErrorMessage = string.Empty;
+    public void ClearProfileError() => _profilePickerHost.ProfileErrorMessage = string.Empty;
 
     public void SetSelectedProfileSilent(string? name) =>
-        _host.SelectedProfileName = name;
+        _profilePickerHost.SelectedProfileName = name;
 
     public void PersistLastActiveProfile(string name)
     {
-        var screen = _profileService.LoadScreenTranslatorProfile();
+        var screen = _applicationProfileService.LoadScreenTranslatorProfile();
         screen.LastActiveProfileName = name;
-        _profileService.SaveScreenTranslatorProfile(screen);
+        _applicationProfileService.SaveScreenTranslatorProfile(screen);
     }
 
     public Task SelectProfileAsync(string? name)
     {
         ClearProfileError();
 
-        if (_host.SuppressProfileChange || string.IsNullOrEmpty(name))
+        if (_profilePickerHost.SuppressProfileChange || string.IsNullOrEmpty(name))
             return Task.CompletedTask;
 
-        if (string.Equals(name, _host.CommittedProfileName, StringComparison.Ordinal))
+        if (string.Equals(name, _profilePickerHost.CommittedProfileName, StringComparison.Ordinal))
             return Task.CompletedTask;
 
-        _profileService.SetActiveProfile(name);
-        _host.CommittedProfileName = name;
+        _applicationProfileService.SetActiveProfile(name);
+        _profilePickerHost.CommittedProfileName = name;
         SetSelectedProfileSilent(name);
         PersistLastActiveProfile(name);
-        _host.ReloadSettingsIfOpen();
+        _profilePickerHost.ReloadSettingsIfOpen();
         return Task.CompletedTask;
     }
 
     public bool CommitProfileRename(string? editedText)
     {
-        if (_host.SuppressProfileChange)
+        if (_profilePickerHost.SuppressProfileChange)
             return true;
 
         ClearProfileError();
@@ -94,39 +94,39 @@ internal sealed class ProfilePickerService
         var text = editedText?.Trim() ?? string.Empty;
         if (string.IsNullOrEmpty(text) || IsSpecialProfilePickerItem(text))
         {
-            _host.ProfileErrorMessage = _host.Loc[LocalizationConstants.SaveAsNew.ErrorEmpty];
+            _profilePickerHost.ProfileErrorMessage = _profilePickerHost.Loc[LocalizationConstants.SaveAsNew.ErrorEmpty];
             return false;
         }
 
-        var current = _host.CommittedProfileName;
+        var current = _profilePickerHost.CommittedProfileName;
         if (string.IsNullOrEmpty(current))
             return false;
 
         if (string.Equals(current, text, StringComparison.Ordinal))
             return true;
 
-        if (!_profileService.TryRename(current, text, out var errorCode))
+        if (!_applicationProfileService.TryRename(current, text, out var errorCode))
         {
-            _host.ProfileErrorMessage = errorCode switch
+            _profilePickerHost.ProfileErrorMessage = errorCode switch
             {
-                ProfileConstants.ErrorEmpty => _host.Loc[LocalizationConstants.SaveAsNew.ErrorEmpty],
-                ProfileConstants.ErrorExists => _host.Loc[LocalizationConstants.SaveAsNew.ErrorExists],
-                _ => _host.Loc[LocalizationConstants.SaveAsNew.ErrorExists],
+                ProfileConstants.ErrorEmpty => _profilePickerHost.Loc[LocalizationConstants.SaveAsNew.ErrorEmpty],
+                ProfileConstants.ErrorExists => _profilePickerHost.Loc[LocalizationConstants.SaveAsNew.ErrorExists],
+                _ => _profilePickerHost.Loc[LocalizationConstants.SaveAsNew.ErrorExists],
             };
             return false;
         }
 
-        _host.SuppressProfileChange = true;
+        _profilePickerHost.SuppressProfileChange = true;
         try
         {
-            _host.CommittedProfileName = text;
+            _profilePickerHost.CommittedProfileName = text;
             RefreshProfilePicker();
             PersistLastActiveProfile(text);
-            _host.ReloadSettingsIfOpen();
+            _profilePickerHost.ReloadSettingsIfOpen();
         }
         finally
         {
-            _host.SuppressProfileChange = false;
+            _profilePickerHost.SuppressProfileChange = false;
         }
 
         return true;
@@ -136,10 +136,10 @@ internal sealed class ProfilePickerService
     {
         ClearProfileError();
 
-        var name = _host.CommittedProfileName;
+        var name = _profilePickerHost.CommittedProfileName;
         if (string.IsNullOrEmpty(name) || !canDelete())
         {
-            _host.ProfileErrorMessage = _host.Loc[LocalizationConstants.Profile.DeleteLast];
+            _profilePickerHost.ProfileErrorMessage = _profilePickerHost.Loc[LocalizationConstants.Profile.DeleteLast];
             return;
         }
 
@@ -147,66 +147,66 @@ internal sealed class ProfilePickerService
 
         var confirmed = await UpdateDialogs.ShowConfirmAsync(
             owner,
-            _host.Loc[LocalizationConstants.Profile.DeleteTitle],
-            string.Format(_host.Loc[LocalizationConstants.Profile.DeleteConfirm], name),
-            _host.Loc[LocalizationConstants.Profile.Delete],
-            _host.Loc[LocalizationConstants.SaveAsNew.Cancel]);
+            _profilePickerHost.Loc[LocalizationConstants.Profile.DeleteTitle],
+            string.Format(_profilePickerHost.Loc[LocalizationConstants.Profile.DeleteConfirm], name),
+            _profilePickerHost.Loc[LocalizationConstants.Profile.Delete],
+            _profilePickerHost.Loc[LocalizationConstants.SaveAsNew.Cancel]);
         if (!confirmed)
             return;
 
-        _host.SuppressProfileChange = true;
+        _profilePickerHost.SuppressProfileChange = true;
         try
         {
-            _profileService.Delete(name);
-            var next = _profileService.ListProfileNames().FirstOrDefault();
+            _applicationProfileService.Delete(name);
+            var next = _applicationProfileService.ListProfileNames().FirstOrDefault();
             if (string.IsNullOrEmpty(next))
             {
                 RefreshProfilePicker();
-                _host.ProfileErrorMessage = _host.Loc[LocalizationConstants.Profile.DeleteLast];
+                _profilePickerHost.ProfileErrorMessage = _profilePickerHost.Loc[LocalizationConstants.Profile.DeleteLast];
                 return;
             }
 
-            _profileService.SetActiveProfile(next);
-            _host.CommittedProfileName = next;
+            _applicationProfileService.SetActiveProfile(next);
+            _profilePickerHost.CommittedProfileName = next;
             RefreshProfilePicker();
             PersistLastActiveProfile(next);
-            _host.ReloadSettingsIfOpen();
+            _profilePickerHost.ReloadSettingsIfOpen();
         }
         finally
         {
-            _host.SuppressProfileChange = false;
+            _profilePickerHost.SuppressProfileChange = false;
             notifyCanExecuteChanged();
         }
     }
 
     public Task CreateNewProfileAsync()
     {
-        if (_host.SuppressProfileChange)
+        if (_profilePickerHost.SuppressProfileChange)
             return Task.CompletedTask;
 
         ClearProfileError();
-        _host.SuppressProfileChange = true;
+        _profilePickerHost.SuppressProfileChange = true;
         try
         {
             var name = AllocateNewProfileName();
             if (name is null)
             {
-                _host.ProfileErrorMessage = string.Format(
-                    _host.Loc[LocalizationConstants.Profile.CreateLimit],
-                    _host.Loc[LocalizationConstants.Profile.NewName],
+                _profilePickerHost.ProfileErrorMessage = string.Format(
+                    _profilePickerHost.Loc[LocalizationConstants.Profile.CreateLimit],
+                    _profilePickerHost.Loc[LocalizationConstants.Profile.NewName],
                     MaxNewProfileNumericSuffix);
-                SetSelectedProfileSilent(_host.CommittedProfileName);
+                SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
                 return Task.CompletedTask;
             }
 
-            var profile = _profileService.CreateFromDefaultTemplate(name);
-            _profileService.Save(profile);
-            _profileService.SetActiveProfile(profile);
+            var profile = _applicationProfileService.CreateFromDefaultTemplate(name);
+            _applicationProfileService.Save(profile);
+            _applicationProfileService.SetActiveProfile(profile);
             ActivateCreatedProfile(name);
         }
         finally
         {
-            _host.SuppressProfileChange = false;
+            _profilePickerHost.SuppressProfileChange = false;
         }
 
         return Task.CompletedTask;
@@ -214,28 +214,28 @@ internal sealed class ProfilePickerService
 
     public Task CopyCurrentProfileAsync()
     {
-        if (_host.SuppressProfileChange)
+        if (_profilePickerHost.SuppressProfileChange)
             return Task.CompletedTask;
 
         ClearProfileError();
-        var current = _host.CommittedProfileName;
+        var current = _profilePickerHost.CommittedProfileName;
         if (string.IsNullOrEmpty(current))
         {
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
             return Task.CompletedTask;
         }
 
-        _host.SuppressProfileChange = true;
+        _profilePickerHost.SuppressProfileChange = true;
         try
         {
-            var name = _profileService.AllocateUniqueProfileName(current);
+            var name = _applicationProfileService.AllocateUniqueProfileName(current);
             var copy = _settingsService.BeginEdit();
             _settingsService.CommitEditAsNew(name, copy);
             ActivateCreatedProfile(name);
         }
         finally
         {
-            _host.SuppressProfileChange = false;
+            _profilePickerHost.SuppressProfileChange = false;
         }
 
         return Task.CompletedTask;
@@ -243,22 +243,22 @@ internal sealed class ProfilePickerService
 
     private void ActivateCreatedProfile(string name)
     {
-        _host.CommittedProfileName = name;
+        _profilePickerHost.CommittedProfileName = name;
         RefreshProfilePicker();
         PersistLastActiveProfile(name);
-        _host.ReloadSettingsIfOpen();
+        _profilePickerHost.ReloadSettingsIfOpen();
     }
 
     public async Task ImportProfileAsync()
     {
-        if (_host.SuppressProfileChange)
+        if (_profilePickerHost.SuppressProfileChange)
             return;
 
         var owner = GetOwnerWindow();
         var topLevel = owner is null ? null : TopLevel.GetTopLevel(owner);
         if (topLevel is null)
         {
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
             return;
         }
 
@@ -267,62 +267,62 @@ internal sealed class ProfilePickerService
         {
             files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = _host.Loc[LocalizationConstants.Profile.Import],
+                Title = _profilePickerHost.Loc[LocalizationConstants.Profile.Import],
                 AllowMultiple = false,
                 FileTypeFilter = [JsonFileType],
             }).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
-            _host.ProfileErrorMessage = string.Format(
-                _host.Loc[LocalizationConstants.Profile.ImportFailed], ex.Message);
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            _profilePickerHost.ProfileErrorMessage = string.Format(
+                _profilePickerHost.Loc[LocalizationConstants.Profile.ImportFailed], ex.Message);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
             return;
         }
 
         if (files.Count == 0)
         {
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
             return;
         }
 
         var path = files[0].TryGetLocalPath();
         string? loadError = null;
         if (string.IsNullOrWhiteSpace(path)
-            || !_profileService.TryLoadProfileFile(path, out var loaded, out loadError)
+            || !_applicationProfileService.TryLoadProfileFile(path, out var loaded, out loadError)
             || loaded is null)
         {
-            _host.ProfileErrorMessage = string.Format(
-                _host.Loc[LocalizationConstants.Profile.ImportFailed],
+            _profilePickerHost.ProfileErrorMessage = string.Format(
+                _profilePickerHost.Loc[LocalizationConstants.Profile.ImportFailed],
                 loadError ?? "Invalid path.");
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
             return;
         }
 
         var preferred = Path.GetFileNameWithoutExtension(path);
-        var name = _profileService.AllocateUniqueProfileName(preferred);
+        var name = _applicationProfileService.AllocateUniqueProfileName(preferred);
 
-        _host.SuppressProfileChange = true;
+        _profilePickerHost.SuppressProfileChange = true;
         try
         {
             loaded.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName] = name;
-            _profileService.Save(loaded);
-            _profileService.SetActiveProfile(name);
-            _host.CommittedProfileName = name;
+            _applicationProfileService.Save(loaded);
+            _applicationProfileService.SetActiveProfile(name);
+            _profilePickerHost.CommittedProfileName = name;
             RefreshProfilePicker();
             PersistLastActiveProfile(name);
-            _host.ReloadSettingsIfOpen();
+            _profilePickerHost.ReloadSettingsIfOpen();
             ClearProfileError();
         }
         catch (Exception ex)
         {
-            _host.ProfileErrorMessage = string.Format(
-                _host.Loc[LocalizationConstants.Profile.ImportFailed], ex.Message);
-            SetSelectedProfileSilent(_host.CommittedProfileName);
+            _profilePickerHost.ProfileErrorMessage = string.Format(
+                _profilePickerHost.Loc[LocalizationConstants.Profile.ImportFailed], ex.Message);
+            SetSelectedProfileSilent(_profilePickerHost.CommittedProfileName);
         }
         finally
         {
-            _host.SuppressProfileChange = false;
+            _profilePickerHost.SuppressProfileChange = false;
         }
     }
 
@@ -330,7 +330,7 @@ internal sealed class ProfilePickerService
     {
         ClearProfileError();
 
-        var profile = _profileService.ActiveProfile;
+        var profile = _applicationProfileService.ActiveProfile;
         if (profile is null)
             return;
 
@@ -348,7 +348,7 @@ internal sealed class ProfilePickerService
         {
             file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = _host.Loc[LocalizationConstants.Profile.Export],
+                Title = _profilePickerHost.Loc[LocalizationConstants.Profile.Export],
                 SuggestedFileName = $"{profileName}.json",
                 DefaultExtension = "json",
                 FileTypeChoices = [JsonFileType],
@@ -356,8 +356,8 @@ internal sealed class ProfilePickerService
         }
         catch (Exception ex)
         {
-            _host.ProfileErrorMessage = string.Format(
-                _host.Loc[LocalizationConstants.Profile.ExportFailed], ex.Message);
+            _profilePickerHost.ProfileErrorMessage = string.Format(
+                _profilePickerHost.Loc[LocalizationConstants.Profile.ExportFailed], ex.Message);
             return;
         }
 
@@ -366,33 +366,21 @@ internal sealed class ProfilePickerService
 
         try
         {
-            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.ProfileName]
-                = profileName;
-
-            var json = System.Text.Json.JsonSerializer.Serialize(
-                profile.Settings,
-                new System.Text.Json.JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Converters = { new Converters.SettingsJsonConverter() },
-                });
-
             var path = file.TryGetLocalPath();
-            if (!string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                await File.WriteAllTextAsync(path, json).ConfigureAwait(true);
+                _profilePickerHost.ProfileErrorMessage = string.Format(
+                    _profilePickerHost.Loc[LocalizationConstants.Profile.ExportFailed],
+                    "Invalid path.");
+                return;
             }
-            else
-            {
-                await using var stream = await file.OpenWriteAsync().ConfigureAwait(true);
-                await using var writer = new StreamWriter(stream);
-                await writer.WriteAsync(json).ConfigureAwait(true);
-            }
+
+            _applicationProfileService.ExportTo(profileName, path);
         }
         catch (Exception ex)
         {
-            _host.ProfileErrorMessage = string.Format(
-                _host.Loc[LocalizationConstants.Profile.ExportFailed], ex.Message);
+            _profilePickerHost.ProfileErrorMessage = string.Format(
+                _profilePickerHost.Loc[LocalizationConstants.Profile.ExportFailed], ex.Message);
         }
     }
 
@@ -404,9 +392,9 @@ internal sealed class ProfilePickerService
 
     private string? AllocateNewProfileName()
     {
-        var baseName = _host.Loc[LocalizationConstants.Profile.NewName];
+        var baseName = _profilePickerHost.Loc[LocalizationConstants.Profile.NewName];
         var existing = new HashSet<string>(
-            _profileService.ListProfileNames(),
+            _applicationProfileService.ListProfileNames(),
             StringComparer.OrdinalIgnoreCase);
 
         if (!existing.Contains(baseName))

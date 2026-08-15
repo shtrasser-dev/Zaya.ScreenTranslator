@@ -2,17 +2,20 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Zaya.Logging.Models;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 /// <summary>
 /// Thin GitHub Releases API client. Session-scoped cache to reduce rate-limit pressure.
 /// </summary>
-public sealed class GitHubReleasesClient : IDisposable
+[Log(LogLevel.Debug, LogParameters = true)]
+public sealed class GitHubReleasesClient : IGitHubReleasesClient
 {
     private readonly HttpClient _http;
     private readonly Dictionary<string, GitHubReleaseInfo?> _releaseByTagCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, IReadOnlyList<GitHubReleaseInfo>> _releasesListCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly bool _ownsHttpClient;
     private bool _disposed;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -20,9 +23,15 @@ public sealed class GitHubReleasesClient : IDisposable
         PropertyNameCaseInsensitive = true,
     };
 
-    public GitHubReleasesClient(HttpClient? httpClient = null)
+    public GitHubReleasesClient(HttpClient httpClient)
     {
-        _http = httpClient ?? new HttpClient();
+        _http = httpClient;
+        _ownsHttpClient = false;
+        EnsureDefaultHeaders();
+    }
+
+    private void EnsureDefaultHeaders()
+    {
         if (!_http.DefaultRequestHeaders.UserAgent.Any())
             _http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Zaya.ScreenTranslator", HostChannel.Current));
         if (!_http.DefaultRequestHeaders.Accept.Any())
@@ -71,10 +80,6 @@ public sealed class GitHubReleasesClient : IDisposable
         return list;
     }
 
-    /// <summary>
-    /// Newest immutable host release across all channels (<c>app-v{MAJOR.MINOR.PATCH}</c>).
-    /// Floating <c>app-v{channel}-latest</c> tags are ignored.
-    /// </summary>
     public async Task<GitHubReleaseInfo?> GetHostLatestAsync(
         string ownerRepo,
         CancellationToken cancellationToken = default)
@@ -97,11 +102,6 @@ public sealed class GitHubReleasesClient : IDisposable
             .FirstOrDefault();
     }
 
-    /// <summary>
-    /// Channel floating tag first; on 404 fall back to max immutable
-    /// <c>{tagPrefix}{channel}.*</c> (e.g. <c>plugin-Zaya.OCR-v1.0-latest</c> /
-    /// <c>plugin-Zaya.OCR-v1.0.0.2</c>).
-    /// </summary>
     public async Task<GitHubReleaseInfo?> GetChannelLatestAsync(
         string ownerRepo,
         string channel,
@@ -119,8 +119,6 @@ public sealed class GitHubReleasesClient : IDisposable
             .Where(r => !r.Prerelease
                         && r.TagName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
                         && !r.TagName.EndsWith("-latest", StringComparison.OrdinalIgnoreCase)
-                        // Reject only suffixes after the channel prefix (e.g. …-beta),
-                        // not hyphens that belong to the tag prefix itself.
                         && !r.TagName.AsSpan(prefix.Length).Contains('-'))
             .Select(r => (Release: r, Version: r.ParsedVersion ?? TryParseTagVersion(r.TagName, tagPrefix)))
             .Where(x => x.Version is not null)
@@ -129,10 +127,6 @@ public sealed class GitHubReleasesClient : IDisposable
             .FirstOrDefault();
     }
 
-    /// <summary>
-    /// Plugin floating channel for one interface package:
-    /// <c>plugin-{interface}-v{channel}-latest</c>.
-    /// </summary>
     public Task<GitHubReleaseInfo?> GetPluginInterfaceChannelLatestAsync(
         string ownerRepo,
         string interfaceName,
@@ -217,7 +211,8 @@ public sealed class GitHubReleasesClient : IDisposable
         if (_disposed)
             return;
         _disposed = true;
-        _http.Dispose();
+        if (_ownsHttpClient)
+            _http.Dispose();
     }
 
     private sealed class ReleaseDto

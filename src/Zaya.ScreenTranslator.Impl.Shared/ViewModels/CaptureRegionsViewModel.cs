@@ -10,7 +10,7 @@ public sealed partial class CaptureRegionsViewModel : ObservableObject
 {
     private CaptureRegionsEditorCanvas? _editor;
 
-    public CaptureRegionsViewModel(CaptureRegionsConfig initial)
+    public CaptureRegionsViewModel(CaptureRegionsConfig initial, ILocalizationService localizationService)
     {
         Regions = [];
         foreach (var r in initial.CaptureRegions)
@@ -18,7 +18,7 @@ public sealed partial class CaptureRegionsViewModel : ObservableObject
         foreach (var r in initial.IgnoreRegions)
             Regions.Add(new EditableCaptureRegion { Kind = CaptureRegionKind.Ignore, Rect = r });
 
-        Loc = new LocalizedStrings(LocalizationService.Instance);
+        Loc = new LocalizedStrings(localizationService);
     }
 
     public LocalizedStrings Loc { get; }

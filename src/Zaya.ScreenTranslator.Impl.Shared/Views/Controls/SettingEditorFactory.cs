@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Zaya.Primitives;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
@@ -18,6 +19,7 @@ internal static class SettingEditorFactory
         IReadOnlyDictionary<string, object?> allSettings,
         Action<string, object?> onChanged,
         CultureInfo culture,
+        ILocalizationService localizationService,
         bool tableCell = false)
     {
         switch (descriptor)
@@ -29,7 +31,7 @@ internal static class SettingEditorFactory
                 return CreateBoolEditor(boolDesc, currentValue, onChanged, culture, tableCell);
 
             case IntegerSettingDescriptor intDesc:
-                return CreateIntegerEditor(intDesc, currentValue, onChanged, culture);
+                return CreateIntegerEditor(intDesc, currentValue, onChanged, culture, localizationService);
 
             case StringSettingDescriptor stringDesc:
                 return CreateTextBoxEditor(
@@ -171,7 +173,7 @@ internal static class SettingEditorFactory
 
     private static Control CreateIntegerEditor(
         IntegerSettingDescriptor desc, object? currentValue,
-        Action<string, object?> onChanged, CultureInfo culture)
+        Action<string, object?> onChanged, CultureInfo culture, ILocalizationService localizationService)
     {
         var tb = new TextBox
         {
@@ -194,7 +196,7 @@ internal static class SettingEditorFactory
         {
             tb.TextChanged += (_, _) =>
             {
-                if (!IntegerSettingValidation.TryParse(tb.Text, desc, out var val, out var message, culture))
+                if (!IntegerSettingValidation.TryParse(tb.Text, desc, localizationService, out var val, out var message, culture))
                 {
                     error.Text = message;
                     error.IsVisible = true;

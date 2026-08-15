@@ -2,25 +2,22 @@ using System.Diagnostics;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
-public sealed class HostVersionChecker
+public sealed class HostVersionChecker : IHostVersionChecker
 {
-    private readonly GitHubReleasesClient _client;
+    private readonly IGitHubReleasesClient _gitHubReleasesClient;
     private readonly string _hostRepo;
 
-    public HostVersionChecker(GitHubReleasesClient client, string hostRepo = "shtrasser-dev/Zaya.ScreenTranslator")
+    public HostVersionChecker(IGitHubReleasesClient gitHubReleasesClient, string hostRepo = "shtrasser-dev/Zaya.ScreenTranslator")
     {
-        _client = client;
+        _gitHubReleasesClient = gitHubReleasesClient;
         _hostRepo = hostRepo;
     }
 
-    /// <summary>
-    /// Compares the local host version to the newest immutable <c>app-v*</c> release (any channel).
-    /// </summary>
     public async Task<HostUpdateInfo> CheckAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var release = await _client.GetHostLatestAsync(_hostRepo, cancellationToken)
+            var release = await _gitHubReleasesClient.GetHostLatestAsync(_hostRepo, cancellationToken)
                 .ConfigureAwait(false);
             if (release is null)
                 return new HostUpdateInfo { UpdateAvailable = false };
@@ -41,9 +38,12 @@ public sealed class HostVersionChecker
                 ReleaseName = release.Name,
             };
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            Debug.WriteLine($"[HostVersionChecker] {ex.Message}");
+            throw;
+        }
+        catch (Exception)
+        {
             return new HostUpdateInfo { UpdateAvailable = false };
         }
     }
@@ -66,7 +66,7 @@ public sealed class HostVersionChecker
     private static Version NormalizeThreePart(Version v) =>
         new(v.Major, v.Minor, Math.Max(v.Build, 0));
 
-    public static void OpenReleasePage(string htmlUrl)
+    public void OpenReleasePage(string htmlUrl)
     {
         if (string.IsNullOrWhiteSpace(htmlUrl))
             return;

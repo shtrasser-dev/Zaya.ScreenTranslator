@@ -2,6 +2,7 @@ using System.Reflection;
 using Zaya.OCR.Services;
 using Zaya.Screenshot.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
 using Zaya.TranslatorCache.Services;
 
@@ -10,21 +11,19 @@ namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 /// <summary>
 /// Maps plugin interface names to host-shipped NuGet assemblies and update channels.
 /// </summary>
-internal static class PluginHostCompatibility
+public sealed class PluginHostCompatibility : IPluginHostCompatibility
 {
-    public static Assembly? ResolveHostInterfaceAssembly(string interfaceName) => interfaceName switch
+    public Assembly? ResolveHostInterfaceAssembly(string interfaceName) => interfaceName switch
     {
         "Zaya.OCR" => typeof(IOCRService).Assembly,
         "Zaya.Translator" => typeof(ITranslatorService).Assembly,
         "Zaya.TranslatorCache" => typeof(ITranslatorCacheService).Assembly,
         "Zaya.Screenshot" => typeof(ICaptureService).Assembly,
+        "Zaya.ScreenTranslator.Layout" => typeof(IOverlayLayoutService).Assembly,
         _ => null,
     };
 
-    /// <summary>
-    /// Floating release channel for an interface package: MAJOR.MINOR of the host-shipped assembly.
-    /// </summary>
-    public static string? ResolveUpdateChannel(string interfaceName)
+    public string? ResolveUpdateChannel(string interfaceName)
     {
         var asm = ResolveHostInterfaceAssembly(interfaceName);
         var ver = asm?.GetName().Version;
@@ -33,18 +32,14 @@ internal static class PluginHostCompatibility
         return $"{ver.Major}.{ver.Minor}";
     }
 
-    public static string? ResolveUpdateChannel(BuiltinPluginEntry entry)
+    public string? ResolveUpdateChannel(BuiltinPluginEntry entry)
     {
         if (!string.IsNullOrWhiteSpace(entry.Interface))
             return ResolveUpdateChannel(entry.Interface);
         return null;
     }
 
-    /// <summary>
-    /// True when the plugin's <c>interfaceVersion</c> matches the host NuGet for that interface
-    /// (same rule as <see cref="PluginLoader"/> load gating).
-    /// </summary>
-    public static bool IsInterfaceCompatible(PluginManifest manifest)
+    public bool IsInterfaceCompatible(PluginManifest manifest)
     {
         if (string.IsNullOrWhiteSpace(manifest.InterfaceVersion))
             return true;

@@ -4,25 +4,38 @@ using Zaya.ScreenTranslator.Impl.Shared.Services;
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 /// <summary>Downloads plugin assets from GitHub releases for catalog entries.</summary>
-internal sealed class PluginCatalogDownloader
+public sealed class PluginCatalogDownloader : IPluginCatalogDownloader
 {
-    private readonly GitHubReleasesClient _client;
+    private readonly IGitHubReleasesClient _gitHubReleasesClient;
+    private readonly ILocalizationService _localizationService;
+    private readonly ILocalPluginStore _localPluginStore;
+    private readonly IPluginHostCompatibility _pluginHostCompatibility;
+    private readonly IPluginManifestReader _pluginManifestReader;
+    private readonly IConfigurationPathService _configurationPathService;
 
-    private static LocalizationService Loc => LocalizationService.Instance;
-
-    public PluginCatalogDownloader(GitHubReleasesClient client)
+    public PluginCatalogDownloader(
+        IGitHubReleasesClient gitHubReleasesClient,
+        ILocalizationService localizationService,
+        ILocalPluginStore localPluginStore,
+        IPluginHostCompatibility pluginHostCompatibility,
+        IPluginManifestReader pluginManifestReader,
+        IConfigurationPathService configurationPathService)
     {
-        _client = client;
+        _gitHubReleasesClient = gitHubReleasesClient;
+        _localizationService = localizationService;
+        _localPluginStore = localPluginStore;
+        _pluginHostCompatibility = pluginHostCompatibility;
+        _pluginManifestReader = pluginManifestReader;
+        _configurationPathService = configurationPathService;
     }
 
     public async Task DownloadCatalogEntryAsync(
         BuiltinPluginEntry entry,
-        string pluginsDirectory,
         string fallbackChannel,
         List<string> downloaded,
         CancellationToken cancellationToken)
     {
-        var zipPath = Path.Combine(pluginsDirectory, entry.Asset);
+        var zipPath = Path.Combine(_configurationPathService.GetPluginsDirectory(), entry.Asset);
 
         var release = await ResolveReleaseForAssetAsync(entry, fallbackChannel, cancellationToken)
                 .ConfigureAwait(false)
@@ -35,12 +48,12 @@ internal sealed class PluginCatalogDownloader
         if (ShouldKeepLocal(zipPath, release, entry.Asset))
             return;
 
-        await _client.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
+        await _gitHubReleasesClient.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var downloadedManifest = PluginManifestReader.ReadFromZip(zipPath);
+        var downloadedManifest = _pluginManifestReader.ReadFromZip(zipPath);
         if (downloadedManifest is not null
-            && LocalPluginStore.IsIncompatibleWithHost(downloadedManifest))
+            && _localPluginStore.IsIncompatibleWithHost(downloadedManifest))
         {
             try { File.Delete(zipPath); }
             catch { /* ignore */ }
@@ -53,13 +66,13 @@ internal sealed class PluginCatalogDownloader
 
     public async Task UpdateFromReleasesAsync(
         IReadOnlyList<BuiltinPluginEntry> catalog,
-        string pluginsDirectory,
         string fallbackChannel,
         bool updateOptional,
         List<string> downloaded,
         IProgress<string>? status,
         CancellationToken cancellationToken)
     {
+        var pluginsDirectory = _configurationPathService.GetPluginsDirectory();
         foreach (var entry in catalog)
         {
             if (!updateOptional && !entry.Required)
@@ -77,7 +90,7 @@ internal sealed class PluginCatalogDownloader
             catch (Exception ex)
             {
                 status?.Report(string.Format(
-                    Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.UpdateCheckFailed], entry.Repo, ex.Message));
+                    _localizationService.CurrentCulture, _localizationService[LocalizationConstants.Plugin.UpdateCheckFailed], entry.Repo, ex.Message));
                 continue;
             }
 
@@ -86,8 +99,8 @@ internal sealed class PluginCatalogDownloader
                 if (entry.Required && assetMissing)
                 {
                     throw new RequiredPluginMissingException(string.Format(
-                        Loc.CurrentCulture,
-                        Loc[LocalizationConstants.Plugin.RequiredAssetMissing],
+                        _localizationService.CurrentCulture,
+                        _localizationService[LocalizationConstants.Plugin.RequiredAssetMissing],
                         entry.Asset,
                         "(no matching release)"));
                 }
@@ -99,7 +112,7 @@ internal sealed class PluginCatalogDownloader
                 continue;
 
             var remoteVersion = ReleaseVersionParser.ResolveAssetVersion(release, entry.Asset);
-            var localManifest = PluginManifestReader.ReadFromZip(zipPath);
+            var localManifest = _pluginManifestReader.ReadFromZip(zipPath);
             var localVersion = Version.TryParse(localManifest?.PluginVersion, out var lv) ? lv : null;
             var remoteNewer = remoteVersion is not null
                 && (localVersion is null || remoteVersion > localVersion);
@@ -113,8 +126,8 @@ internal sealed class PluginCatalogDownloader
                 if (entry.Required && assetMissing)
                 {
                     throw new RequiredPluginMissingException(string.Format(
-                        Loc.CurrentCulture,
-                        Loc[LocalizationConstants.Plugin.RequiredAssetMissing],
+                        _localizationService.CurrentCulture,
+                        _localizationService[LocalizationConstants.Plugin.RequiredAssetMissing],
                         entry.Asset,
                         release.TagName));
                 }
@@ -122,19 +135,19 @@ internal sealed class PluginCatalogDownloader
                 continue;
             }
 
-            status?.Report(string.Format(Loc.CurrentCulture, Loc[LocalizationConstants.Plugin.Updating], entry.Asset));
-            await _client.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
+            status?.Report(string.Format(_localizationService.CurrentCulture, _localizationService[LocalizationConstants.Plugin.Updating], entry.Asset));
+            await _gitHubReleasesClient.DownloadAssetAsync(asset.BrowserDownloadUrl, zipPath, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
-            var downloadedManifest = PluginManifestReader.ReadFromZip(zipPath);
+            var downloadedManifest = _pluginManifestReader.ReadFromZip(zipPath);
             if (downloadedManifest is not null
-                && LocalPluginStore.IsIncompatibleWithHost(downloadedManifest))
+                && _localPluginStore.IsIncompatibleWithHost(downloadedManifest))
             {
                 try { File.Delete(zipPath); }
                 catch { /* ignore */ }
                 status?.Report(string.Format(
-                    Loc.CurrentCulture,
-                    Loc[LocalizationConstants.Plugin.UpdateCheckFailed],
+                    _localizationService.CurrentCulture,
+                    _localizationService[LocalizationConstants.Plugin.UpdateCheckFailed],
                     entry.Asset,
                     $"interface {downloadedManifest.InterfaceVersion} incompatible with host"));
                 continue;
@@ -144,22 +157,17 @@ internal sealed class PluginCatalogDownloader
         }
     }
 
-    /// <summary>
-    /// Resolve the GitHub release for a catalog entry via
-    /// <c>plugin-{interface}-v{channel}-latest</c> (or the newest immutable
-    /// <c>plugin-{interface}-v{channel}.*</c> tag).
-    /// </summary>
     private async Task<GitHubReleaseInfo?> ResolveReleaseForAssetAsync(
         BuiltinPluginEntry entry,
         string fallbackChannel,
         CancellationToken cancellationToken)
     {
-        var channel = PluginHostCompatibility.ResolveUpdateChannel(entry) ?? fallbackChannel;
+        var channel = _pluginHostCompatibility.ResolveUpdateChannel(entry) ?? fallbackChannel;
         var interfaceName = entry.Interface?.Trim();
         if (string.IsNullOrEmpty(interfaceName))
             return null;
 
-        var release = await _client
+        var release = await _gitHubReleasesClient
             .GetPluginInterfaceChannelLatestAsync(entry.Repo, interfaceName, channel, cancellationToken)
             .ConfigureAwait(false);
 
@@ -173,21 +181,18 @@ internal sealed class PluginCatalogDownloader
         release.Assets.FirstOrDefault(a =>
             string.Equals(a.Name, assetName, StringComparison.OrdinalIgnoreCase));
 
-    /// <summary>
-    /// Keep an existing local zip when its pluginVersion is greater than or equal to the remote asset version.
-    /// </summary>
-    private static bool ShouldKeepLocal(string zipPath, GitHubReleaseInfo release, string assetName)
+    private bool ShouldKeepLocal(string zipPath, GitHubReleaseInfo release, string assetName)
     {
         if (!File.Exists(zipPath))
             return false;
 
-        var localManifest = PluginManifestReader.ReadFromZip(zipPath);
+        var localManifest = _pluginManifestReader.ReadFromZip(zipPath);
         if (!Version.TryParse(localManifest?.PluginVersion, out var localVersion))
             return false;
 
         var remoteVersion = ReleaseVersionParser.ResolveAssetVersion(release, assetName);
         if (remoteVersion is null)
-            return true; // unknown remote version — do not downgrade a versioned local build
+            return true;
 
         return localVersion >= remoteVersion;
     }

@@ -11,18 +11,23 @@ internal sealed class CaptureWindowResolver
 {
     public sealed record CaptureTarget(nint Handle, string Title, string ProcessName);
 
-    private readonly ICaptureHostState _host;
+    private readonly ICaptureHostState _captureHostState;
+    private readonly IProcessIconLoader _processIconLoader;
     private int _windowsLoadVersion;
 
-    public CaptureWindowResolver(ICaptureHostState host) => _host = host;
+    public CaptureWindowResolver(ICaptureHostState captureHostState, IProcessIconLoader processIconLoader)
+    {
+        _captureHostState = captureHostState;
+        _processIconLoader = processIconLoader;
+    }
 
     public async Task<CaptureTarget?> ResolveCaptureTargetAsync(IApplicationProfile profile)
     {
-        if (_host.SelectedWindow is { IsLoadingPlaceholder: false, Handle: not 0 } window)
+        if (_captureHostState.SelectedWindow is { IsLoadingPlaceholder: false, Handle: not 0 } window)
         {
-            _host.SetWindowError(null);
-            _host.Context.ActiveWindowHandle = window.Handle;
-            _host.Context.ActiveWindowTitle = window.Title;
+            _captureHostState.SetWindowError(null);
+            _captureHostState.Context.ActiveWindowHandle = window.Handle;
+            _captureHostState.Context.ActiveWindowTitle = window.Title;
             return new CaptureTarget(window.Handle, window.Title, window.ProcessName);
         }
 
@@ -35,11 +40,11 @@ internal sealed class CaptureWindowResolver
             return null;
         }
 
-        _host.SetWindowError(null);
-        _host.LoopCts = new CancellationTokenSource();
-        var ct = _host.LoopCts.Token;
-        _host.IsRunning = true;
-        _host.SetStatus(string.Format(_host.Loc[LocalizationConstants.Status.WaitingForProcess], targetProcess));
+        _captureHostState.SetWindowError(null);
+        _captureHostState.LoopCts = new CancellationTokenSource();
+        var ct = _captureHostState.LoopCts.Token;
+        _captureHostState.IsRunning = true;
+        _captureHostState.SetStatus(string.Format(_captureHostState.Loc[LocalizationConstants.Status.WaitingForProcess], targetProcess));
 
         try
         {
@@ -47,9 +52,9 @@ internal sealed class CaptureWindowResolver
             {
                 if (CaptureProcessWindowHelpers.TryFindProcessMainWindow(targetProcess, out var handle, out var title))
                 {
-                    _host.SetWindowError(null);
-                    _host.Context.ActiveWindowHandle = handle;
-                    _host.Context.ActiveWindowTitle = title;
+                    _captureHostState.SetWindowError(null);
+                    _captureHostState.Context.ActiveWindowHandle = handle;
+                    _captureHostState.Context.ActiveWindowTitle = title;
                     return new CaptureTarget(handle, title, targetProcess);
                 }
 
@@ -67,25 +72,25 @@ internal sealed class CaptureWindowResolver
         {
             if (ct.IsCancellationRequested)
             {
-                _host.IsRunning = false;
-                _host.LoopCts?.Dispose();
-                _host.LoopCts = null;
+                _captureHostState.IsRunning = false;
+                _captureHostState.LoopCts?.Dispose();
+                _captureHostState.LoopCts = null;
             }
         }
 
         if (ct.IsCancellationRequested)
             return null;
 
-        _host.IsRunning = false;
-        _host.LoopCts?.Dispose();
-        _host.LoopCts = null;
+        _captureHostState.IsRunning = false;
+        _captureHostState.LoopCts?.Dispose();
+        _captureHostState.LoopCts = null;
         ReportSelectTargetWindowError();
         return null;
     }
 
     private void ReportSelectTargetWindowError()
     {
-        _host.SetWindowError(_host.Loc[LocalizationConstants.Status.SelectTargetWindow]);
+        _captureHostState.SetWindowError(_captureHostState.Loc[LocalizationConstants.Status.SelectTargetWindow]);
     }
 
     public async Task SyncWindowPickerAsync(CaptureTarget target)
@@ -93,7 +98,7 @@ internal sealed class CaptureWindowResolver
         IReadOnlyList<WindowInfo> list;
         try
         {
-            list = await Task.Run(BuildWindowList).ConfigureAwait(true);
+            list = await Task.Run(() => BuildWindowList()).ConfigureAwait(true);
         }
         catch
         {
@@ -108,7 +113,7 @@ internal sealed class CaptureWindowResolver
                 Handle = target.Handle,
                 Title = target.Title,
                 ProcessName = target.ProcessName,
-                Icon = CaptureProcessWindowHelpers.TryLoadIconForProcessName(target.ProcessName),
+                Icon = CaptureProcessWindowHelpers.TryLoadIconForProcessName(target.ProcessName, _processIconLoader),
             };
             list = list
                 .Append(match)
@@ -116,23 +121,23 @@ internal sealed class CaptureWindowResolver
                 .ToList();
         }
 
-        _host.Windows = list;
-        _host.SetSelectedWindow(match);
-        _host.LastSelectedWindow = match;
-        _host.NotifySetCurrentProcessCanExecuteChanged();
+        _captureHostState.Windows = list;
+        _captureHostState.SetSelectedWindow(match);
+        _captureHostState.LastSelectedWindow = match;
+        _captureHostState.NotifySetCurrentProcessCanExecuteChanged();
     }
 
     public async Task LoadWindowsAsync()
     {
         var version = Interlocked.Increment(ref _windowsLoadVersion);
-        var previous = _host.LastSelectedWindow;
+        var previous = _captureHostState.LastSelectedWindow;
 
-        _host.Windows = [WindowInfo.Loading];
+        _captureHostState.Windows = [WindowInfo.Loading];
 
         IReadOnlyList<WindowInfo> list;
         try
         {
-            list = await Task.Run(BuildWindowList).ConfigureAwait(true);
+            list = await Task.Run(() => BuildWindowList()).ConfigureAwait(true);
         }
         catch
         {
@@ -142,8 +147,8 @@ internal sealed class CaptureWindowResolver
         if (version != _windowsLoadVersion)
             return;
 
-        _host.Windows = list;
-        _host.SetSelectedWindow(previous is null
+        _captureHostState.Windows = list;
+        _captureHostState.SetSelectedWindow(previous is null
             ? null
             : list.FirstOrDefault(w => w.Handle == previous.Handle));
     }
@@ -153,7 +158,7 @@ internal sealed class CaptureWindowResolver
     /// </summary>
     public Task ClearSelectedWindowIfProcessGoneAsync()
     {
-        var selected = _host.SelectedWindow;
+        var selected = _captureHostState.SelectedWindow;
         if (selected is null || selected.IsLoadingPlaceholder)
             return Task.CompletedTask;
 
@@ -162,15 +167,15 @@ internal sealed class CaptureWindowResolver
         if (processAlive && windowAlive)
             return Task.CompletedTask;
 
-        _host.LastSelectedWindow = null;
-        _host.SetSelectedWindow(null);
-        _host.Context.ActiveWindowHandle = 0;
-        _host.Context.ActiveWindowTitle = null;
-        _host.NotifySetCurrentProcessCanExecuteChanged();
+        _captureHostState.LastSelectedWindow = null;
+        _captureHostState.SetSelectedWindow(null);
+        _captureHostState.Context.ActiveWindowHandle = 0;
+        _captureHostState.Context.ActiveWindowTitle = null;
+        _captureHostState.NotifySetCurrentProcessCanExecuteChanged();
         return LoadWindowsAsync();
     }
 
-    public static List<WindowInfo> BuildWindowList()
+    private List<WindowInfo> BuildWindowList()
     {
         var result = new List<WindowInfo>();
         foreach (var process in Process.GetProcesses())
@@ -189,7 +194,7 @@ internal sealed class CaptureWindowResolver
                     Handle = process.MainWindowHandle,
                     Title = title,
                     ProcessName = process.ProcessName,
-                    Icon = ProcessIconLoader.GetIcon(process),
+                    Icon = _processIconLoader.GetIcon(process),
                 });
             }
             catch

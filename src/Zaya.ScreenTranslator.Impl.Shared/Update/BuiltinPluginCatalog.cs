@@ -1,24 +1,26 @@
-using System.Reflection;
-using System.Text.Json;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
-public static class BuiltinPluginCatalog
+public sealed class BuiltinPluginCatalog : IBuiltinPluginCatalog
 {
-    private static readonly Lazy<IReadOnlyList<BuiltinPluginEntry>> _entries = new(Load);
+    private readonly Lazy<IReadOnlyList<BuiltinPluginEntry>> _entries;
 
-    public static IReadOnlyList<BuiltinPluginEntry> Entries => _entries.Value;
+    private readonly IJsonConfigurationService _jsonConfigurationService;
 
-    private static IReadOnlyList<BuiltinPluginEntry> Load()
+    public BuiltinPluginCatalog(IEmbeddedResourceService embeddedResourceService, IJsonConfigurationService jsonConfigurationService)
     {
-        var asm = typeof(BuiltinPluginCatalog).Assembly;
-        const string resourceName = "Zaya.ScreenTranslator.Impl.Shared.Update.builtin-plugins.json";
+        _entries = new Lazy<IReadOnlyList<BuiltinPluginEntry>>(() => Load(embeddedResourceService));
+        _jsonConfigurationService = jsonConfigurationService;
+    }
 
-        using var stream = asm.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
+    public IReadOnlyList<BuiltinPluginEntry> Entries => _entries.Value;
 
-        var list = JsonSerializer.Deserialize<List<BuiltinPluginEntry>>(stream)
-            ?? [];
+    private IReadOnlyList<BuiltinPluginEntry> Load(IEmbeddedResourceService embeddedResourceService)
+    {
+        using var stream = embeddedResourceService.GetStream(EmbeddedResourceConstants.BuiltinPluginsJson);
+        var list = _jsonConfigurationService.Read<List<BuiltinPluginEntry>>(stream);
         return list.AsReadOnly();
     }
 }

@@ -23,10 +23,11 @@ internal static class CaptureRegionsDialog
         Window owner,
         IApplicationProfile profile,
         nint? targetHwnd,
-        CaptureRegionsConfig initial)
+        CaptureRegionsConfig initial,
+        ICaptureRegionsSnapshotService snapshotService,
+        ILocalizationService localizationService)
     {
-        var loc = LocalizationService.Instance;
-        var vm = new CaptureRegionsViewModel(initial);
+        var vm = new CaptureRegionsViewModel(initial, localizationService);
         var editor = new CaptureRegionsEditorCanvas(vm.Regions);
         vm.AttachEditor(editor);
 
@@ -35,7 +36,7 @@ internal static class CaptureRegionsDialog
 
         var dialog = new Window
         {
-            Title = loc[LocalizationConstants.CaptureRegions.Title],
+            Title = localizationService[LocalizationConstants.CaptureRegions.Title],
             Topmost = false,
             CanResize = true,
             ShowInTaskbar = false,
@@ -57,9 +58,9 @@ internal static class CaptureRegionsDialog
             },
         });
 
-        var clearBtn = MakeButton(loc[LocalizationConstants.CaptureRegions.ClearAll], vm.ClearAllCommand);
-        var addCaptureBtn = MakeButton(loc[LocalizationConstants.CaptureRegions.AddCapture], vm.AddCaptureCommand);
-        var addIgnoreBtn = MakeButton(loc[LocalizationConstants.CaptureRegions.AddIgnore], vm.AddIgnoreCommand);
+        var clearBtn = MakeButton(localizationService[LocalizationConstants.CaptureRegions.ClearAll], vm.ClearAllCommand);
+        var addCaptureBtn = MakeButton(localizationService[LocalizationConstants.CaptureRegions.AddCapture], vm.AddCaptureCommand);
+        var addIgnoreBtn = MakeButton(localizationService[LocalizationConstants.CaptureRegions.AddIgnore], vm.AddIgnoreCommand);
 
         var leftBar = new StackPanel
         {
@@ -72,9 +73,9 @@ internal static class CaptureRegionsDialog
         leftBar.Children.Add(addIgnoreBtn);
         leftBar.Children.Add(clearBtn);
 
-        var saveBtn = MakeButton(loc["Settings_Save"], null);
+        var saveBtn = MakeButton(localizationService["Settings_Save"], null);
         saveBtn.Click += (_, _) => dialog.Close(true);
-        var cancelBtn = MakeButton(loc["Settings_Cancel"], null);
+        var cancelBtn = MakeButton(localizationService["Settings_Cancel"], null);
         cancelBtn.Click += (_, _) => dialog.Close(false);
 
         var rightBar = new StackPanel
@@ -108,7 +109,7 @@ internal static class CaptureRegionsDialog
 
         var waitingText = new TextBlock
         {
-            Text = loc[LocalizationConstants.CaptureRegions.WaitingCapture],
+            Text = localizationService[LocalizationConstants.CaptureRegions.WaitingCapture],
             TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -216,7 +217,7 @@ internal static class CaptureRegionsDialog
         {
             if (targetHwnd is null or 0)
             {
-                ApplySnapshot(CaptureRegionsSnapshotService.CreatePlaceholderSnapshot());
+                ApplySnapshot(snapshotService.CreatePlaceholderSnapshot());
                 return;
             }
 
@@ -225,7 +226,7 @@ internal static class CaptureRegionsDialog
             {
                 try
                 {
-                    var result = await CaptureRegionsSnapshotService.CaptureUntilStableAsync(
+                    var result = await snapshotService.CaptureUntilStableAsync(
                         profile, hwnd, cts.Token).ConfigureAwait(false);
                     if (result is null || cts.IsCancellationRequested)
                         return;
@@ -250,9 +251,9 @@ internal static class CaptureRegionsDialog
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         waitingText.Text = string.Format(
-                            loc.CurrentCulture,
-                            loc[LocalizationConstants.Status.Error],
-                            loc.FormatExceptionMessage(ex));
+                            localizationService.CurrentCulture,
+                            localizationService[LocalizationConstants.Status.Error],
+                            localizationService.FormatExceptionMessage(ex));
                     });
                 }
             });

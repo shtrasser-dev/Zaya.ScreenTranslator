@@ -3,17 +3,32 @@ using Zaya.ScreenTranslator.Impl.Shared.Services;
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 /// <summary>Scans and maintains plugin zips on disk.</summary>
-internal static class LocalPluginStore
+public sealed class LocalPluginStore : ILocalPluginStore
 {
-    public static Dictionary<string, PluginManifest> Scan(string pluginsDirectory)
+    private readonly IPluginHostCompatibility _pluginHostCompatibility;
+    private readonly IPluginManifestReader _pluginManifestReader;
+    private readonly IConfigurationPathService _configurationPathService;
+
+    public LocalPluginStore(
+        IPluginHostCompatibility pluginHostCompatibility,
+        IPluginManifestReader pluginManifestReader,
+        IConfigurationPathService configurationPathService)
+    {
+        _pluginHostCompatibility = pluginHostCompatibility;
+        _pluginManifestReader = pluginManifestReader;
+        _configurationPathService = configurationPathService;
+    }
+
+    public Dictionary<string, PluginManifest> Scan()
     {
         var result = new Dictionary<string, PluginManifest>(StringComparer.OrdinalIgnoreCase);
+        var pluginsDirectory = _configurationPathService.GetPluginsDirectory();
         if (!Directory.Exists(pluginsDirectory))
             return result;
 
         foreach (var zip in Directory.EnumerateFiles(pluginsDirectory, "*.zip"))
         {
-            var manifest = PluginManifestReader.ReadFromZip(zip);
+            var manifest = _pluginManifestReader.ReadFromZip(zip);
             if (manifest is null)
                 continue;
             result[Path.GetFileName(zip)] = manifest;
@@ -22,22 +37,19 @@ internal static class LocalPluginStore
         return result;
     }
 
-    /// <summary>
-    /// Removes zips whose <c>interfaceVersion</c> does not match the host-shipped interface NuGet.
-    /// Local builds that match the host interface (e.g. Translator 1.1.x) are kept even when
-    /// their update channel differs from the host app channel.
-    /// </summary>
-    public static void PurgeIncompatibleInterfaces(
-        string pluginsDirectory,
-        Dictionary<string, PluginManifest> localState)
+    public void PurgeIncompatibleInterfaces(Dictionary<string, PluginManifest> localState)
     {
+        var pluginsDirectory = _configurationPathService.GetPluginsDirectory();
+        if (!Directory.Exists(pluginsDirectory))
+            return;
+
         foreach (var zip in Directory.EnumerateFiles(pluginsDirectory, "*.zip"))
         {
             var fileName = Path.GetFileName(zip);
             localState.TryGetValue(fileName, out var manifest);
             if (manifest is null)
                 continue;
-            if (PluginHostCompatibility.IsInterfaceCompatible(manifest))
+            if (_pluginHostCompatibility.IsInterfaceCompatible(manifest))
                 continue;
 
             try { File.Delete(zip); }
@@ -45,9 +57,6 @@ internal static class LocalPluginStore
         }
     }
 
-    /// <summary>
-    /// True when the plugin declares an interface version that cannot load against the host NuGet.
-    /// </summary>
-    public static bool IsIncompatibleWithHost(PluginManifest manifest)
-        => !PluginHostCompatibility.IsInterfaceCompatible(manifest);
+    public bool IsIncompatibleWithHost(PluginManifest manifest)
+        => !_pluginHostCompatibility.IsInterfaceCompatible(manifest);
 }

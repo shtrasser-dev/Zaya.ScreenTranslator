@@ -6,7 +6,6 @@ using Zaya.Screenshot.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
-using Zaya.ScreenTranslator.Layout.Impl.Services;
 using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
 using Zaya.TranslatorCache.Services;
@@ -26,11 +25,14 @@ internal interface ITranslationSessionHost : IStatusHost
 
 internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 {
-    private readonly IApplicationProfileService _profileService;
-    private readonly TranslationLoopService _loopService;
-    private readonly TranslationHistoryService _history;
+    private readonly IApplicationProfileService _applicationProfileService;
+    private readonly ITranslationLoopService _translationLoopService;
+    private readonly ITranslationHistoryService _translationHistoryService;
+    private readonly IEngineFactory _engineFactory;
+    private readonly ILocalizationService _localizationService;
+    private readonly IConfigurationPathService _configurationPathService;
     private readonly TextOutputPresenter _textOutput;
-    private readonly ITranslationSessionHost _host;
+    private readonly ITranslationSessionHost _translationSessionHost;
     private readonly object _refreshLock = new();
 
     private Task? _loopTask;
@@ -46,17 +48,23 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
     private nint _sessionWindowHandle;
 
     public TranslationSessionCoordinator(
-        IApplicationProfileService profileService,
-        TranslationLoopService loopService,
-        TranslationHistoryService history,
+        IApplicationProfileService applicationProfileService,
+        ITranslationLoopService translationLoopService,
+        ITranslationHistoryService translationHistoryService,
+        IEngineFactory engineFactory,
+        ILocalizationService localizationService,
+        IConfigurationPathService configurationPathService,
         TextOutputPresenter textOutput,
-        ITranslationSessionHost host)
+        ITranslationSessionHost translationSessionHost)
     {
-        _profileService = profileService;
-        _loopService = loopService;
-        _history = history;
+        _applicationProfileService = applicationProfileService;
+        _translationLoopService = translationLoopService;
+        _translationHistoryService = translationHistoryService;
+        _engineFactory = engineFactory;
+        _localizationService = localizationService;
+        _configurationPathService = configurationPathService;
         _textOutput = textOutput;
-        _host = host;
+        _translationSessionHost = translationSessionHost;
     }
 
     public IOverlayLayoutSession? OverlaySession => _overlaySession;
@@ -77,7 +85,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         lock (_refreshLock)
             _pendingRefresh = TranslationModuleKind.None;
 
-        var cts = _host.LoopCts;
+        var cts = _translationSessionHost.LoopCts;
         if (cts is not null && !cts.IsCancellationRequested)
             cts.Cancel();
 
@@ -110,7 +118,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         if (pending == TranslationModuleKind.None)
             return;
 
-        var profile = _profileService.ActiveProfile;
+        var profile = _applicationProfileService.ActiveProfile;
         if (profile is null)
             return;
 
@@ -141,7 +149,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             _pendingRefresh = TranslationModuleKind.None;
 
         _sessionWindowHandle = handle;
-        _host.SetStatus(_host.Loc[LocalizationConstants.Status.CreatingSessions], isError: false);
+        _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.CreatingSessions], isError: false);
 
         IOCRService? ocr = null;
         ICaptureService? capture = null;
@@ -158,56 +166,65 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 
         try
         {
-            ocr = EngineFactory.CreateOcr(
+            ocr = _engineFactory.CreateOcr(
                 profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-            capture = EngineFactory.CreateCapture(
+            capture = _engineFactory.CreateCapture(
                 profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
 
             if (ocr is null || capture is null)
             {
                 AbortPendingStart(ocr, capture, null, null, null, null);
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.EngineNotFound], isError: true);
+                _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.EngineNotFound], isError: true);
                 return;
             }
 
-            textLayout = EngineFactory.CreateTextLayout(
+            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.Ocr] = ocr.EngineId;
+            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.Capture] = capture.EngineId;
+
+            textLayout = _engineFactory.CreateTextLayout(
                 profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
             if (textLayout is null)
             {
                 AbortPendingStart(ocr, capture, null, null, null, null);
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TextLayoutNotFound], isError: true);
+                _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.TextLayoutNotFound], isError: true);
                 return;
             }
 
-            translator = EngineFactory.CreateTranslator(
+            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TextLayout]
+                = textLayout.EngineId;
+
+            translator = _engineFactory.CreateTranslator(
                 profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
             if (translator is null)
             {
                 AbortPendingStart(ocr, capture, textLayout, null, null, null);
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorNotFound], isError: true);
+                _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.TranslatorNotFound], isError: true);
                 return;
             }
 
+            profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.Translator]
+                = translator.EngineId;
+
             var translatorCacheId = ResolveTranslatorCacheId(profile);
-            translatorCache = EngineFactory.CreateTranslatorCache(translatorCacheId);
+            translatorCache = _engineFactory.CreateTranslatorCache(translatorCacheId);
             if (translatorCache is null
                 && !string.Equals(translatorCacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
             {
-                translatorCache = new NoTranslatorCacheService();
+                translatorCache = _engineFactory.CreateTranslatorCache(NoTranslatorCacheService.EngineIdValue);
                 translatorCacheId = NoTranslatorCacheService.EngineIdValue;
             }
 
             if (translatorCache is null)
             {
                 AbortPendingStart(ocr, capture, textLayout, translator, null, null);
-                _host.SetStatus(_host.Loc[LocalizationConstants.Status.TranslatorCacheNotFound], isError: true);
+                _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.TranslatorCacheNotFound], isError: true);
                 return;
             }
 
             profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
                 = translatorCacheId;
 
-            if (_host.IsOverlayMode)
+            if (_translationSessionHost.IsOverlayMode)
             {
                 var created = await TryCreateOverlayAsync(profile, handle).ConfigureAwait(true);
                 if (created is null)
@@ -225,7 +242,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
                 WindowHandle = handle,
                 CaptureClientArea = true,
             };
-            var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+            var targetLanguage = _applicationProfileService.LoadScreenTranslatorProfile().TargetLanguage;
             var ctProbe = CancellationToken.None;
 
             captureSession = await CreateCaptureSessionAsync(capture, captureRegion, profile, ctProbe).ConfigureAwait(true);
@@ -242,7 +259,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             translatorSession?.Dispose();
             try { overlaySession?.Dispose(); } catch { /* ignore */ }
             AbortPendingStart(ocr, capture, textLayout, translator, translatorCache, overlayLayout);
-            _host.SetStatus(LocalizationService.Instance.FormatStoppedWithError(ex), isError: true);
+            _translationSessionHost.SetStatus(_localizationService.FormatStoppedWithError(ex), isError: true);
             return;
         }
 
@@ -271,33 +288,33 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             WindowHandle = handle,
         };
 
-        _host.LoopCts ??= new CancellationTokenSource();
-        var ct = _host.LoopCts.Token;
-        _host.IsRunning = true;
-        _host.SetStatus(_host.Loc[LocalizationConstants.Status.Starting]);
-        _host.SetTextOutputVisible(true);
+        _translationSessionHost.LoopCts ??= new CancellationTokenSource();
+        var ct = _translationSessionHost.LoopCts.Token;
+        _translationSessionHost.IsRunning = true;
+        _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.Starting]);
+        _translationSessionHost.SetTextOutputVisible(true);
 
         _loopTask = Task.Run(async () =>
         {
-            await _loopService.RunAsync(
+            await _translationLoopService.RunAsync(
                 runtime,
-                () => _profileService.ActiveProfile,
+                () => _applicationProfileService.ActiveProfile,
                 this,
                 ct,
                 text => _textOutput.UpdateText(text),
                 status => Dispatcher.UIThread.Post(() =>
                 {
                     if (string.Equals(status.Text, AppConstants.LoopStatus.Running, StringComparison.Ordinal))
-                        _host.SetLocalizedStatus(LocalizationConstants.Status.Running, statusKeyRunning);
+                        _translationSessionHost.SetLocalizedStatus(LocalizationConstants.Status.Running, statusKeyRunning);
                     else
-                        _host.SetStatus(status.Text, isError: status.IsError);
+                        _translationSessionHost.SetStatus(status.Text, isError: status.IsError);
                 }),
                 (capMs, ocrMs, trMs) => Dispatcher.UIThread.Post(() =>
-                    _host.TimingInfo = string.Format(
-                        LocalizationService.Instance.CurrentCulture,
-                        _host.Loc[LocalizationConstants.Timing.Format],
+                    _translationSessionHost.TimingInfo = string.Format(
+                        _localizationService.CurrentCulture,
+                        _translationSessionHost.Loc[LocalizationConstants.Timing.Format],
                         capMs, ocrMs, trMs)),
-                pairs => _history.AddRange(pairs));
+                pairs => _translationHistoryService.AddRange(pairs));
         });
 
         try
@@ -307,19 +324,19 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         catch (OperationCanceledException) { }
         catch (Exception ex)
         {
-            _host.SetStatus(LocalizationService.Instance.FormatStoppedWithError(ex), isError: true);
+            _translationSessionHost.SetStatus(_localizationService.FormatStoppedWithError(ex), isError: true);
         }
         finally
         {
             DisposeEngines();
-            _host.IsRunning = false;
-            if (_host.LoopCts is not null)
+            _translationSessionHost.IsRunning = false;
+            if (_translationSessionHost.LoopCts is not null)
             {
-                _host.LoopCts.Dispose();
-                _host.LoopCts = null;
+                _translationSessionHost.LoopCts.Dispose();
+                _translationSessionHost.LoopCts = null;
             }
             _loopTask = null;
-            await _host.ClearWindowSelectionIfProcessGoneAsync().ConfigureAwait(true);
+            await _translationSessionHost.ClearWindowSelectionIfProcessGoneAsync().ConfigureAwait(true);
         }
     }
 
@@ -329,7 +346,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture);
         if (string.IsNullOrWhiteSpace(engineId))
             engineId = SettingsConstants.EngineDefaults.Capture;
-        var capture = EngineFactory.CreateCapture(engineId)
+        var capture = _engineFactory.CreateCapture(engineId)
             ?? throw new InvalidOperationException("Capture engine not found.");
         var session = await CreateCaptureSessionAsync(capture, runtime.Region, profile, ct).ConfigureAwait(false);
 
@@ -346,7 +363,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr);
         if (string.IsNullOrWhiteSpace(engineId))
             engineId = SettingsConstants.EngineDefaults.Ocr;
-        var ocr = EngineFactory.CreateOcr(engineId)
+        var ocr = _engineFactory.CreateOcr(engineId)
             ?? throw new InvalidOperationException("OCR engine not found.");
         var session = await CreateOcrSessionAsync(ocr, profile, ct).ConfigureAwait(false);
 
@@ -363,7 +380,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var engineId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout);
         if (string.IsNullOrWhiteSpace(engineId))
             engineId = SettingsConstants.EngineDefaults.TextLayout;
-        var textLayout = EngineFactory.CreateTextLayout(engineId)
+        var textLayout = _engineFactory.CreateTextLayout(engineId)
             ?? throw new InvalidOperationException("Text layout engine not found.");
         var session = await CreateTextLayoutSessionAsync(textLayout, profile, ct).ConfigureAwait(false);
 
@@ -380,14 +397,14 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var translatorId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator);
         if (string.IsNullOrWhiteSpace(translatorId))
             translatorId = SettingsConstants.EngineDefaults.Translator;
-        var translator = EngineFactory.CreateTranslator(translatorId)
+        var translator = _engineFactory.CreateTranslator(translatorId)
             ?? throw new InvalidOperationException("Translator engine not found.");
 
         var cacheId = ResolveTranslatorCacheId(profile);
-        var translatorCache = EngineFactory.CreateTranslatorCache(cacheId);
+        var translatorCache = _engineFactory.CreateTranslatorCache(cacheId);
         if (translatorCache is null
             && !string.Equals(cacheId, NoTranslatorCacheService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
-            translatorCache = new NoTranslatorCacheService();
+            translatorCache = _engineFactory.CreateTranslatorCache(NoTranslatorCacheService.EngineIdValue);
         if (translatorCache is null)
         {
             translator.Dispose();
@@ -396,7 +413,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 
         profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.TranslatorCache]
             = cacheId;
-        var targetLanguage = _profileService.LoadScreenTranslatorProfile().TargetLanguage;
+        var targetLanguage = _applicationProfileService.LoadScreenTranslatorProfile().TargetLanguage;
         var session = await CreateTranslatorSessionAsync(
             translator, translatorCache, profile, targetLanguage, ct).ConfigureAwait(false);
 
@@ -416,7 +433,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
     {
         ct.ThrowIfCancellationRequested();
 
-        if (!_host.IsOverlayMode)
+        if (!_translationSessionHost.IsOverlayMode)
         {
             var old = runtime.OverlaySession;
             runtime.OverlaySession = null;
@@ -442,7 +459,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            _host.SetTextOutputVisible(true);
+            _translationSessionHost.SetTextOutputVisible(true);
             created.Value.Session.SetVisible(true);
         }).GetTask().ConfigureAwait(false);
     }
@@ -453,19 +470,22 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
     {
         var overlayId = profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout);
         if (string.IsNullOrWhiteSpace(overlayId))
-            overlayId = ScreenOverlayLayoutService.EngineIdValue;
+            overlayId = SettingsConstants.EngineDefaults.OverlayLayout;
 
-        var overlayLayout = EngineFactory.CreateOverlayLayout(overlayId);
+        var overlayLayout = _engineFactory.CreateOverlayLayout(overlayId);
         if (overlayLayout is null || !overlayLayout.IsAvailable)
         {
             overlayLayout?.Dispose();
-            _host.SetStatus(_host.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
+            _translationSessionHost.SetStatus(_translationSessionHost.Loc[LocalizationConstants.Status.OverlayUnavailable], isError: true);
             return null;
         }
 
-        var overlaySettings = new Dictionary<string, object>(GetOrCreatePluginSettings(profile, overlayId));
+        profile.Settings[ScreenTranslatorSettingDescriptors.StKey][ScreenTranslatorSettingDescriptors.OverlayLayout]
+            = overlayLayout.EngineId;
+
+        var overlaySettings = new Dictionary<string, object>(GetOrCreatePluginSettings(profile, overlayLayout.EngineId));
         overlaySettings[ManagedSettingKeys.TargetWindowHandle] = handle.ToInt64();
-        GetOrCreatePluginSettings(profile, overlayId).Remove(ManagedSettingKeys.TargetWindowHandle);
+        GetOrCreatePluginSettings(profile, overlayLayout.EngineId).Remove(ManagedSettingKeys.TargetWindowHandle);
 
         try
         {
@@ -477,9 +497,9 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         catch (Exception ex)
         {
             overlayLayout.Dispose();
-            _host.SetStatus(string.Format(
-                _host.Loc[LocalizationConstants.Status.OverlayFailed],
-                LocalizationService.Instance.FormatExceptionMessage(ex)), isError: true);
+            _translationSessionHost.SetStatus(string.Format(
+                _translationSessionHost.Loc[LocalizationConstants.Status.OverlayFailed],
+                _localizationService.FormatExceptionMessage(ex)), isError: true);
             return null;
         }
     }
@@ -500,7 +520,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
                 }
 
                 if (pairs.Count > 0)
-                    _history.AddRange(pairs);
+                    _translationHistoryService.AddRange(pairs);
                 return translated;
             }
             catch (OperationCanceledException)
@@ -512,10 +532,10 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
                 // Transient translator failures must not stop the capture loop
                 // (translate now runs inside overlay PresentAsync).
                 var msg = string.Format(
-                    LocalizationService.Instance.CurrentCulture,
-                    LocalizationService.Instance[LocalizationConstants.Status.Error],
-                    LocalizationService.Instance.FormatExceptionMessage(ex));
-                Dispatcher.UIThread.Post(() => _host.SetStatus(msg, isError: true));
+                    _localizationService.CurrentCulture,
+                    _localizationService[LocalizationConstants.Status.Error],
+                    _localizationService.FormatExceptionMessage(ex));
+                Dispatcher.UIThread.Post(() => _translationSessionHost.SetStatus(msg, isError: true));
                 await Task.Delay(1000, token).ConfigureAwait(false);
                 return texts;
             }
@@ -530,7 +550,7 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         return translatorCacheId;
     }
 
-    private static async Task<ICaptureSession> CreateCaptureSessionAsync(
+    private async Task<ICaptureSession> CreateCaptureSessionAsync(
         ICaptureService capture,
         ICaptureRegion region,
         IApplicationProfile profile,
@@ -539,10 +559,10 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var settings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
         return await capture.CreateSessionAsync(region,
-            ManagedSettingKeys.PrepareForEngine(capture.EngineId, capture.Settings, settings), ct);
+            ManagedSettingKeys.PrepareForEngine(_configurationPathService, capture.EngineId, capture.Settings, settings), ct);
     }
 
-    private static async Task<IOCRSession> CreateOcrSessionAsync(
+    private async Task<IOCRSession> CreateOcrSessionAsync(
         IOCRService ocr,
         IApplicationProfile profile,
         CancellationToken ct)
@@ -550,10 +570,10 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var settings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
         return await ocr.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(ocr.EngineId, ocr.Settings, settings), ct);
+            ManagedSettingKeys.PrepareForEngine(_configurationPathService, ocr.EngineId, ocr.Settings, settings), ct);
     }
 
-    private static async Task<ITextLayoutSession> CreateTextLayoutSessionAsync(
+    private async Task<ITextLayoutSession> CreateTextLayoutSessionAsync(
         ITextLayoutService textLayout,
         IApplicationProfile profile,
         CancellationToken ct)
@@ -561,10 +581,10 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         var settings = GetOrCreatePluginSettings(profile,
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
         return await textLayout.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(textLayout.EngineId, textLayout.Settings, settings), ct);
+            ManagedSettingKeys.PrepareForEngine(_configurationPathService, textLayout.EngineId, textLayout.Settings, settings), ct);
     }
 
-    private static async Task<ITranslatorSession> CreateTranslatorSessionAsync(
+    private async Task<ITranslatorSession> CreateTranslatorSessionAsync(
         ITranslatorService translator,
         ITranslatorCacheService translatorCache,
         IApplicationProfile profile,
@@ -577,10 +597,10 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
             profile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache));
 
         var raw = await translator.CreateSessionAsync(
-            ManagedSettingKeys.PrepareForEngine(translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
+            ManagedSettingKeys.PrepareForEngine(_configurationPathService, translator.EngineId, translator.Settings, trSettings, targetLanguage), ct);
         return await translatorCache.WrapSessionAsync(
             raw,
-            ManagedSettingKeys.PrepareForEngine(translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
+            ManagedSettingKeys.PrepareForEngine(_configurationPathService, translatorCache.EngineId, translatorCache.Settings, cacheSettings), ct);
     }
 
     private void AbortPendingStart(
@@ -597,12 +617,12 @@ internal sealed class TranslationSessionCoordinator : ITranslationModuleRefresh
         DisposeQuietly(translator);
         DisposeQuietly(translatorCache);
         DisposeQuietly(overlayLayout);
-        _host.IsRunning = false;
-        if (_host.LoopCts is null)
+        _translationSessionHost.IsRunning = false;
+        if (_translationSessionHost.LoopCts is null)
             return;
 
-        _host.LoopCts.Dispose();
-        _host.LoopCts = null;
+        _translationSessionHost.LoopCts.Dispose();
+        _translationSessionHost.LoopCts = null;
     }
 
     private void DisposeEngines()

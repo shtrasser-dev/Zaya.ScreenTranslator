@@ -21,8 +21,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
+    <PackageReference Include="Zaya.Logging" Version="$(ZayaLoggingVersion)" />
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
+    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
   </ItemGroup>
 
 </Project>

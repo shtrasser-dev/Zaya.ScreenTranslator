@@ -20,16 +20,21 @@ public sealed partial class MainViewModel :
     ITextOutputHost,
     ITranslationSessionHost
 {
-    private readonly IApplicationProfileService _profileService;
-    private readonly IScreenTranslatorContext _context;
+    private readonly IApplicationProfileService _applicationProfileService;
+    private readonly IScreenTranslatorContext _screenTranslatorContext;
     private readonly ISettingsService _settingsService;
-    private readonly PluginUpdateService _pluginUpdateService;
-    private readonly HostVersionChecker _hostVersionChecker;
+    private readonly IPluginUpdateService _pluginUpdateService;
+    private readonly IHostVersionChecker _hostVersionChecker;
+    private readonly ICaptureRegionsStore _captureRegionsStore;
+    private readonly ICaptureRegionsSnapshotService _captureRegionsSnapshotService;
+    private readonly IProcessIconLoader _processIconLoader;
 
     private readonly CaptureWindowResolver _captureResolver;
     private readonly TranslationSessionCoordinator _sessionCoordinator;
     private readonly ProfilePickerService _profilePicker;
     private readonly TextOutputPresenter _textOutput;
+    private readonly ILocalizationService _localizationService;
+    private readonly IConfigurationPathService _configurationPathService;
 
     private WindowInfo? _lastSelectedWindow;
     private string? _committedProfileName;
@@ -41,36 +46,49 @@ public sealed partial class MainViewModel :
     private TranslationModuleKind _pendingModuleRefresh;
 
     public MainViewModel(
-        IApplicationProfileService profileService,
-        IScreenTranslatorContext context,
+        IApplicationProfileService applicationProfileService,
+        IScreenTranslatorContext screenTranslatorContext,
         ISettingsService settingsService,
-        TranslationLoopService loopService,
-        PluginUpdateService pluginUpdateService,
-        HostVersionChecker hostVersionChecker,
-        TranslationHistoryService history)
+        ITranslationLoopService translationLoopService,
+        IPluginUpdateService pluginUpdateService,
+        IHostVersionChecker hostVersionChecker,
+        ICaptureRegionsStore captureRegionsStore,
+        ICaptureRegionsSnapshotService captureRegionsSnapshotService,
+        IProcessIconLoader processIconLoader,
+        IEngineFactory engineFactory,
+        ITranslationHistoryService translationHistoryService,
+        ILocalizationService localizationService,
+        IConfigurationPathService configurationPathService)
     {
-        _profileService = profileService;
-        _context = context;
+        _applicationProfileService = applicationProfileService;
+        _screenTranslatorContext = screenTranslatorContext;
         _settingsService = settingsService;
         _pluginUpdateService = pluginUpdateService;
         _hostVersionChecker = hostVersionChecker;
+        _captureRegionsStore = captureRegionsStore;
+        _captureRegionsSnapshotService = captureRegionsSnapshotService;
+        _processIconLoader = processIconLoader;
+        _localizationService = localizationService;
+        _configurationPathService = configurationPathService;
+        Loc = new LocalizedStrings(localizationService);
 
         TranslationSessionCoordinator? session = null;
         _textOutput = new TextOutputPresenter(
-            profileService, history, LocalizationService.Instance, this, () => session!.OverlaySession);
-        _sessionCoordinator = new TranslationSessionCoordinator(profileService, loopService, history, _textOutput, this);
+            applicationProfileService, translationHistoryService, localizationService, this, () => session!.OverlaySession);
+        _sessionCoordinator = new TranslationSessionCoordinator(
+            applicationProfileService, translationLoopService, translationHistoryService, engineFactory, localizationService, configurationPathService, _textOutput, this);
         session = _sessionCoordinator;
-        _captureResolver = new CaptureWindowResolver(this);
-        _profilePicker = new ProfilePickerService(profileService, settingsService, this);
+        _captureResolver = new CaptureWindowResolver(this, processIconLoader);
+        _profilePicker = new ProfilePickerService(applicationProfileService, settingsService, this);
 
-        _profileNames = SortedProfileNames(profileService.ListProfileNames());
-        _selectedProfileName = profileService.ActiveProfile?.ScreenTranslatorSettings
+        _profileNames = SortedProfileNames(applicationProfileService.ListProfileNames());
+        _selectedProfileName = applicationProfileService.ActiveProfile?.ScreenTranslatorSettings
             .GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName)
                                ?? _profileNames.FirstOrDefault();
         _committedProfileName = _selectedProfileName;
         _windows = [];
 
-        var screen = profileService.LoadScreenTranslatorProfile();
+        var screen = applicationProfileService.LoadScreenTranslatorProfile();
         var displayModeId = screen.DisplayMode is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
             ? screen.DisplayMode
             : AppConstants.DisplayMode.Overlay;
@@ -91,9 +109,9 @@ public sealed partial class MainViewModel :
 
     public sealed record TargetLanguageItem(string Code, string Name);
 
-    private static IReadOnlyList<TargetLanguageItem> BuildTargetLanguages() =>
+    private IReadOnlyList<TargetLanguageItem> BuildTargetLanguages() =>
         Languages.All
-            .Select(o => new TargetLanguageItem(o.Value, o.DisplayName.GetValue(LocalizationService.Instance.CurrentCulture)))
+            .Select(o => new TargetLanguageItem(o.Value, o.DisplayName.GetValue(_localizationService.CurrentCulture)))
             .ToList();
 
     [ObservableProperty] private IReadOnlyList<TargetLanguageItem> _targetLanguages = [];
@@ -102,11 +120,11 @@ public sealed partial class MainViewModel :
     partial void OnSelectedTargetLanguageChanged(TargetLanguageItem? value)
     {
         if (value is null) return;
-        var screen = _profileService.LoadScreenTranslatorProfile();
+        var screen = _applicationProfileService.LoadScreenTranslatorProfile();
         if (string.Equals(screen.TargetLanguage, value.Code, StringComparison.OrdinalIgnoreCase))
             return;
         screen.TargetLanguage = value.Code;
-        _profileService.SaveScreenTranslatorProfile(screen);
+        _applicationProfileService.SaveScreenTranslatorProfile(screen);
         ScheduleModulesRefreshIfRunning(TranslationModuleKind.Translator);
     }
 
@@ -259,11 +277,11 @@ public sealed partial class MainViewModel :
     partial void OnSelectedDisplayModeOptionChanged(DisplayModeOption? oldValue, DisplayModeOption? newValue)
     {
         if (newValue is null) return;
-        var screen = _profileService.LoadScreenTranslatorProfile();
+        var screen = _applicationProfileService.LoadScreenTranslatorProfile();
         screen.DisplayMode = newValue.Id is AppConstants.DisplayMode.Overlay or AppConstants.DisplayMode.TextWindow
             ? newValue.Id
             : AppConstants.DisplayMode.Overlay;
-        _profileService.SaveScreenTranslatorProfile(screen);
+        _applicationProfileService.SaveScreenTranslatorProfile(screen);
         _textOutput.OnDisplayModeChanged(newValue.Id);
         if (oldValue is not null
             && !string.Equals(oldValue.Id, newValue.Id, StringComparison.OrdinalIgnoreCase))
@@ -293,10 +311,10 @@ public sealed partial class MainViewModel :
 
     internal CancellationTokenSource? LoopCts { get; set; }
 
-    public LocalizationService Localization => LocalizationService.Instance;
-    public LocalizedStrings Loc { get; private set; } = new(LocalizationService.Instance);
-    public IApplicationProfileService ProfileService => _profileService;
-    public IScreenTranslatorContext Context => _context;
+    public ILocalizationService Localization => _localizationService;
+    public LocalizedStrings Loc { get; private set; }
+    public IApplicationProfileService ProfileService => _applicationProfileService;
+    public IScreenTranslatorContext Context => _screenTranslatorContext;
 
     public void CancelLoop() => _sessionCoordinator.CancelLoop();
     public Task StopLoopAsync() => _sessionCoordinator.StopLoopAsync();
@@ -399,7 +417,7 @@ public sealed partial class MainViewModel :
 
     private async Task StartTranslationSessionAsync()
     {
-        var profile = _profileService.ActiveProfile;
+        var profile = _applicationProfileService.ActiveProfile;
         if (profile is null)
         {
             SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
@@ -437,14 +455,14 @@ public sealed partial class MainViewModel :
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task OpenCaptureRegions()
     {
-        var profile = _profileService.ActiveProfile;
+        var profile = _applicationProfileService.ActiveProfile;
         if (profile is null)
         {
             SetStatus(Loc[LocalizationConstants.Status.NoActiveProfile], isError: true);
             return;
         }
 
-        var initial = CaptureRegionsStore.Load(profile);
+        var initial = _captureRegionsStore.Load(profile);
         nint? targetHwnd = SelectedWindow is { IsLoadingPlaceholder: false, Handle: not 0 } window
             ? window.Handle
             : null;
@@ -470,12 +488,13 @@ public sealed partial class MainViewModel :
         if (owner is null)
             return;
 
-        var result = await CaptureRegionsDialog.ShowAsync(owner, profile, targetHwnd, initial);
+        var result = await CaptureRegionsDialog.ShowAsync(
+            owner, profile, targetHwnd, initial, _captureRegionsSnapshotService, _localizationService);
         if (result is null)
             return;
 
-        CaptureRegionsStore.Save(profile, result);
-        _profileService.Save(profile);
+        _captureRegionsStore.Save(profile, result);
+        _applicationProfileService.Save(profile);
         RefreshCaptureRegionsIndicator();
 
         if (wasRunning)
@@ -492,8 +511,8 @@ public sealed partial class MainViewModel :
 
     internal void RefreshCaptureRegionsIndicator()
     {
-        var profile = _profileService.ActiveProfile;
-        HasCaptureRegionsConfigured = profile is not null && !CaptureRegionsStore.Load(profile).IsEmpty;
+        var profile = _applicationProfileService.ActiveProfile;
+        HasCaptureRegionsConfigured = profile is not null && !_captureRegionsStore.Load(profile).IsEmpty;
         OnPropertyChanged(nameof(CaptureRegionsTooltip));
     }
 

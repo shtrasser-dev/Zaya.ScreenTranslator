@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Zaya.Primitives;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 
@@ -29,6 +30,7 @@ public static class SettingControlFactory
         IReadOnlyDictionary<string, object?> allSettings,
         Action<string, object?> onChanged,
         CultureInfo culture,
+        ILocalizationService localizationService,
         bool includeTrailingDivider = true)
     {
         var displayName = descriptor.DisplayName.GetValue(culture);
@@ -62,11 +64,11 @@ public static class SettingControlFactory
                 });
             }
 
-            vertical.Children.Add(SettingTableEditor.Create(tableDesc, currentValue, onChanged, culture));
+            vertical.Children.Add(SettingTableEditor.Create(tableDesc, currentValue, onChanged, culture, localizationService));
             return includeTrailingDivider ? WithDivider(vertical) : vertical;
         }
 
-        var control = SettingEditorFactory.CreateEditor(descriptor, currentValue, allSettings, onChanged, culture);
+        var control = SettingEditorFactory.CreateEditor(descriptor, currentValue, allSettings, onChanged, culture, localizationService);
         var row = CreateSettingsRow(displayName, description, control);
         return includeTrailingDivider ? WithDivider(row) : row;
     }

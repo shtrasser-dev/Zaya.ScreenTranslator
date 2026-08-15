@@ -20,7 +20,8 @@ internal static class SettingTableEditor
         TableSettingDescriptor tableDesc,
         object? currentValue,
         Action<string, object?> onChanged,
-        CultureInfo culture)
+        CultureInfo culture,
+        ILocalizationService localizationService)
     {
         var rows = SettingTableLayout.NormalizeMutableRows(currentValue);
         var root = new StackPanel { Spacing = 6 };
@@ -91,6 +92,7 @@ internal static class SettingTableEditor
                                 ApplyTableRowEnabledOpacity(rowGrid, row, tableDesc);
                         },
                         culture,
+                        localizationService,
                         tableCell: true);
 
                     if (editor is not null)
@@ -121,7 +123,7 @@ internal static class SettingTableEditor
                     Padding = new Avalonia.Thickness(6, 2),
                     HorizontalAlignment = HorizontalAlignment.Center,
                 };
-                ToolTip.SetTip(removeBtn, LocalizationService.Instance[LocalizationConstants.Table.RemoveRule]);
+                ToolTip.SetTip(removeBtn, localizationService[LocalizationConstants.Table.RemoveRule]);
                 removeBtn.Click += (_, _) =>
                 {
                     if (index < 0 || index >= rows.Count)
@@ -139,7 +141,7 @@ internal static class SettingTableEditor
 
         var addBtn = new Button
         {
-            Content = LocalizationService.Instance[LocalizationConstants.Table.AddRule],
+            Content = localizationService[LocalizationConstants.Table.AddRule],
             HorizontalAlignment = HorizontalAlignment.Left,
             Margin = new Avalonia.Thickness(0, 4, 0, 0),
         };

@@ -12,7 +12,8 @@ public sealed partial class MainViewModel
 {
     private SettingsViewModel CreateSettingsViewModel()
     {
-        var vm = new SettingsViewModel(_settingsService, _profileService, Localization, _pluginUpdateService, _hostVersionChecker);
+        var vm = new SettingsViewModel(
+            _settingsService, _applicationProfileService, Localization, _pluginUpdateService, _hostVersionChecker, _configurationPathService);
         vm.UiCultureChanged = RefreshUiForCulture;
         vm.TranslationModulesChanged = ScheduleModulesRefreshIfRunning;
         vm.DeleteProfileCommand = DeleteProfileCommand;
@@ -102,13 +103,13 @@ public sealed partial class MainViewModel
     private async Task CloseSettingsPanelAsync()
     {
         _profilePicker.RefreshProfilePicker();
-        var activeName = _profileService.ActiveProfile?.ScreenTranslatorSettings
+        var activeName = _applicationProfileService.ActiveProfile?.ScreenTranslatorSettings
             .GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName)
             ?? ProfileNames.FirstOrDefault();
         _committedProfileName = activeName;
         _profilePicker.SetSelectedProfileSilent(activeName);
 
-        var screen = _profileService.LoadScreenTranslatorProfile();
+        var screen = _applicationProfileService.LoadScreenTranslatorProfile();
         RebuildDisplayModeOptions(screen.DisplayMode);
 
         if (Settings is not null)
@@ -145,9 +146,9 @@ public sealed partial class MainViewModel
         }
         else
         {
-            var screen = _profileService.LoadScreenTranslatorProfile();
+            var screen = _applicationProfileService.LoadScreenTranslatorProfile();
             screen.Theme = next;
-            _profileService.SaveScreenTranslatorProfile(screen);
+            _applicationProfileService.SaveScreenTranslatorProfile(screen);
             if (Application.Current is not null)
             {
                 Application.Current.RequestedThemeVariant = next == AppConstants.Theme.Dark

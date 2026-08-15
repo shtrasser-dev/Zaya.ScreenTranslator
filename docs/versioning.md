@@ -4,7 +4,7 @@
 
 | Artifact | Rule |
 |----------|------|
-| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.1.3` |
+| App `Version` | `Major.HostMinor.HostPatch` from `Directory.Build.props` (`ZayaHostVersionMinor` / `Patch`) → currently `1.2.0` |
 | Release tags | Immutable `app-v{ver}`; optional floating `app-v{channel}-latest` (`channel` = `MAJOR.MINOR`); asset `Zaya.ScreenTranslator-{ver}.zip` |
 
 Host does not self-replace the exe; it opens the GitHub release page when a newer immutable `app-v*` exists (newest version across all channels).
@@ -34,7 +34,7 @@ Use root [`CHANGELOG.md`](../CHANGELOG.md) ([Keep a Changelog](https://keepachan
 
 1. While working, append notes under `## [Unreleased]`.
 2. Run the Publish workflow — GitHub Release body is taken from `[Unreleased]` (plus release metadata). There is no changelog input on the action.
-3. After a successful publish, move that block to a dated section, e.g. `## [1.1.4] - 2026-08-12`, and leave `[Unreleased]` empty for the next cycle.
+3. After a successful publish, move that block to a dated section, e.g. `## [1.2.0] - 2026-08-15`, and leave `[Unreleased]` empty for the next cycle.
 
 Do not backfill older releases; history starts from the current line.
 

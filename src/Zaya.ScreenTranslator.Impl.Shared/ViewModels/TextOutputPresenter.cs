@@ -17,10 +17,10 @@ internal interface ITextOutputHost : IStatusHost
 
 internal sealed class TextOutputPresenter
 {
-    private readonly IApplicationProfileService _profileService;
-    private readonly TranslationHistoryService _history;
-    private readonly LocalizationService _localization;
-    private readonly ITextOutputHost _host;
+    private readonly IApplicationProfileService _applicationProfileService;
+    private readonly ITranslationHistoryService _translationHistoryService;
+    private readonly ILocalizationService _localizationService;
+    private readonly ITextOutputHost _textOutputHost;
     private readonly Func<IOverlayLayoutSession?> _getOverlaySession;
 
     private Window? _textWindow;
@@ -28,38 +28,38 @@ internal sealed class TextOutputPresenter
     private HistoryViewModel? _historyViewModel;
 
     public TextOutputPresenter(
-        IApplicationProfileService profileService,
-        TranslationHistoryService history,
-        LocalizationService localization,
-        ITextOutputHost host,
+        IApplicationProfileService applicationProfileService,
+        ITranslationHistoryService translationHistoryService,
+        ILocalizationService localizationService,
+        ITextOutputHost textOutputHost,
         Func<IOverlayLayoutSession?> getOverlaySession)
     {
-        _profileService = profileService;
-        _history = history;
-        _localization = localization;
-        _host = host;
+        _applicationProfileService = applicationProfileService;
+        _translationHistoryService = translationHistoryService;
+        _localizationService = localizationService;
+        _textOutputHost = textOutputHost;
         _getOverlaySession = getOverlaySession;
     }
 
-    public void ToggleTextOutput() => SetTextOutputVisible(!_host.IsTextWindowVisible);
+    public void ToggleTextOutput() => SetTextOutputVisible(!_textOutputHost.IsTextWindowVisible);
 
     public void SetTextOutputVisible(bool visible)
     {
-        _host.IsTextWindowVisible = visible;
+        _textOutputHost.IsTextWindowVisible = visible;
 
-        if (_host.IsOverlayMode)
+        if (_textOutputHost.IsOverlayMode)
         {
             var overlaySession = _getOverlaySession();
             if (overlaySession is not null)
-                overlaySession.SetVisible(_host.IsTextWindowVisible);
-            else if (_host.IsTextWindowVisible)
-                _host.SetStatus(_host.Loc[LocalizationConstants.Overlay.NeedStart], isError: true);
+                overlaySession.SetVisible(_textOutputHost.IsTextWindowVisible);
+            else if (_textOutputHost.IsTextWindowVisible)
+                _textOutputHost.SetStatus(_textOutputHost.Loc[LocalizationConstants.Overlay.NeedStart], isError: true);
             return;
         }
 
         EnsureTextWindow();
 
-        if (_host.IsTextWindowVisible)
+        if (_textOutputHost.IsTextWindowVisible)
             _textWindow!.Show();
         else
             _textWindow!.Hide();
@@ -72,13 +72,13 @@ internal sealed class TextOutputPresenter
             if (_textWindow is not null)
             {
                 _textWindow.Hide();
-                _host.IsTextWindowVisible = false;
+                _textOutputHost.IsTextWindowVisible = false;
             }
 
             var overlaySession = _getOverlaySession();
             if (overlaySession is not null)
             {
-                _host.IsTextWindowVisible = true;
+                _textOutputHost.IsTextWindowVisible = true;
                 overlaySession.SetVisible(true);
             }
         }
@@ -92,7 +92,7 @@ internal sealed class TextOutputPresenter
     {
         if (_historyWindow is null)
         {
-            _historyViewModel = new HistoryViewModel(_history, _localization);
+            _historyViewModel = new HistoryViewModel(_translationHistoryService, _localizationService);
             _historyWindow = new HistoryWindow { DataContext = _historyViewModel };
         }
         else
@@ -133,13 +133,13 @@ internal sealed class TextOutputPresenter
         {
             tw.ForceClose();
             _textWindow = null;
-            _host.IsTextWindowVisible = false;
+            _textOutputHost.IsTextWindowVisible = false;
         }
         else if (_textWindow is not null)
         {
             _textWindow.Close();
             _textWindow = null;
-            _host.IsTextWindowVisible = false;
+            _textOutputHost.IsTextWindowVisible = false;
         }
     }
 
@@ -187,8 +187,8 @@ internal sealed class TextOutputPresenter
         if (_textWindow is not null)
             return;
 
-        var screenProfile = _profileService.LoadScreenTranslatorProfile();
-        var vm = new TextWindowViewModel
+        var screenProfile = _applicationProfileService.LoadScreenTranslatorProfile();
+        var vm = new TextWindowViewModel(_localizationService)
         {
             IsTopmost = screenProfile.TextWindow.Topmost
         };

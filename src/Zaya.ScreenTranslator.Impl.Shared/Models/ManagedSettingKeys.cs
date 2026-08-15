@@ -1,4 +1,5 @@
 using Zaya.Primitives;
+using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Models;
 
@@ -30,6 +31,7 @@ public static class ManagedSettingKeys
     /// Copies stored plugin settings and overwrites host-managed keys when the plugin declares them.
     /// </summary>
     public static Dictionary<string, object> PrepareForEngine(
+        IConfigurationPathService configurationPathService,
         string engineId,
         IReadOnlyList<SettingDescriptor> descriptors,
         IReadOnlyDictionary<string, object> stored,
@@ -39,7 +41,7 @@ public static class ManagedSettingKeys
 
         if (descriptors.Any(d => d.Key == CacheDirectory))
         {
-            var path = AppPaths.GetPluginCacheDirectory(engineId);
+            var path = Path.Combine(configurationPathService.GetCachePluginsDirectory(), engineId);
             Directory.CreateDirectory(path);
             result[CacheDirectory] = path;
         }

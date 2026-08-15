@@ -6,16 +6,16 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
 public sealed partial class HistoryViewModel : ObservableObject
 {
-    private readonly TranslationHistoryService _history;
-    private readonly LocalizationService _loc;
+    private readonly ITranslationHistoryService _translationHistoryService;
+    private readonly ILocalizationService _localizationService;
 
-    public HistoryViewModel(TranslationHistoryService history, LocalizationService loc)
+    public HistoryViewModel(ITranslationHistoryService translationHistoryService, ILocalizationService localizationService)
     {
-        _history = history;
-        _loc = loc;
-        Loc = new LocalizedStrings(loc);
+        _translationHistoryService = translationHistoryService;
+        _localizationService = localizationService;
+        Loc = new LocalizedStrings(localizationService);
         Refresh();
-        _history.Changed += OnHistoryChanged;
+        _translationHistoryService.Changed += OnHistoryChanged;
     }
 
     public LocalizedStrings Loc { get; private set; }
@@ -25,17 +25,17 @@ public sealed partial class HistoryViewModel : ObservableObject
 
     public void RefreshLocalization()
     {
-        Loc = new LocalizedStrings(_loc);
+        Loc = new LocalizedStrings(_localizationService);
         OnPropertyChanged(nameof(Loc));
     }
 
-    public void Detach() => _history.Changed -= OnHistoryChanged;
+    public void Detach() => _translationHistoryService.Changed -= OnHistoryChanged;
 
     private void OnHistoryChanged() =>
         Avalonia.Threading.Dispatcher.UIThread.Post(Refresh);
 
-    public void Refresh() => HistoryText = _history.FormatDisplayText();
+    public void Refresh() => HistoryText = _translationHistoryService.FormatDisplayText();
 
     [RelayCommand]
-    private void ClearHistory() => _history.Clear();
+    private void ClearHistory() => _translationHistoryService.Clear();
 }

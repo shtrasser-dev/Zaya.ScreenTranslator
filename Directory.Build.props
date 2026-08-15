@@ -3,14 +3,14 @@
     <ZayaPrimitivesVersion>1.0.0</ZayaPrimitivesVersion>
     <ZayaPrimitivesMajor>$([System.Version]::Parse('$(ZayaPrimitivesVersion)').Major)</ZayaPrimitivesMajor>
 
-    <!-- Host-consumed interface / layout packages (NuGet). -->
-    <ZayaOcrVersion>1.2.0</ZayaOcrVersion>
-    <ZayaScreenshotVersion>1.2.0</ZayaScreenshotVersion>
-    <ZayaTranslatorVersion>1.1.0</ZayaTranslatorVersion>
-    <ZayaTranslatorCacheVersion>1.0.0</ZayaTranslatorCacheVersion>
+    <ZayaLoggingVersion>1.0.0</ZayaLoggingVersion>
+    <ZayaOcrVersion>1.3.0</ZayaOcrVersion>
+    <ZayaScreenshotVersion>1.3.0</ZayaScreenshotVersion>
+    <ZayaTranslatorVersion>1.2.0</ZayaTranslatorVersion>
+    <ZayaTranslatorCacheVersion>1.1.0</ZayaTranslatorCacheVersion>
 
     <!-- Host app default (Windows/Unix/Shared) when ZayaVersionRole is unset. -->
-    <ZayaHostVersionMinor>1</ZayaHostVersionMinor>
-    <ZayaHostVersionPatch>3</ZayaHostVersionPatch>
+    <ZayaHostVersionMinor>2</ZayaHostVersionMinor>
+    <ZayaHostVersionPatch>0</ZayaHostVersionPatch>
   </PropertyGroup>
 </Project>

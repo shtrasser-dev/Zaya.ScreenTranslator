@@ -21,11 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
-    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
-    <PackageReference Include="Zaya.Screenshot" Version="$(ZayaScreenshotVersion)" />
-    <PackageReference Include="Zaya.Translator" Version="$(ZayaTranslatorVersion)" />
-    <PackageReference Include="Zaya.TranslatorCache" Version="$(ZayaTranslatorCacheVersion)" />
     <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />
     <PackageReference Include="Avalonia.Skia" Version="12.1.0" />
@@ -33,15 +28,26 @@
     <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.10" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
     <PackageReference Include="System.Text.Json" Version="10.0.10" />
+    <PackageReference Include="Zaya.Logging" Version="$(ZayaLoggingVersion)" />
+    <PackageReference Include="Zaya.Logging.Impl" Version="$(ZayaLoggingVersion)" />
+    <PackageReference Include="Zaya.Logging.Impl.Microsoft" Version="$(ZayaLoggingVersion)" />
+    <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
+    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
+    <PackageReference Include="Zaya.Screenshot" Version="$(ZayaScreenshotVersion)" />
+    <PackageReference Include="Zaya.Translator" Version="$(ZayaTranslatorVersion)" />
+    <PackageReference Include="Zaya.TranslatorCache" Version="$(ZayaTranslatorCacheVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Remove="Assets\*.json" />
     <EmbeddedResource Include="Update\builtin-plugins.json" />
-    <EmbeddedResource Include="Services\default-profile.json" />
-    <EmbeddedResource Include="Services\manga-profile.json" />
+    <EmbeddedResource Include="Assets\default-profile.json" />
+    <EmbeddedResource Include="Assets\manga-profile.json" />
   </ItemGroup>
 
 </Project>

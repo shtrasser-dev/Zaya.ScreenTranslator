@@ -15,6 +15,9 @@ public interface IApplicationProfileService : INotifyPropertyChanged
     void Save(IApplicationProfile profile);
     void Delete(string name);
 
+    /// <summary>Copies the saved profile file to <paramref name="destinationPath"/>.</summary>
+    void ExportTo(string name, string destinationPath);
+
     /// <summary>Preferred name, or <c>preferred 1</c>, <c>preferred 2</c>, … when taken.</summary>
     string AllocateUniqueProfileName(string preferredName);
 

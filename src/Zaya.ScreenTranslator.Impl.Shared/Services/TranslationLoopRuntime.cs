@@ -10,7 +10,7 @@ namespace Zaya.ScreenTranslator.Impl.Shared.Services;
 /// <summary>
 /// Mutable engine/session bundle for the translation loop; modules can be swapped between frames.
 /// </summary>
-internal sealed class TranslationLoopRuntime
+public sealed class TranslationLoopRuntime
 {
     public required ICaptureService Capture { get; set; }
     public required IOCRService Ocr { get; set; }
@@ -27,7 +27,7 @@ internal sealed class TranslationLoopRuntime
 }
 
 /// <summary>Applies pending module recreations after a frame finishes.</summary>
-internal interface ITranslationModuleRefresh
+public interface ITranslationModuleRefresh
 {
     Task ApplyPendingAsync(TranslationLoopRuntime runtime, CancellationToken cancellationToken);
 }

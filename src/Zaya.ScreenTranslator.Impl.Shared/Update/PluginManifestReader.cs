@@ -1,19 +1,20 @@
 using System.IO.Compression;
-using System.Text.Json;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 /// <summary>Reads <c>plugin.json</c> from plugin zip archives.</summary>
-internal static class PluginManifestReader
+public sealed class PluginManifestReader : IPluginManifestReader
 {
-    private static readonly JsonSerializerOptions ManifestJsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
+    private readonly IJsonConfigurationService _jsonConfigurationService;
 
-    public static PluginManifest? ReadFromZip(string zipPath)
+    public PluginManifestReader(IJsonConfigurationService jsonConfigurationService)
+    {
+        _jsonConfigurationService = jsonConfigurationService;
+    }
+
+    public PluginManifest? ReadFromZip(string zipPath)
     {
         if (!File.Exists(zipPath))
             return null;
@@ -28,7 +29,7 @@ internal static class PluginManifestReader
                 return null;
 
             using var stream = entry.Open();
-            return JsonSerializer.Deserialize<PluginManifest>(stream, ManifestJsonOptions);
+            return _jsonConfigurationService.Read<PluginManifest>(stream);
         }
         catch
         {

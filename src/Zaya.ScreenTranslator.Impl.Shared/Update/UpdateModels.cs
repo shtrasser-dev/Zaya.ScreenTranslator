@@ -1,23 +1,16 @@
-using System.Text.Json.Serialization;
-
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 
 public sealed class BuiltinPluginEntry
 {
-    [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
 
-    [JsonPropertyName("repo")]
     public string Repo { get; set; } = string.Empty;
 
-    [JsonPropertyName("asset")]
     public string Asset { get; set; } = string.Empty;
 
     /// <summary>Interface package id (e.g. <c>Zaya.Translator</c>) used for channel and compatibility checks.</summary>
-    [JsonPropertyName("interface")]
     public string Interface { get; set; } = string.Empty;
 
-    [JsonPropertyName("required")]
     public bool Required { get; set; }
 }
 

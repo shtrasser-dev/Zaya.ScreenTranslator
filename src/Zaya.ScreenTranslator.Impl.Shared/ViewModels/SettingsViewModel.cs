@@ -15,8 +15,9 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
-    private readonly IApplicationProfileService _profileService;
-    private readonly LocalizationService _loc;
+    private readonly IApplicationProfileService _applicationProfileService;
+    private readonly ILocalizationService _localizationService;
+    private readonly IConfigurationPathService _configurationPathService;
     private readonly SettingsUpdateChecker _updateChecker;
     private readonly SettingsEngineDescriptorLoader _descriptorLoader;
 
@@ -30,21 +31,23 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public SettingsViewModel(
         ISettingsService settingsService,
-        IApplicationProfileService profileService,
-        LocalizationService loc,
-        PluginUpdateService pluginUpdateService,
-        HostVersionChecker hostVersionChecker)
+        IApplicationProfileService applicationProfileService,
+        ILocalizationService localizationService,
+        IPluginUpdateService pluginUpdateService,
+        IHostVersionChecker hostVersionChecker,
+        IConfigurationPathService configurationPathService)
     {
         _settingsService = settingsService;
-        _profileService = profileService;
-        _loc = loc;
-        _updateChecker = new SettingsUpdateChecker(pluginUpdateService, hostVersionChecker, loc);
+        _applicationProfileService = applicationProfileService;
+        _localizationService = localizationService;
+        _configurationPathService = configurationPathService;
+        _updateChecker = new SettingsUpdateChecker(pluginUpdateService, hostVersionChecker, localizationService);
         _descriptorLoader = new SettingsEngineDescriptorLoader(settingsService);
 
-        Loc = new LocalizedStrings(loc);
+        Loc = new LocalizedStrings(localizationService);
 
         _originalProfile = _settingsService.BeginEdit();
-        _originalScreenProfile = ScreenTranslatorProfileCloner.Clone(_profileService.LoadScreenTranslatorProfile());
+        _originalScreenProfile = ScreenTranslatorProfileCloner.Clone(_applicationProfileService.LoadScreenTranslatorProfile());
 
         UiLanguages = BuildUiLanguages();
         TargetLanguages = BuildTargetLanguages();
@@ -57,31 +60,50 @@ public sealed partial class SettingsViewModel : ObservableObject
         _availableTranslatorEngines = _settingsService.GetAvailableTranslatorEngines();
         _availableTranslatorCacheEngines = _settingsService.GetAvailableTranslatorCacheEngines();
         _availableOverlayLayoutEngines = _settingsService.GetAvailableOverlayLayoutEngines();
-        _profileNames = _profileService.ListProfileNames();
+        _profileNames = _applicationProfileService.ListProfileNames();
         _selectedProfileName = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.ProfileName);
-        _selectedOcrEngine = _availableOcrEngines.FirstOrDefault(e => e.Id ==
-            _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
-        _selectedCaptureEngine = _availableCaptureEngines.FirstOrDefault(e => e.Id ==
-            _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
-        _selectedTextLayoutEngine = _availableTextLayoutEngines.FirstOrDefault(e => e.Id ==
-            _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
-        _selectedTranslatorEngine = _availableTranslatorEngines.FirstOrDefault(e => e.Id ==
-            _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
-        var cacheId = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
+
+        var st = _editingProfile.Settings[ScreenTranslatorSettingDescriptors.StKey];
+        var stSettings = _editingProfile.ScreenTranslatorSettings;
+        _selectedOcrEngine = EngineSelection.Pick(
+            _availableOcrEngines,
+            stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr));
+        _selectedCaptureEngine = EngineSelection.Pick(
+            _availableCaptureEngines,
+            stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Capture));
+        _selectedTextLayoutEngine = EngineSelection.Pick(
+            _availableTextLayoutEngines,
+            stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout));
+        _selectedTranslatorEngine = EngineSelection.Pick(
+            _availableTranslatorEngines,
+            stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.Translator));
+
+        var cacheId = stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache);
         if (string.IsNullOrWhiteSpace(cacheId)
             || string.Equals(cacheId, "none", StringComparison.OrdinalIgnoreCase))
             cacheId = SettingsConstants.EngineDefaults.TranslatorCache;
-        _selectedTranslatorCacheEngine = _availableTranslatorCacheEngines.FirstOrDefault(e => e.Id == cacheId)
-            ?? _availableTranslatorCacheEngines.FirstOrDefault(e =>
-                e.Id == SettingsConstants.EngineDefaults.TranslatorCache)
-            ?? _availableTranslatorCacheEngines.FirstOrDefault(e =>
-                e.Id != NoTranslatorCacheService.EngineIdValue)
-            ?? _availableTranslatorCacheEngines.FirstOrDefault();
-        _selectedOverlayLayoutEngine = _availableOverlayLayoutEngines.FirstOrDefault(e => e.Id ==
-            _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout))
-            ?? _availableOverlayLayoutEngines.FirstOrDefault();
+        _selectedTranslatorCacheEngine = EngineSelection.Pick(_availableTranslatorCacheEngines, cacheId);
+
+        _selectedOverlayLayoutEngine = EngineSelection.Pick(
+            _availableOverlayLayoutEngines,
+            stSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout));
+
+        // Keep the editing profile in sync with engines that actually exist.
+        if (_selectedOcrEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Ocr] = _selectedOcrEngine.Id;
+        if (_selectedCaptureEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Capture] = _selectedCaptureEngine.Id;
+        if (_selectedTextLayoutEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.TextLayout] = _selectedTextLayoutEngine.Id;
+        if (_selectedTranslatorEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.Translator] = _selectedTranslatorEngine.Id;
+        if (_selectedTranslatorCacheEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.TranslatorCache] = _selectedTranslatorCacheEngine.Id;
+        if (_selectedOverlayLayoutEngine is not null)
+            st[ScreenTranslatorSettingDescriptors.OverlayLayout] = _selectedOverlayLayoutEngine.Id;
+
         _framePauseMs = _originalProfile.ScreenTranslatorSettings.GetValueAsInt(ScreenTranslatorSettingDescriptors.FramePauseMs);
-        _framePauseMsText = _framePauseMs.ToString(_loc.CurrentCulture);
+        _framePauseMsText = _framePauseMs.ToString(_localizationService.CurrentCulture);
         _targetProcess = _originalProfile.ScreenTranslatorSettings.GetValueAsString(ScreenTranslatorSettingDescriptors.TargetProcess);
         _selectedUiLanguage = UiLanguages.FirstOrDefault(
             l => string.Equals(l.Code, _originalScreenProfile.UiCulture ?? "en", StringComparison.OrdinalIgnoreCase));
@@ -96,7 +118,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _committedTargetLanguage = EditingScreenProfile.TargetLanguage ?? string.Empty;
     }
 
-    public LocalizationService Localization => _loc;
+    public ILocalizationService Localization => _localizationService;
     public LocalizedStrings Loc { get; private set; }
     public Action? UiCultureChanged { get; set; }
     public Action<TranslationModuleKind>? TranslationModulesChanged { get; set; }
@@ -131,13 +153,13 @@ public sealed partial class SettingsViewModel : ObservableObject
         _settingsService.CommitEdit(EditingProfile);
         // Keep window geometry from disk: this clone may still have default 0,0 and would wipe
         // coordinates that App persists on exit / PositionChanged.
-        var existingScreen = _profileService.LoadScreenTranslatorProfile();
+        var existingScreen = _applicationProfileService.LoadScreenTranslatorProfile();
         EditingScreenProfile.MainWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.MainWindow);
         EditingScreenProfile.SettingsWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.SettingsWindow);
         EditingScreenProfile.TextWindow = ScreenTranslatorProfileCloner.CloneWindowSettings(existingScreen.TextWindow);
         EditingScreenProfile.TargetLanguage = existingScreen.TargetLanguage;
         EditingScreenProfile.LastActiveProfileName = SelectedProfileName;
-        _profileService.SaveScreenTranslatorProfile(EditingScreenProfile);
+        _applicationProfileService.SaveScreenTranslatorProfile(EditingScreenProfile);
 
         var modules = TranslationSettingsDiff.Detect(
             _committedSettingsSnapshot,
@@ -158,7 +180,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         UiLanguages = BuildUiLanguages();
         TargetLanguages = BuildTargetLanguages();
-        Loc = new LocalizedStrings(_loc);
+        Loc = new LocalizedStrings(_localizationService);
         OnPropertyChanged(nameof(UiLanguages));
         OnPropertyChanged(nameof(TargetLanguages));
         OnPropertyChanged(nameof(Loc));
@@ -180,7 +202,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void OpenAppDataFolder()
     {
-        var dir = App.DataDirectory;
+        var dir = _configurationPathService.GetRootAppDirectory();
         Directory.CreateDirectory(dir);
         Process.Start(new ProcessStartInfo
         {
@@ -193,7 +215,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private async Task CheckUpdates()
     {
         IsCheckingUpdates = true;
-        UpdateStatusMessage = _loc[LocalizationConstants.Update.Checking];
+        UpdateStatusMessage = _localizationService[LocalizationConstants.Update.Checking];
         try
         {
             UpdateStatusMessage = await _updateChecker.CheckAsync(
@@ -214,15 +236,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnIsCheckingUpdatesChanged(bool value) => CheckUpdatesCommand.NotifyCanExecuteChanged();
 
     private IReadOnlyList<LanguageItem> BuildUiLanguages()
-        => LocalizationService.SupportedUiCultures
+        => _localizationService.SupportedUiCultures
             .Select(c => Languages.Find(c))
             .Where(o => o is not null)
-            .Select(o => new LanguageItem(o!.Value, o.DisplayName.GetValue(_loc.CurrentCulture)))
+            .Select(o => new LanguageItem(o!.Value, o.DisplayName.GetValue(_localizationService.CurrentCulture)))
             .ToList();
 
     private IReadOnlyList<LanguageItem> BuildTargetLanguages()
         => Languages.All
-            .Select(o => new LanguageItem(o.Value, o.DisplayName.GetValue(_loc.CurrentCulture)))
+            .Select(o => new LanguageItem(o.Value, o.DisplayName.GetValue(_localizationService.CurrentCulture)))
             .ToList();
 
     private void ReloadAllDescriptors()
@@ -248,6 +270,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     private bool IsCurrentCulture(string code) =>
-        string.Equals(_loc.CurrentCulture.TwoLetterISOLanguageName, code, StringComparison.OrdinalIgnoreCase)
-        || string.Equals(_loc.CurrentCulture.Name, code, StringComparison.OrdinalIgnoreCase);
+        string.Equals(_localizationService.CurrentCulture.TwoLetterISOLanguageName, code, StringComparison.OrdinalIgnoreCase)
+        || string.Equals(_localizationService.CurrentCulture.Name, code, StringComparison.OrdinalIgnoreCase);
 }

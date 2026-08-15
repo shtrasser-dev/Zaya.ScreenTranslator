@@ -72,7 +72,7 @@ public sealed partial class SettingsViewModel
             return;
         }
 
-        _loc.SetCulture(value.Code);
+        _localizationService.SetCulture(value.Code);
         ApplyChanges(affectsTranslation: false);
         UiCultureChanged?.Invoke();
     }
@@ -81,16 +81,16 @@ public sealed partial class SettingsViewModel
     {
         if (value is null || _suppressLanguageChange) return;
         EditingScreenProfile.TargetLanguage = value.Code;
-        var screen = _profileService.LoadScreenTranslatorProfile();
+        var screen = _applicationProfileService.LoadScreenTranslatorProfile();
         screen.TargetLanguage = value.Code;
-        _profileService.SaveScreenTranslatorProfile(screen);
+        _applicationProfileService.SaveScreenTranslatorProfile(screen);
         ApplyChanges();
     }
 
     partial void OnFramePauseMsTextChanged(string value)
     {
         var desc = FramePauseDescriptor;
-        if (!IntegerSettingValidation.TryParse(value, desc, out var parsed, out var error, _loc.CurrentCulture))
+        if (!IntegerSettingValidation.TryParse(value, desc, _localizationService, out var parsed, out var error, _localizationService.CurrentCulture))
         {
             FramePauseMsError = error ?? string.Empty;
             return;
@@ -105,7 +105,7 @@ public sealed partial class SettingsViewModel
 
     partial void OnFramePauseMsChanged(int value)
     {
-        var text = value.ToString(_loc.CurrentCulture);
+        var text = value.ToString(_localizationService.CurrentCulture);
         if (!string.Equals(FramePauseMsText, text, StringComparison.Ordinal))
             FramePauseMsText = text;
         ApplyChanges();

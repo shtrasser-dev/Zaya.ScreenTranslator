@@ -7,7 +7,7 @@ namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
 internal static class CaptureProcessWindowHelpers
 {
-    public static Bitmap? TryLoadIconForProcessName(string processName)
+    public static Bitmap? TryLoadIconForProcessName(string processName, IProcessIconLoader iconLoader)
     {
         if (string.IsNullOrWhiteSpace(processName))
             return null;
@@ -18,7 +18,7 @@ internal static class CaptureProcessWindowHelpers
             processes = Process.GetProcessesByName(processName);
             foreach (var process in processes)
             {
-                var icon = ProcessIconLoader.GetIcon(process);
+                var icon = iconLoader.GetIcon(process);
                 if (icon is not null)
                     return icon;
             }
