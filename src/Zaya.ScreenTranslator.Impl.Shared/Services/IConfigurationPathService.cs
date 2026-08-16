@@ -18,7 +18,7 @@ public interface IConfigurationPathService
 
     string GetSettingsFilePath();
 
-    string GetLogOptionsFilePath();
+    string GetLogConfigFilePath();
 
     string GetLogsDirectory();
 

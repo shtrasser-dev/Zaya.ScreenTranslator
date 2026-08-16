@@ -7,6 +7,13 @@ History starts at the current release line; older releases are not backfilled.
 
 ## [Unreleased]
 
+### Changed
+
+- File log line format is configurable in `log.json` via named placeholders (`{timestamp:…}`, `{level}`, `{category}`, `{message}`, `{newline}`, `{exception}`).
+- Default log level is `Information` (was `Debug`).
+
+## [1.2.0] - 2026-08-15
+
 ### Added
 
 - Optional file logging via `%AppData%\Zaya\ScreenTranslator\log.json` (level, debug/file sinks, rolling size/count).

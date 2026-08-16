@@ -1,3 +1,5 @@
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
+
 namespace Zaya.ScreenTranslator.Impl.Shared.Services.Impl;
 
 /// <summary>
@@ -27,9 +29,9 @@ public sealed class ConfigurationPathService : IConfigurationPathService
 
     public string GetSettingsFilePath() => Path.Combine(_root, "settings.json");
 
-    public string GetLogOptionsFilePath() => Path.Combine(_root, "log.json");
+    public string GetLogConfigFilePath() => Path.Combine(_root, LogConstants.ConfigFileName);
 
-    public string GetLogsDirectory() => Path.Combine(_root, "logs");
+    public string GetLogsDirectory() => Path.Combine(_root, LogConstants.LogsFolderName);
 
     public string GetLibDirectory() => Path.Combine(_root, "lib");
 }

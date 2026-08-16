@@ -1,8 +1,10 @@
-using System.Collections.Concurrent;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using System.Globalization;
+using System.Text;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 
-namespace Zaya.ScreenTranslator.Impl.Shared.Logging;
+namespace Zaya.ScreenTranslator.Impl.Shared.Logging.Impl;
 
 /// <summary>
 /// Simple size-based rolling file logger for the host.
@@ -12,18 +14,29 @@ public sealed class RollingFileLoggerProvider : ILoggerProvider
 {
     private readonly ConcurrentDictionary<string, RollingFileLogger> _loggers = new(StringComparer.Ordinal);
     private readonly RollingFileSink _sink;
+    private readonly CompositeFormat _lineFormat;
+    private readonly CompositeFormat _lineFormatWithException;
     private bool _disposed;
 
-    public RollingFileLoggerProvider(string directory, long maxFileSizeBytes, int maxFileCount)
+    public RollingFileLoggerProvider(string directory, LogConfig options)
     {
         Directory.CreateDirectory(directory);
-        _sink = new RollingFileSink(directory, maxFileSizeBytes, maxFileCount);
+        _lineFormat = LogLineCompositeFormat.CompileOrDefault(
+            options.FileLineFormat,
+            LogConstants.DefaultFileLineFormat);
+        _lineFormatWithException = LogLineCompositeFormat.CompileOrDefault(
+            options.FileLineFormatWithException,
+            LogConstants.DefaultFileLineFormatWithException);
+        _sink = new RollingFileSink(directory, options.MaxFileSizeBytes, options.MaxFileCount);
     }
 
     public ILogger CreateLogger(string categoryName)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        return _loggers.GetOrAdd(categoryName, static (name, sink) => new RollingFileLogger(name, sink), _sink);
+        return _loggers.GetOrAdd(
+            categoryName,
+            static (name, state) => new RollingFileLogger(name, state.Sink, state.LineFormat, state.LineFormatWithException),
+            (Sink: _sink, LineFormat: _lineFormat, LineFormatWithException: _lineFormatWithException));
     }
 
     public void Dispose()
@@ -39,11 +52,19 @@ public sealed class RollingFileLoggerProvider : ILoggerProvider
     {
         private readonly string _category;
         private readonly RollingFileSink _sink;
+        private readonly CompositeFormat _lineFormat;
+        private readonly CompositeFormat _lineFormatWithException;
 
-        public RollingFileLogger(string category, RollingFileSink sink)
+        public RollingFileLogger(
+            string category,
+            RollingFileSink sink,
+            CompositeFormat lineFormat,
+            CompositeFormat lineFormatWithException)
         {
             _category = category;
             _sink = sink;
+            _lineFormat = lineFormat;
+            _lineFormatWithException = lineFormatWithException;
         }
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
@@ -61,9 +82,17 @@ public sealed class RollingFileLoggerProvider : ILoggerProvider
                 return;
 
             var message = formatter(state, exception);
-            var line = exception is null
-                ? $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff} [{logLevel}] {_category}: {message}"
-                : $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff} [{logLevel}] {_category}: {message}{Environment.NewLine}{exception}";
+            var format = exception is null ? _lineFormat : _lineFormatWithException;
+            // 0 timestamp, 1 level, 2 category, 3 message, 4 newline, 5 exception
+            var line = string.Format(
+                CultureInfo.InvariantCulture,
+                format,
+                DateTimeOffset.Now,
+                logLevel,
+                _category,
+                message,
+                Environment.NewLine,
+                exception);
             _sink.WriteLine(line);
         }
     }

@@ -4,6 +4,7 @@ using Zaya.Logging.Impl.Microsoft.Services;
 using Zaya.Logging.Impl.Services;
 using Zaya.Logging.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Logging;
+using Zaya.ScreenTranslator.Impl.Shared.Logging.Impl;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
 
@@ -38,23 +39,21 @@ public static class BootstrapServiceRegistrar
     public static void Register(IServiceCollection services)
     {
         // Pre-DI: paths + log.json must load before MEL / ILoggingWrapper exist.
-        var paths = new ConfigurationPathService();
-        var jsonStore = new JsonConfigurationService();
-        var logOptionsStore = new LogOptionsStore(jsonStore, paths);
-        var logOptions = logOptionsStore.LoadOrCreate();
-        var melLevel = logOptions.ResolveLevel();
+        var configurationPathService = new ConfigurationPathService();
+        var jsonConfigurationService = new JsonConfigurationService();
+        var logConfigService = new LogConfigService(jsonConfigurationService, configurationPathService);
+        var logConfig = logConfigService.LoadOrCreate();
 
         services.AddLogging(builder =>
         {
-            builder.SetMinimumLevel(melLevel);
-            if (logOptions.WriteToDebug)
+            builder.SetMinimumLevel(logConfig.Level);
+            if (logConfig.WriteToDebug)
                 builder.AddDebug();
-            if (logOptions.WriteToFile)
+            if (logConfig.WriteToFile)
             {
                 builder.AddProvider(new RollingFileLoggerProvider(
-                    logOptionsStore.GetLogsDirectory(),
-                    logOptions.ResolveMaxFileSizeBytes(),
-                    logOptions.ResolveMaxFileCount()));
+                    configurationPathService.GetLogsDirectory(),
+                    logConfig));
             }
         });
 
@@ -65,9 +64,9 @@ public static class BootstrapServiceRegistrar
             return new LoggingWrapper(new MicrosoftExtensionsLogger(mel));
         });
 
-        services.AddSingleton<IConfigurationPathService>(paths).WrapLogging<IConfigurationPathService>();
-        services.AddSingleton<IJsonConfigurationService>(jsonStore).WrapLogging<IJsonConfigurationService>();
-        services.AddSingleton<ILogOptionsStore>(logOptionsStore).WrapLogging<ILogOptionsStore>();
+        services.AddSingleton<IConfigurationPathService>(configurationPathService).WrapLogging<IConfigurationPathService>();
+        services.AddSingleton<IJsonConfigurationService>(jsonConfigurationService).WrapLogging<IJsonConfigurationService>();
+        services.AddSingleton<ILogConfigService>(logConfigService).WrapLogging<ILogConfigService>();
         services.AddSingleton<IEmbeddedResourceService, EmbeddedResourceService>().WrapLogging<IEmbeddedResourceService>();
 
         services.AddSingleton<HttpClient>();
