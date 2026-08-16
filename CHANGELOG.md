@@ -7,6 +7,8 @@ History starts at the current release line; older releases are not backfilled.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-08-16
+
 ### Changed
 
 - File log line format is configurable in `log.json` via named placeholders (`{timestamp:…}`, `{level}`, `{category}`, `{message}`, `{newline}`, `{exception}`).
