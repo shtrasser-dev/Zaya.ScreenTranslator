@@ -3,10 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Zaya.Primitives;
 using Zaya.ScreenTranslator.Layout.Impl.Constants;
 using Zaya.ScreenTranslator.Layout.Impl.Models;
 using Zaya.ScreenTranslator.Layout.Impl.Native;
-using Zaya.ScreenTranslator.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Impl.Services;
 
 namespace Zaya.ScreenTranslator.Layout.Impl.Views;
 
@@ -125,10 +126,12 @@ public sealed class OverlayWindow : Window
 
     public void RenderItems(
         IReadOnlyList<OverlayDrawSpec> specs,
-        IReadOnlyList<OverlayDebugWord>? debugWords = null,
-        IReadOnlyList<OverlayDebugLine>? debugMatchedLines = null)
+        IOCRResult? debugOcr = null,
+        ITextResult? debugLayout = null,
+        int originXPx = 0,
+        int originYPx = 0)
     {
-        var key = BuildRenderKey(specs, debugWords, debugMatchedLines);
+        var key = BuildRenderKey(specs, debugOcr, debugLayout, originXPx, originYPx);
         if (string.Equals(key, _lastRenderKey, StringComparison.Ordinal))
             return;
         _lastRenderKey = key;
@@ -273,11 +276,11 @@ public sealed class OverlayWindow : Window
             }
         }
 
-        if (debugMatchedLines is { Count: > 0 })
-            RenderDebugMatchedLines(debugMatchedLines, scaling);
+        if (debugLayout is not null)
+            RenderDebugMatchedLines(debugLayout, originXPx, originYPx, scaling);
 
-        if (debugWords is { Count: > 0 })
-            RenderDebugWords(debugWords, scaling);
+        if (debugOcr is not null)
+            RenderDebugWords(debugOcr.Words, originXPx, originYPx, scaling);
     }
 
     /// <summary>
@@ -390,108 +393,81 @@ public sealed class OverlayWindow : Window
         HoverTargetChanged?.Invoke(key);
     }
 
-    private void RenderDebugMatchedLines(IReadOnlyList<OverlayDebugLine> lines, double scaling)
+    private void RenderDebugMatchedLines(ITextResult layout, int originXPx, int originYPx, double scaling)
     {
         var fill = new SolidColorBrush(Color.FromArgb(160, 0, 180, 0));
         var stroke = new SolidColorBrush(Colors.Lime);
-        foreach (var line in lines)
+        foreach (var paragraph in layout.Paragraphs)
         {
-            if (line.Bounds.IsEmpty)
-                continue;
-
-            var b = line.Bounds;
-            var poly = new Polygon
+            foreach (var line in paragraph.Lines)
             {
-                Stroke = stroke,
-                StrokeThickness = 1.5,
-                Fill = fill,
-                Points =
-                [
-                    new Point(b.P1.X / scaling, b.P1.Y / scaling),
-                    new Point(b.P2.X / scaling, b.P2.Y / scaling),
-                    new Point(b.P3.X / scaling, b.P3.Y / scaling),
-                    new Point(b.P4.X / scaling, b.P4.Y / scaling),
-                ],
-            };
-            _canvas.Children.Add(poly);
+                if (line is not ITextLineExt ext || !ext.HasPreviousFrameMatch || line.Bounds.IsEmpty)
+                    continue;
 
-            if (string.IsNullOrWhiteSpace(line.Text))
-                continue;
-
-            var centerX = (b.P5.X + b.P6.X) * 0.5 / scaling;
-            var centerY = (b.P5.Y + b.P6.Y) * 0.5 / scaling;
-            var label = new TextBlock
-            {
-                Text = line.Text,
-                FontSize = 8,
-                Foreground = Brushes.Black,
-                TextWrapping = TextWrapping.NoWrap,
-            };
-            label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            var w = label.DesiredSize.Width;
-            var h = label.DesiredSize.Height;
-            Canvas.SetLeft(label, Math.Round(centerX - w * 0.5));
-            Canvas.SetTop(label, Math.Round(centerY - h * 0.5));
-            if (Math.Abs(b.AngleDegrees) >= 0.5f)
-            {
-                label.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
-                label.RenderTransform = new RotateTransform(b.AngleDegrees);
+                RenderDebugBox(line.Text, OverlayLayoutMath.OffsetBounds(line.Bounds, originXPx, originYPx), fill, stroke, Brushes.Black, scaling);
             }
-
-            _canvas.Children.Add(label);
         }
     }
 
-    private void RenderDebugWords(IReadOnlyList<OverlayDebugWord> debugWords, double scaling)
+    private void RenderDebugWords(IReadOnlyList<IOCRWord> words, int originXPx, int originYPx, double scaling)
     {
         var stroke = new SolidColorBrush(Colors.Red);
-        foreach (var word in debugWords)
+        foreach (var word in words)
         {
             if (string.IsNullOrWhiteSpace(word.Text) && word.Bounds.IsEmpty)
                 continue;
 
-            var b = word.Bounds;
-            var poly = new Polygon
-            {
-                Stroke = stroke,
-                StrokeThickness = 1.5,
-                Fill = Brushes.Transparent,
-                Points =
-                [
-                    new Point(b.P1.X / scaling, b.P1.Y / scaling),
-                    new Point(b.P2.X / scaling, b.P2.Y / scaling),
-                    new Point(b.P3.X / scaling, b.P3.Y / scaling),
-                    new Point(b.P4.X / scaling, b.P4.Y / scaling),
-                ],
-            };
-            _canvas.Children.Add(poly);
-
-            if (string.IsNullOrWhiteSpace(word.Text))
-                continue;
-
-            var fontSizeDip = 8;
-            var centerX = (b.P5.X + b.P6.X) * 0.5 / scaling;
-            var centerY = (b.P5.Y + b.P6.Y) * 0.5 / scaling;
-            var label = new TextBlock
-            {
-                Text = word.Text,
-                FontSize = fontSizeDip,
-                Foreground = stroke,
-                TextWrapping = TextWrapping.NoWrap,
-            };
-            label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            var w = label.DesiredSize.Width;
-            var h = label.DesiredSize.Height;
-            Canvas.SetLeft(label, Math.Round(centerX - w * 0.5));
-            Canvas.SetTop(label, Math.Round(centerY - h * 0.5));
-            if (Math.Abs(b.AngleDegrees) >= 0.5f)
-            {
-                label.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
-                label.RenderTransform = new RotateTransform(b.AngleDegrees);
-            }
-
-            _canvas.Children.Add(label);
+            RenderDebugBox(word.Text, OverlayLayoutMath.OffsetBounds(word.Bounds, originXPx, originYPx), Brushes.Transparent, stroke, stroke, scaling);
         }
+    }
+
+    private void RenderDebugBox(
+        string text,
+        BoundingBox b,
+        IBrush fill,
+        IBrush stroke,
+        IBrush labelBrush,
+        double scaling)
+    {
+        var poly = new Polygon
+        {
+            Stroke = stroke,
+            StrokeThickness = 1.5,
+            Fill = fill,
+            Points =
+            [
+                new Point(b.P1.X / scaling, b.P1.Y / scaling),
+                new Point(b.P2.X / scaling, b.P2.Y / scaling),
+                new Point(b.P3.X / scaling, b.P3.Y / scaling),
+                new Point(b.P4.X / scaling, b.P4.Y / scaling),
+            ],
+        };
+        _canvas.Children.Add(poly);
+
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        var centerX = (b.P5.X + b.P6.X) * 0.5 / scaling;
+        var centerY = (b.P5.Y + b.P6.Y) * 0.5 / scaling;
+        var label = new TextBlock
+        {
+            Text = text,
+            FontSize = 8,
+            Foreground = labelBrush,
+            TextWrapping = TextWrapping.NoWrap,
+        };
+        label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        var w = label.DesiredSize.Width;
+        var h = label.DesiredSize.Height;
+        Canvas.SetLeft(label, Math.Round(centerX - w * 0.5));
+        Canvas.SetTop(label, Math.Round(centerY - h * 0.5));
+        if (Math.Abs(b.AngleDegrees) >= 0.5f)
+        {
+            label.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+            label.RenderTransform = new RotateTransform(b.AngleDegrees);
+        }
+
+        _canvas.Children.Add(label);
     }
 
     public void ClearItems()
@@ -504,37 +480,41 @@ public sealed class OverlayWindow : Window
 
     private static string BuildRenderKey(
         IReadOnlyList<OverlayDrawSpec> specs,
-        IReadOnlyList<OverlayDebugWord>? debugWords,
-        IReadOnlyList<OverlayDebugLine>? debugMatchedLines)
+        IOCRResult? ocr,
+        ITextResult? layout,
+        int originXPx,
+        int originYPx)
     {
         // Integer geometry + rounded font — ignore sub-pixel noise.
-        var extra = (debugWords?.Count ?? 0) + (debugMatchedLines?.Count ?? 0);
-        var parts = new string[specs.Count + extra];
-        for (var i = 0; i < specs.Count; i++)
+        var parts = new List<string>(specs.Count + 16);
+        foreach (var s in specs)
         {
-            var s = specs[i];
-            parts[i] =
-                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.AngleDegrees:F1}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.BackgroundColor}|{s.TextColor}|{s.Outline}|{s.VAlign}|{s.IsMarker}|{s.SourceKey}|{s.WrapWords}";
+            parts.Add(
+                $"{s.Text}|{s.DrawBounds.X},{s.DrawBounds.Y},{s.DrawBounds.Width},{s.DrawBounds.Height}|{s.AngleDegrees:F1}|{s.FontSize:F0}|{s.Background}|{s.BackgroundOpacity}|{s.BackgroundColor}|{s.TextColor}|{s.Outline}|{s.VAlign}|{s.IsMarker}|{s.SourceKey}|{s.WrapWords}");
         }
 
-        var idx = specs.Count;
-        if (debugMatchedLines is not null)
+        if (layout is not null)
         {
-            foreach (var line in debugMatchedLines)
+            foreach (var paragraph in layout.Paragraphs)
             {
-                var b = line.Bounds;
-                parts[idx++] =
-                    $"dbgL|{line.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}";
+                foreach (var line in paragraph.Lines)
+                {
+                    if (line is not ITextLineExt ext || !ext.HasPreviousFrameMatch || line.Bounds.IsEmpty)
+                        continue;
+                    var b = OverlayLayoutMath.OffsetBounds(line.Bounds, originXPx, originYPx);
+                    parts.Add(
+                        $"dbgL|{line.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}");
+                }
             }
         }
 
-        if (debugWords is not null)
+        if (ocr is not null)
         {
-            foreach (var w in debugWords)
+            foreach (var w in ocr.Words)
             {
-                var b = w.Bounds;
-                parts[idx++] =
-                    $"dbg|{w.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}";
+                var b = OverlayLayoutMath.OffsetBounds(w.Bounds, originXPx, originYPx);
+                parts.Add(
+                    $"dbg|{w.Text}|{b.P1.X:F0},{b.P1.Y:F0},{b.P2.X:F0},{b.P2.Y:F0},{b.P3.X:F0},{b.P3.Y:F0},{b.P4.X:F0},{b.P4.Y:F0}");
             }
         }
 

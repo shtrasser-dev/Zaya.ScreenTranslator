@@ -30,6 +30,7 @@
     <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
     <PackageReference Include="Zaya.Logging" Version="$(ZayaLoggingVersion)" />
+    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
   </ItemGroup>
 

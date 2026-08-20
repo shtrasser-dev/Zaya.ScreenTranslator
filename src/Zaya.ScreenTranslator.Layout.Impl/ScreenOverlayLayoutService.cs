@@ -44,17 +44,9 @@ public sealed class ScreenOverlayLayoutService : IOverlayLayoutService
     public bool IsAvailable => OperatingSystem.IsWindows();
     public IReadOnlyList<SettingDescriptor> Settings => SettingsList;
 
-    public Task<IOverlayLayoutSession> CreateSessionAsync(CancellationToken cancellationToken = default)
-        => CreateSessionAsync(new Dictionary<string, object>(), translate: null, cancellationToken);
-
-    public Task<IOverlayLayoutSession> CreateSessionAsync(
-        IReadOnlyDictionary<string, object> engineSettings,
-        CancellationToken cancellationToken = default)
-        => CreateSessionAsync(engineSettings, translate: null, cancellationToken);
-
     public async Task<IOverlayLayoutSession> CreateSessionAsync(
         IReadOnlyDictionary<string, object> engineSettings,
-        OverlayTranslateCallback? translate,
+        OverlayTranslateCallback? translate = null,
         CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

@@ -8,7 +8,7 @@
     "captureRegions": [],
     "ignoreRegions": [],
     "ocr": "oneocr",
-    "capture": "graphics-capture",
+    "capture": "windows-graphics-capture",
     "textLayout": "proximity-text-layout",
     "overlayLayout": "screen-overlay"
   },
@@ -23,7 +23,7 @@
   "oneocr": {
     "minConfidence": 40
   },
-  "graphics-capture": {},
+  "windows-graphics-capture": {},
   "proximity-text-layout": {
     "wordGapThreshold": 150,
     "enableCenterAlignment": true,

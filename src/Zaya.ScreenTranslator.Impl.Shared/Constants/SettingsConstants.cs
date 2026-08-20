@@ -26,7 +26,7 @@ internal static class SettingsConstants
     {
         public const string ProfileName = "Default";
         public const string Ocr = "oneocr";
-        public const string Capture = "graphics-capture";
+        public const string Capture = "windows-graphics-capture";
         public const string TextLayout = "proximity-text-layout";
         public const string Translator = "yandex";
         public const string TranslatorCache = "memory-translator-cache";

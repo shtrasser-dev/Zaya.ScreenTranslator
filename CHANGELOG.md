@@ -7,6 +7,13 @@ History starts at the current release line; older releases are not backfilled.
 
 ## [Unreleased]
 
+### Changed
+
+- Target **Zaya.Primitives / OCR / Screenshot / Translator / TranslatorCache `2.0.0`** (Logging stays `1.0.0`). Host `2.0.0`, layout `2.0.0` / `2.0.0.0`; plugin channels `plugin-*-v2.0-latest`.
+- Settings types use `Zaya.Primitives.Settings`; OCR layout/result models use `Zaya.Primitives` / `Zaya.Primitives.OCR`.
+- Default capture engine id: `graphics-capture` → `windows-graphics-capture`.
+- Overlay layout public API: `CreateSessionAsync(settings, translate?)` and `PresentAsync(OverlayPresentRequest)` (`ITextResult` + origin + optional OCR for debug). Host no longer maps overlay frames; join/translate/wrap stay in Layout.Impl.
+
 ## [1.2.1] - 2026-08-16
 
 ### Changed

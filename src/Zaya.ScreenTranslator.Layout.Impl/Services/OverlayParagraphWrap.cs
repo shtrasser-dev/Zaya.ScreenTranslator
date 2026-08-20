@@ -1,5 +1,5 @@
 using System.Numerics;
-using Zaya.ScreenTranslator.Layout.Models;
+using Zaya.ScreenTranslator.Layout.Impl.Models;
 
 namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 

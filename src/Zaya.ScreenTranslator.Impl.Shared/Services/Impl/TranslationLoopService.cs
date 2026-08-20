@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
+using Zaya.ScreenTranslator.Layout.Models;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services.Impl;
 
@@ -11,20 +12,17 @@ public sealed class TranslationLoopService : ITranslationLoopService
     private readonly ICaptureRegionsStore _captureRegionsStore;
     private readonly IOcrFramePreparer _ocrFramePreparer;
     private readonly ITranslationBatchBuilder _translationBatchBuilder;
-    private readonly IOverlayFrameMapper _overlayFrameMapper;
     private readonly ILocalizationService _localizationService;
 
     public TranslationLoopService(
         ICaptureRegionsStore captureRegionsStore,
         IOcrFramePreparer ocrFramePreparer,
         ITranslationBatchBuilder translationBatchBuilder,
-        IOverlayFrameMapper overlayFrameMapper,
         ILocalizationService localizationService)
     {
         _captureRegionsStore = captureRegionsStore;
         _ocrFramePreparer = ocrFramePreparer;
         _translationBatchBuilder = translationBatchBuilder;
-        _overlayFrameMapper = overlayFrameMapper;
         _localizationService = localizationService;
     }
 
@@ -131,15 +129,16 @@ public sealed class TranslationLoopService : ITranslationLoopService
                     var avgOcrMs = ocrTimes.Average();
 
                     var layout = await runtime.LayoutSession.ProcessAsync(ocr, ct);
-                    var batch = _translationBatchBuilder.Build(layout.Paragraphs);
                     var overlaySession = runtime.OverlaySession;
                     var useOverlayTranslate = overlaySession is not null;
 
                     IReadOnlyList<string> translatedTexts = Array.Empty<string>();
                     double avgTranslateMs = translatorTimes.Count > 0 ? translatorTimes.Average() : 0;
+                    var pairs = new List<(string Source, string Translation)>();
 
                     if (!useOverlayTranslate)
                     {
+                        var batch = _translationBatchBuilder.Build(layout.Paragraphs);
                         try
                         {
                             var trSw = Stopwatch.StartNew();
@@ -162,24 +161,24 @@ public sealed class TranslationLoopService : ITranslationLoopService
                             await Task.Delay(1000, ct);
                             continue;
                         }
-                    }
 
-                    if (overlaySession is not null)
-                    {
-                        var view = _overlayFrameMapper.Map(
-                            ocr, layout, batch, prepared.OriginX, prepared.OriginY);
-                        await overlaySession.PresentAsync(
-                            view.Items, view.DebugWords, view.DebugLines, ct);
-                    }
-
-                    var pairs = new List<(string Source, string Translation)>(batch.Texts.Count);
-                    if (!useOverlayTranslate)
-                    {
+                        pairs.Capacity = batch.Texts.Count;
                         for (var i = 0; i < batch.Texts.Count; i++)
                         {
                             var translated = i < translatedTexts.Count ? translatedTexts[i] : batch.Texts[i];
                             pairs.Add((batch.Texts[i], translated));
                         }
+                    }
+
+                    if (overlaySession is not null)
+                    {
+                        await overlaySession.PresentAsync(new OverlayPresentRequest
+                        {
+                            Layout = layout,
+                            OriginX = prepared.OriginX,
+                            OriginY = prepared.OriginY,
+                            Ocr = ocr,
+                        }, ct);
                     }
 
                     var confLine = string.Format(

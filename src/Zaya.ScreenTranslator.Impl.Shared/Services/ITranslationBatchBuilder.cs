@@ -1,4 +1,3 @@
-using Zaya.OCR.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Services;

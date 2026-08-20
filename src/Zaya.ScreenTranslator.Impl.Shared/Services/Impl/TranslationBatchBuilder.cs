@@ -1,5 +1,4 @@
 using System.Text;
-using Zaya.OCR.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 

@@ -9,11 +9,11 @@
     <NoWarn>CS1591</NoWarn>
 
     <ZayaVersionRole>interface</ZayaVersionRole>
-    <ZayaVersionInterface>2</ZayaVersionInterface>
+    <ZayaVersionInterface>0</ZayaVersionInterface>
 
     <PackageId>Zaya.ScreenTranslator.Layout</PackageId>
     <Title>Zaya Screen Translator — Overlay Layout Abstractions</Title>
-    <Description>Overlay layout abstractions for Zaya Screen Translator (IOverlayLayoutService / session / OverlayItem).</Description>
+    <Description>Overlay layout abstractions for Zaya Screen Translator (IOverlayLayoutService / session / OverlayPresentRequest).</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>SHTrassEr</Authors>
     <RepositoryUrl>https://github.com/shtrasser-dev/Zaya.ScreenTranslator</RepositoryUrl>
@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="Zaya.Logging" Version="$(ZayaLoggingVersion)" />
     <PackageReference Include="Zaya.Primitives" Version="$(ZayaPrimitivesVersion)" />
-    <PackageReference Include="Zaya.OCR" Version="$(ZayaOcrVersion)" />
   </ItemGroup>
 
 </Project>

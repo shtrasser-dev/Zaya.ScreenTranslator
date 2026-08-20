@@ -30,7 +30,6 @@ public static class AppServiceRegistrar
         services.AddSingleton<ISettingsService, SettingsService>().WrapLogging<ISettingsService>();
         services.AddSingleton<IOcrFramePreparer, OcrFramePreparer>().WrapLogging<IOcrFramePreparer>();
         services.AddSingleton<ITranslationBatchBuilder, TranslationBatchBuilder>().WrapLogging<ITranslationBatchBuilder>();
-        services.AddSingleton<IOverlayFrameMapper, OverlayFrameMapper>().WrapLogging<IOverlayFrameMapper>();
         services.AddSingleton<ITranslationLoopService, TranslationLoopService>().WrapLogging<ITranslationLoopService>();
         services.AddSingleton<ITranslationHistoryService, TranslationHistoryService>().WrapLogging<ITranslationHistoryService>();
         services.AddTransient<MainViewModel>();

@@ -136,7 +136,7 @@ public partial class SettingsPanel : UserControl
 
     private void BindList(
         string controlName,
-        IReadOnlyList<Zaya.Primitives.SettingDescriptor>? descriptors,
+        IReadOnlyList<SettingDescriptor>? descriptors,
         IDictionary<string, object>? values,
         IReadOnlyDictionary<string, object>? hostSettings,
         System.Globalization.CultureInfo culture,

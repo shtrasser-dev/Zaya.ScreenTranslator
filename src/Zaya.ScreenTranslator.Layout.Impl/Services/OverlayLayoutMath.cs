@@ -1,8 +1,8 @@
 using System.Drawing;
 using System.Numerics;
+using Zaya.Primitives;
 using Zaya.ScreenTranslator.Layout.Impl.Constants;
 using Zaya.ScreenTranslator.Layout.Impl.Models;
-using Zaya.ScreenTranslator.Layout.Models;
 
 namespace Zaya.ScreenTranslator.Layout.Impl.Services;
 
@@ -210,5 +210,19 @@ public static class OverlayLayoutMath
         var w = Math.Max(1, (int)Math.Ceiling(maxX) - x);
         var h = Math.Max(1, (int)Math.Ceiling(maxY) - y);
         return new Rectangle(x, y, w, h);
+    }
+
+    /// <summary>Shifts oriented bounds from capture space into client space by region origin.</summary>
+    public static BoundingBox OffsetBounds(BoundingBox bounds, int originX, int originY)
+    {
+        if (originX == 0 && originY == 0)
+            return bounds;
+
+        var delta = new Vector2(originX, originY);
+        return new BoundingBox(
+            bounds.P1 + delta,
+            bounds.P2 + delta,
+            bounds.P3 + delta,
+            bounds.P4 + delta);
     }
 }

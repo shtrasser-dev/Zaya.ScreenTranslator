@@ -1,5 +1,4 @@
 using Avalonia.Threading;
-using Zaya.Primitives;
 using Zaya.ScreenTranslator.Layout.Impl.Constants;
 using Zaya.ScreenTranslator.Layout.Impl.Models;
 using Zaya.ScreenTranslator.Layout.Impl.Views;
@@ -23,8 +22,10 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     private bool _visible;
     private int _presentGeneration;
     private IReadOnlyList<OverlayItem> _lastItems = Array.Empty<OverlayItem>();
-    private IReadOnlyList<OverlayDebugWord>? _lastDebugWords;
-    private IReadOnlyList<OverlayDebugLine>? _lastDebugMatchedLines;
+    private IOCRResult? _lastOcr;
+    private ITextResult? _lastLayout;
+    private int _lastOriginX;
+    private int _lastOriginY;
 
     public ScreenOverlayLayoutSession(
         SettingDescriptorList settings,
@@ -39,23 +40,14 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         _window.SyncToTarget(_targetHwnd);
     }
 
-    public Task PresentAsync(IReadOnlyList<OverlayItem> items, CancellationToken cancellationToken = default)
-        => PresentAsync(items, debugWords: null, debugMatchedLines: null, cancellationToken);
-
-    public Task PresentAsync(
-        IReadOnlyList<OverlayItem> items,
-        IReadOnlyList<OverlayDebugWord>? debugWords,
-        CancellationToken cancellationToken = default)
-        => PresentAsync(items, debugWords, debugMatchedLines: null, cancellationToken);
-
-    public async Task PresentAsync(
-        IReadOnlyList<OverlayItem> items,
-        IReadOnlyList<OverlayDebugWord>? debugWords,
-        IReadOnlyList<OverlayDebugLine>? debugMatchedLines,
-        CancellationToken cancellationToken = default)
+    public async Task PresentAsync(OverlayPresentRequest request, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Layout);
         cancellationToken.ThrowIfCancellationRequested();
+
+        var items = ToLineItems(request.Layout, request.OriginX, request.OriginY);
 
         var onDemand = IsOnDemand();
         var prunedHovered = PruneExpanded(items);
@@ -93,17 +85,25 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
         }
 
         var specs = BuildSpecs(items, translationsById, onDemand);
-        var debug = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode) ? debugWords : null;
-        var matchedLines = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode) ? debugMatchedLines : null;
+        var debugMode = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode);
 
         lock (_gate)
         {
             _lastItems = items;
-            _lastDebugWords = debugWords;
-            _lastDebugMatchedLines = debugMatchedLines;
+            _lastOcr = request.Ocr;
+            _lastLayout = request.Layout;
+            _lastOriginX = request.OriginX;
+            _lastOriginY = request.OriginY;
         }
 
-        await RenderOnUiAsync(specs, debug, matchedLines, interactive: onDemand, cancellationToken).ConfigureAwait(false);
+        await RenderOnUiAsync(
+            specs,
+            debugMode ? request.Ocr : null,
+            debugMode ? request.Layout : null,
+            request.OriginX,
+            request.OriginY,
+            interactive: onDemand,
+            cancellationToken).ConfigureAwait(false);
 
         if (onDemand && prunedHovered)
             RetranslateHoveredIfNeeded();
@@ -187,6 +187,28 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
     }
 
     private static string IdKey(Guid id) => id.ToString("N");
+
+    private static List<OverlayItem> ToLineItems(ITextResult layout, int originX, int originY)
+    {
+        var items = new List<OverlayItem>();
+        foreach (var paragraph in layout.Paragraphs)
+        {
+            foreach (var line in paragraph.Lines)
+            {
+                if (string.IsNullOrWhiteSpace(line.Text))
+                    continue;
+
+                items.Add(new OverlayItem
+                {
+                    Id = paragraph.Id,
+                    Text = line.Text,
+                    Bounds = OverlayLayoutMath.OffsetBounds(line.Bounds, originX, originY),
+                });
+            }
+        }
+
+        return items;
+    }
 
     private static List<(Guid Id, List<OverlayItem> Lines)> GroupLinesByParagraph(IReadOnlyList<OverlayItem> items)
     {
@@ -279,8 +301,10 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
 
     private Task RenderOnUiAsync(
         IReadOnlyList<OverlayDrawSpec> specs,
-        IReadOnlyList<OverlayDebugWord>? debug,
-        IReadOnlyList<OverlayDebugLine>? matchedLines,
+        IOCRResult? debugOcr,
+        ITextResult? debugLayout,
+        int originX,
+        int originY,
         bool interactive,
         CancellationToken cancellationToken)
     {
@@ -292,7 +316,7 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
                 cancellationToken.ThrowIfCancellationRequested();
                 _window.SyncToTarget(_targetHwnd);
                 _window.SetInteractive(interactive);
-                _window.RenderItems(specs, debug, matchedLines);
+                _window.RenderItems(specs, debugOcr, debugLayout, originX, originY);
                 if (_visible)
                 {
                     if (!_window.IsVisible)
@@ -409,18 +433,28 @@ internal sealed class ScreenOverlayLayoutSession : IOverlayLayoutSession
             return;
 
         IReadOnlyList<OverlayItem> items;
-        IReadOnlyList<OverlayDebugWord>? debugWords;
-        IReadOnlyList<OverlayDebugLine>? debugLines;
+        IOCRResult? ocr;
+        ITextResult? layout;
+        int originX;
+        int originY;
         lock (_gate)
         {
             items = _lastItems;
-            debugWords = _lastDebugWords;
-            debugLines = _lastDebugMatchedLines;
+            ocr = _lastOcr;
+            layout = _lastLayout;
+            originX = _lastOriginX;
+            originY = _lastOriginY;
         }
 
         var specs = BuildSpecs(items, translationsById: null, onDemand: true);
-        var debug = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode) ? debugWords : null;
-        var matched = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode) ? debugLines : null;
-        await RenderOnUiAsync(specs, debug, matched, interactive: true, CancellationToken.None).ConfigureAwait(false);
+        var debugMode = _settings.GetValueAsBool(OverlayLayoutSettingKeys.DebugMode);
+        await RenderOnUiAsync(
+            specs,
+            debugMode ? ocr : null,
+            debugMode ? layout : null,
+            originX,
+            originY,
+            interactive: true,
+            CancellationToken.None).ConfigureAwait(false);
     }
 }
