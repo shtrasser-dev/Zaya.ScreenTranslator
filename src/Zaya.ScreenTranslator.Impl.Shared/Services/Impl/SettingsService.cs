@@ -1,4 +1,6 @@
 using Zaya.Primitives;
+using Zaya.PluginManager.Impl.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -94,7 +96,7 @@ public sealed class SettingsService : ISettingsService
     }
 
     public IReadOnlyList<EngineInfo> GetAvailableOcrEngines()
-        => FromCatalog(PluginServiceKind.Ocr);
+        => FromCatalog(ScreenTranslatorPluginKinds.Ocr);
 
     public IReadOnlyList<SettingDescriptor>? GetOcrDescriptors(string engineId)
     {
@@ -103,7 +105,7 @@ public sealed class SettingsService : ISettingsService
     }
 
     public IReadOnlyList<EngineInfo> GetAvailableCaptureEngines()
-        => FromCatalog(PluginServiceKind.Capture);
+        => FromCatalog(ScreenTranslatorPluginKinds.Capture);
 
     public IReadOnlyList<SettingDescriptor>? GetCaptureDescriptors(string engineId)
     {
@@ -112,7 +114,7 @@ public sealed class SettingsService : ISettingsService
     }
 
     public IReadOnlyList<EngineInfo> GetAvailableTextLayoutEngines()
-        => FromCatalog(PluginServiceKind.TextLayout);
+        => FromCatalog(ScreenTranslatorPluginKinds.TextLayout);
 
     public IReadOnlyList<SettingDescriptor>? GetTextLayoutDescriptors(string engineId)
     {
@@ -125,7 +127,7 @@ public sealed class SettingsService : ISettingsService
         using var builtIn = _engineFactory.CreateTranslator(NoTranslationTranslatorService.EngineIdValue);
         var label = builtIn!.DisplayName.GetValue(_localizationService.CurrentCulture);
         var engines = new List<EngineInfo> { new(builtIn.EngineId, label) };
-        engines.AddRange(FromCatalog(PluginServiceKind.Translator));
+        engines.AddRange(FromCatalog(ScreenTranslatorPluginKinds.Translator));
         return engines;
     }
 
@@ -140,7 +142,7 @@ public sealed class SettingsService : ISettingsService
         using var builtIn = _engineFactory.CreateTranslatorCache(NoTranslatorCacheService.EngineIdValue);
         var label = builtIn!.DisplayName.GetValue(_localizationService.CurrentCulture);
         var engines = new List<EngineInfo>();
-        engines.AddRange(FromCatalog(PluginServiceKind.TranslatorCache));
+        engines.AddRange(FromCatalog(ScreenTranslatorPluginKinds.TranslatorCache));
         engines.Add(new EngineInfo(builtIn.EngineId, label));
         return engines;
     }
@@ -152,7 +154,7 @@ public sealed class SettingsService : ISettingsService
     }
 
     public IReadOnlyList<EngineInfo> GetAvailableOverlayLayoutEngines()
-        => FromCatalog(PluginServiceKind.OverlayLayout);
+        => FromCatalog(ScreenTranslatorPluginKinds.OverlayLayout);
 
     public IReadOnlyList<SettingDescriptor>? GetOverlayLayoutDescriptors(string engineId)
     {
@@ -160,7 +162,7 @@ public sealed class SettingsService : ISettingsService
         return engine?.Settings;
     }
 
-    private IReadOnlyList<EngineInfo> FromCatalog(PluginServiceKind kind)
+    private IReadOnlyList<EngineInfo> FromCatalog(string kind)
         => _pluginCatalog.List(kind)
             .Select(e => new EngineInfo(e.EngineId, e.DisplayName))
             .ToList();

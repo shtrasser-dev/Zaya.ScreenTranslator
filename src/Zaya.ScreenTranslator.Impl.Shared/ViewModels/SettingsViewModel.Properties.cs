@@ -4,6 +4,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
+using Zaya.UI.Impl.Controls;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 
@@ -90,7 +91,7 @@ public sealed partial class SettingsViewModel
     partial void OnFramePauseMsTextChanged(string value)
     {
         var desc = FramePauseDescriptor;
-        if (!IntegerSettingValidation.TryParse(value, desc, _localizationService, out var parsed, out var error, _localizationService.CurrentCulture))
+        if (!IntegerSettingValidation.TryParse(value, desc, _localizationService.CurrentCulture, out var parsed, out var error))
         {
             FramePauseMsError = error ?? string.Empty;
             return;

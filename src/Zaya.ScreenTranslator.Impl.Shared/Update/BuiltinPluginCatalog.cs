@@ -1,3 +1,4 @@
+using Zaya.PluginManager.Impl.Update;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 
@@ -7,20 +8,19 @@ public sealed class BuiltinPluginCatalog : IBuiltinPluginCatalog
 {
     private readonly Lazy<IReadOnlyList<BuiltinPluginEntry>> _entries;
 
-    private readonly IJsonConfigurationService _jsonConfigurationService;
-
-    public BuiltinPluginCatalog(IEmbeddedResourceService embeddedResourceService, IJsonConfigurationService jsonConfigurationService)
+    public BuiltinPluginCatalog(IEmbeddedResourceService embeddedResourceService)
     {
         _entries = new Lazy<IReadOnlyList<BuiltinPluginEntry>>(() => Load(embeddedResourceService));
-        _jsonConfigurationService = jsonConfigurationService;
     }
 
     public IReadOnlyList<BuiltinPluginEntry> Entries => _entries.Value;
 
-    private IReadOnlyList<BuiltinPluginEntry> Load(IEmbeddedResourceService embeddedResourceService)
+    private static IReadOnlyList<BuiltinPluginEntry> Load(IEmbeddedResourceService embeddedResourceService)
     {
         using var stream = embeddedResourceService.GetStream(EmbeddedResourceConstants.BuiltinPluginsJson);
-        var list = _jsonConfigurationService.Read<List<BuiltinPluginEntry>>(stream);
-        return list.AsReadOnly();
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        copy.Position = 0;
+        return JsonBuiltinPluginCatalog.FromStream(copy).Entries;
     }
 }

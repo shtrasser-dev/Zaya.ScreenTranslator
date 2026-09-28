@@ -1,3 +1,5 @@
+using Zaya.PluginManager.Impl.Services;
+using Zaya.PluginManager.Impl.Update;
 using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
@@ -12,6 +14,7 @@ public sealed class ApplicationBootstrap : IApplicationBootstrap
     private readonly IPluginUpdateService _pluginUpdateService;
     private readonly IHostVersionChecker _hostVersionChecker;
     private readonly IPluginLoader _pluginLoader;
+    private readonly IPluginCatalog _pluginCatalog;
     private readonly IApplicationProfileService _applicationProfileService;
     private readonly ILocalizationService _localizationService;
 
@@ -19,12 +22,14 @@ public sealed class ApplicationBootstrap : IApplicationBootstrap
         IPluginUpdateService pluginUpdateService,
         IHostVersionChecker hostVersionChecker,
         IPluginLoader pluginLoader,
+        IPluginCatalog pluginCatalog,
         IApplicationProfileService applicationProfileService,
         ILocalizationService localizationService)
     {
         _pluginUpdateService = pluginUpdateService;
         _hostVersionChecker = hostVersionChecker;
         _pluginLoader = pluginLoader;
+        _pluginCatalog = pluginCatalog;
         _applicationProfileService = applicationProfileService;
         _localizationService = localizationService;
     }
@@ -69,7 +74,7 @@ public sealed class ApplicationBootstrap : IApplicationBootstrap
         }
 
         _pluginLoader.LoadPlugins();
-        _pluginLoader.RegisterHostBundledPlugins();
+        HostBundledPlugins.RegisterOverlayLayout(_pluginCatalog);
 
         return new BootstrapResult
         {

@@ -40,6 +40,8 @@
     <PackageReference Include="Zaya.Screenshot" Version="$(ZayaScreenshotVersion)" />
     <PackageReference Include="Zaya.Translator" Version="$(ZayaTranslatorVersion)" />
     <PackageReference Include="Zaya.TranslatorCache" Version="$(ZayaTranslatorCacheVersion)" />
+    <PackageReference Include="Zaya.PluginManager.Impl" Version="$(ZayaPluginManagerVersion)" />
+    <PackageReference Include="Zaya.UI.Impl" Version="$(ZayaUIVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Zaya.PluginManager.Impl.Update;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Update;
 

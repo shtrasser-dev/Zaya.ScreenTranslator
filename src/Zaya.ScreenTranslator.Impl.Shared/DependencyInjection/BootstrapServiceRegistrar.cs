@@ -3,6 +3,10 @@ using Microsoft.Extensions.Logging;
 using Zaya.Logging.Impl.Microsoft.Services;
 using Zaya.Logging.Impl.Services;
 using Zaya.Logging.Services;
+using Zaya.PluginManager.Impl;
+using Zaya.PluginManager.Impl.DependencyInjection;
+using Zaya.PluginManager.Impl.Services;
+using Zaya.PluginManager.Impl.Update;
 using Zaya.ScreenTranslator.Impl.Shared.Logging;
 using Zaya.ScreenTranslator.Impl.Shared.Logging.Impl;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
@@ -70,27 +74,34 @@ public static class BootstrapServiceRegistrar
         services.AddSingleton<IEmbeddedResourceService, EmbeddedResourceService>().WrapLogging<IEmbeddedResourceService>();
 
         services.AddSingleton<HttpClient>();
-        services.AddSingleton<IGitHubReleasesClient, GitHubReleasesClient>().WrapLogging<IGitHubReleasesClient>();
-
         services.AddSingleton<ILocalizationService, LocalizationService>().WrapLogging<ILocalizationService>();
+        services.AddSingleton<IPluginUiCulture, LocalizationPluginUiCulture>().WrapLogging<IPluginUiCulture>();
         services.AddSingleton<IApplicationProfileService, ApplicationProfileService>().WrapLogging<IApplicationProfileService>();
         services.AddSingleton<IBuiltinPluginCatalog, BuiltinPluginCatalog>().WrapLogging<IBuiltinPluginCatalog>();
         services.AddSingleton<IPluginHostCompatibility, PluginHostCompatibility>().WrapLogging<IPluginHostCompatibility>();
-        services.AddSingleton<IPluginManifestReader, PluginManifestReader>().WrapLogging<IPluginManifestReader>();
-        services.AddSingleton<ILocalPluginStore, LocalPluginStore>().WrapLogging<ILocalPluginStore>();
-        services.AddSingleton<IPluginCatalogDownloader, PluginCatalogDownloader>().WrapLogging<IPluginCatalogDownloader>();
-        services.AddSingleton<IPluginUpdateService, PluginUpdateService>().WrapLogging<IPluginUpdateService>();
-        services.AddSingleton<IHostVersionChecker, HostVersionChecker>().WrapLogging<IHostVersionChecker>();
-
-        services.AddSingleton<IPluginExtractCache, PluginExtractCache>().WrapLogging<IPluginExtractCache>();
-        services.AddSingleton<IPluginZipProcessor, PluginZipProcessor>().WrapLogging<IPluginZipProcessor>();
-        services.AddSingleton<IPluginZipDirectoryScanner, PluginZipDirectoryScanner>().WrapLogging<IPluginZipDirectoryScanner>();
-        services.AddSingleton<IPluginAssemblyLoader, PluginAssemblyLoader>().WrapLogging<IPluginAssemblyLoader>();
-        services.AddSingleton<IPluginDirectoryProcessor, PluginDirectoryProcessor>().WrapLogging<IPluginDirectoryProcessor>();
-        services.AddSingleton<IPluginDirectoryScanner, PluginDirectoryScanner>().WrapLogging<IPluginDirectoryScanner>();
-        services.AddSingleton<IPluginCatalog, PluginCatalog>().WrapLogging<IPluginCatalog>();
+        services.AddSingleton<IPluginEngineProbe, ScreenTranslatorEngineProbe>();
+        services.AddSingleton<IPluginPaths>(configurationPathService);
+        services.AddZayaPluginManager(new PluginManagerOptions
+        {
+            GitHubProductName = "Zaya.ScreenTranslator",
+            GitHubProductVersion = HostChannel.Current,
+            LibDirectory = configurationPathService.GetLibDirectory(),
+        });
+        services.WrapLogging<IGitHubReleasesClient>();
+        services.WrapLogging<IPluginManifestReader>();
+        services.WrapLogging<ILocalPluginStore>();
+        services.WrapLogging<IPluginCatalogDownloader>();
+        services.WrapLogging<IPluginUpdateService>();
+        services.WrapLogging<IPluginExtractCache>();
+        services.WrapLogging<IPluginZipProcessor>();
+        services.WrapLogging<IPluginZipDirectoryScanner>();
+        services.WrapLogging<IPluginAssemblyLoader>();
+        services.WrapLogging<IPluginDirectoryProcessor>();
+        services.WrapLogging<IPluginDirectoryScanner>();
+        services.WrapLogging<IPluginCatalog>();
+        services.WrapLogging<IPluginLoader>();
         services.AddSingleton<IEngineFactoryCatalogService, EngineFactoryCatalogService>().WrapLogging<IEngineFactoryCatalogService>();
-        services.AddSingleton<IPluginLoader, PluginLoader>().WrapLogging<IPluginLoader>();
+        services.AddSingleton<IHostVersionChecker, HostVersionChecker>().WrapLogging<IHostVersionChecker>();
         services.AddSingleton<IEngineFactory, EngineFactory>().WrapLogging<IEngineFactory>();
         services.AddSingleton<ICaptureRegionsStore, CaptureRegionsStore>().WrapLogging<ICaptureRegionsStore>();
         services.AddSingleton<ICaptureFrameProcessor, CaptureFrameProcessor>().WrapLogging<ICaptureFrameProcessor>();

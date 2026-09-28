@@ -5,6 +5,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.ViewModels;
 using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
+using Zaya.UI.Impl.Controls;
 
 namespace Zaya.ScreenTranslator.Impl.Shared.Views;
 
@@ -90,48 +91,42 @@ public partial class SettingsPanel : UserControl
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.Ocr)),
             host,
-            culture,
-            vm.Localization);
+            culture);
         BindList(
             "CaptureSettingsPanel",
             vm.CaptureDescriptors,
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.Capture)),
             host,
-            culture,
-            vm.Localization);
+            culture);
         BindList(
             "TextLayoutSettingsPanel",
             vm.TextLayoutDescriptors,
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.TextLayout)),
             host,
-            culture,
-            vm.Localization);
+            culture);
         BindList(
             "TranslatorSettingsPanel",
             vm.TranslatorDescriptors,
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.Translator)),
             host,
-            culture,
-            vm.Localization);
+            culture);
         BindList(
             "TranslatorCacheSettingsPanel",
             vm.TranslatorCacheDescriptors,
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.TranslatorCache)),
             host,
-            culture,
-            vm.Localization);
+            culture);
         BindList(
             "OverlaySettingsPanel",
             vm.OverlayLayoutDescriptors,
             GetPluginSettings(vm, () => vm.EditingProfile.ScreenTranslatorSettings
                 .GetValueAsString(ScreenTranslatorSettingDescriptors.OverlayLayout)),
             host,
-            culture,
-            vm.Localization);
+            culture);
     }
 
     private void BindList(
@@ -139,8 +134,7 @@ public partial class SettingsPanel : UserControl
         IReadOnlyList<SettingDescriptor>? descriptors,
         IDictionary<string, object>? values,
         IReadOnlyDictionary<string, object>? hostSettings,
-        System.Globalization.CultureInfo culture,
-        ILocalizationService localizationService)
+        System.Globalization.CultureInfo culture)
     {
         var control = FindListControl(controlName);
         if (control is null)
@@ -150,7 +144,7 @@ public partial class SettingsPanel : UserControl
         control.SettingChanged += OnListSettingChanged;
 
         control.Culture = culture;
-        control.Localization = localizationService;
+        control.IncludeDescriptor = desc => !ManagedSettingKeys.IsHostManaged(desc);
         control.HostSettings = hostSettings;
         control.Values = values;
         control.Descriptors = descriptors;
@@ -161,7 +155,7 @@ public partial class SettingsPanel : UserControl
         if (_viewModel is null || sender is not SettingDescriptorListControl control)
             return;
 
-        _viewModel.ApplyChanges(moduleHint: control.ModuleKind);
+        _viewModel.ApplyChanges(moduleHint: SettingsModule.GetKind(control));
     }
 
     private static IReadOnlyDictionary<string, object> GetHostSettings(SettingsViewModel vm) =>

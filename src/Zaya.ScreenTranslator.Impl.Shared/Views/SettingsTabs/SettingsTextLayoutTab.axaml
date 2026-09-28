@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
              xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+             xmlns:ui="clr-namespace:Zaya.UI.Impl.Controls;assembly=Zaya.UI.Impl"
              x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsTextLayoutTab"
              x:DataType="vm:SettingsViewModel">
     <ScrollViewer Name="TabScroll"
@@ -24,8 +25,8 @@
                                   DisplayMemberBinding="{Binding Id}" />
                     </Grid>
                     <Border Classes="settings-divider" />
-                    <ctrl:SettingDescriptorListControl Name="TextLayoutSettingsPanel"
-                                                       ModuleKind="TextLayout" />
+                    <ui:SettingDescriptorListControl Name="TextLayoutSettingsPanel"
+                                                       ctrl:SettingsModule.Kind="TextLayout" />
                 </StackPanel>
             </Border>
         </Panel>

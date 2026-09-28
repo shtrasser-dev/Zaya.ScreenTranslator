@@ -1,7 +1,8 @@
 using System.Reflection;
 using Zaya.OCR.Services;
+using Zaya.PluginManager.Impl.Services;
+using Zaya.PluginManager.Impl.Update;
 using Zaya.Screenshot.Services;
-using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Layout.Services;
 using Zaya.Translator.Services;
 using Zaya.TranslatorCache.Services;

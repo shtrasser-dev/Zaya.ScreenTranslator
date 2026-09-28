@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.ViewModels"
              xmlns:ctrl="clr-namespace:Zaya.ScreenTranslator.Impl.Shared.Views.Controls"
+             xmlns:ui="clr-namespace:Zaya.UI.Impl.Controls;assembly=Zaya.UI.Impl"
              x:Class="Zaya.ScreenTranslator.Impl.Shared.Views.SettingsTabs.SettingsCaptureTab"
              x:DataType="vm:SettingsViewModel">
     <ScrollViewer Name="TabScroll"
@@ -75,8 +76,8 @@
                         </StackPanel>
                     </Grid>
                     <Border Classes="settings-divider" />
-                    <ctrl:SettingDescriptorListControl Name="CaptureSettingsPanel"
-                                                       ModuleKind="Capture" />
+                    <ui:SettingDescriptorListControl Name="CaptureSettingsPanel"
+                                                       ctrl:SettingsModule.Kind="Capture" />
                 </StackPanel>
             </Border>
         </Panel>

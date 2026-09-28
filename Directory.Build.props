@@ -8,6 +8,8 @@
     <ZayaScreenshotVersion>2.0.0</ZayaScreenshotVersion>
     <ZayaTranslatorVersion>2.0.0</ZayaTranslatorVersion>
     <ZayaTranslatorCacheVersion>2.0.0</ZayaTranslatorCacheVersion>
+    <ZayaPluginManagerVersion>1.0.0.0</ZayaPluginManagerVersion>
+    <ZayaUIVersion>2.0.0.0</ZayaUIVersion>
 
     <!-- Host app default (Windows/Unix/Shared) when ZayaVersionRole is unset. -->
     <ZayaHostVersionMinor>0</ZayaHostVersionMinor>

@@ -8,6 +8,7 @@ using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Models;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Impl.Shared.Update;
+using Zaya.PluginManager.Impl.Update;
 using Zaya.ScreenTranslator.Impl.Shared.Views;
 using Zaya.ScreenTranslator.Impl.Shared.Views.Controls;
 

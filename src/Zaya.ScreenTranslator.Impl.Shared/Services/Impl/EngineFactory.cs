@@ -1,7 +1,9 @@
 using Zaya.Logging.Models;
 using Zaya.Logging.Services;
 using Zaya.OCR.Services;
+using Zaya.PluginManager.Impl.Services;
 using Zaya.Screenshot.Services;
+using Zaya.ScreenTranslator.Impl.Shared.Constants;
 using Zaya.ScreenTranslator.Impl.Shared.Exceptions;
 using Zaya.ScreenTranslator.Impl.Shared.Services;
 using Zaya.ScreenTranslator.Layout.Services;
@@ -28,24 +30,24 @@ public sealed class EngineFactory : IEngineFactory
     }
 
     public IOCRService? CreateOcr(string? engineId)
-        => CreateFromCatalog<IOCRService>(PluginServiceKind.Ocr, engineId);
+        => CreateFromCatalog<IOCRService>(ScreenTranslatorPluginKinds.Ocr, engineId);
 
     public ITextLayoutService? CreateTextLayout(string? engineId)
-        => CreateFromCatalog<ITextLayoutService>(PluginServiceKind.TextLayout, engineId);
+        => CreateFromCatalog<ITextLayoutService>(ScreenTranslatorPluginKinds.TextLayout, engineId);
 
     public ICaptureService? CreateCapture(string? engineId)
-        => CreateFromCatalog<ICaptureService>(PluginServiceKind.Capture, engineId);
+        => CreateFromCatalog<ICaptureService>(ScreenTranslatorPluginKinds.Capture, engineId);
 
     public ITranslatorService? CreateTranslator(string? engineId)
     {
         if (string.Equals(engineId, NoTranslationTranslatorService.EngineIdValue, StringComparison.OrdinalIgnoreCase))
             return _loggingWrapper.Wrap<ITranslatorService>(new NoTranslationTranslatorService(_loggingWrapper));
 
-        var created = CreateFromCatalog<ITranslatorService>(PluginServiceKind.Translator, engineId);
+        var created = CreateFromCatalog<ITranslatorService>(ScreenTranslatorPluginKinds.Translator, engineId);
         if (created is not null)
             return created;
 
-        if (_pluginCatalog.List(PluginServiceKind.Translator).Count == 0)
+        if (_pluginCatalog.List(ScreenTranslatorPluginKinds.Translator).Count == 0)
             return _loggingWrapper.Wrap<ITranslatorService>(new NoTranslationTranslatorService(_loggingWrapper));
 
         return null;
@@ -57,20 +59,20 @@ public sealed class EngineFactory : IEngineFactory
             || string.Equals(engineId, "none", StringComparison.OrdinalIgnoreCase))
             return _loggingWrapper.Wrap<ITranslatorCacheService>(new NoTranslatorCacheService(_loggingWrapper));
 
-        var created = CreateFromCatalog<ITranslatorCacheService>(PluginServiceKind.TranslatorCache, engineId);
+        var created = CreateFromCatalog<ITranslatorCacheService>(ScreenTranslatorPluginKinds.TranslatorCache, engineId);
         if (created is not null)
             return created;
 
-        if (_pluginCatalog.List(PluginServiceKind.TranslatorCache).Count == 0)
+        if (_pluginCatalog.List(ScreenTranslatorPluginKinds.TranslatorCache).Count == 0)
             return _loggingWrapper.Wrap<ITranslatorCacheService>(new NoTranslatorCacheService(_loggingWrapper));
 
         return null;
     }
 
     public IOverlayLayoutService? CreateOverlayLayout(string? engineId)
-        => CreateFromCatalog<IOverlayLayoutService>(PluginServiceKind.OverlayLayout, engineId);
+        => CreateFromCatalog<IOverlayLayoutService>(ScreenTranslatorPluginKinds.OverlayLayout, engineId);
 
-    private TService? CreateFromCatalog<TService>(PluginServiceKind kind, string? engineId)
+    private TService? CreateFromCatalog<TService>(string kind, string? engineId)
         where TService : class
     {
         var entries = _pluginCatalog.List(kind);
